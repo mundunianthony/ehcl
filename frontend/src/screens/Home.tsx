@@ -15,11 +15,12 @@ import * as Location from "expo-location";
 import { Picker } from "@react-native-picker/picker";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../types";
-import Navbar from "../components/Navbar";
 import Icon from "react-native-vector-icons/Ionicons";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import MainLayout from "../components/MainLayout";
 import { API_URL } from '../config/api';
+import { useNavigation } from "@react-navigation/native";
+import IconMaterialCommunity from "react-native-vector-icons/MaterialCommunityIcons";
 
 type HomeScreenProps = {
   navigation: StackNavigationProp<RootStackParamList, 'Home'>;
@@ -46,9 +47,17 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
     lab: false,
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
 
   // Get user from auth context
   const { user } = useAuth();
+
+  // Helper to get user initial
+  const getUserInitial = () => {
+    if (user?.name && user.name.length > 0) return user.name[0].toUpperCase();
+    if (user?.email && user.email.length > 0) return user.email[0].toUpperCase();
+    return 'U';
+  };
 
   // Fetch available districts when component mounts
   useEffect(() => {
@@ -126,38 +135,6 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
     } finally {
       setIsLoading(false); // Stop loading regardless of success/failure
     }
-  };
-
-  // Get user initials from name
-  const getInitials = (name: string) => {
-    // If name is available, use its initials
-    if (name && name.trim() !== '') {
-      return name
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2);
-    }
-    // Otherwise, use the first letter of the email
-    if (user?.email) {
-      return user.email[0].toUpperCase();
-    }
-    // Fallback to 'U' for User
-    return 'U';
-  };
-
-  const getUserInitial = () => {
-    // If user has a first name, use the first letter
-    if (user?.first_name) {
-      return user.first_name[0].toUpperCase();
-    }
-    // Otherwise, use the first letter of the email
-    if (user?.email) {
-      return user.email[0].toUpperCase();
-    }
-    // Fallback to 'U' for User
-    return 'U';
   };
 
   const getPickerItems = (type: string) => {
@@ -271,23 +248,20 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
 
   return (
     <MainLayout navigation={navigation} route={route}>
-      {/* Use ScrollView to prevent content overflow on smaller screens */}
       <ScrollView 
         style={styles.screen} 
         contentContainerStyle={styles.contentContainer}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Profile Avatar in Upper Right Corner */}
-        <TouchableOpacity
-          style={styles.profileContainer}
-          onPress={() => navigation.navigate("About")}
-        >
-          <View style={styles.profileAvatar}>
-            <Text style={styles.profileText}>
-              {getUserInitial()}
-            </Text>
+        {/* Top Bar with Menu and Notification */}
+        <View style={styles.topBar}>
+          <TouchableOpacity style={styles.menuButton} onPress={() => setMenuVisible(true)}>
+            <IconMaterialCommunity name="menu" size={28} color="#333" />
+          </TouchableOpacity>
+          <View style={styles.topBarTitle}>
+            <Text style={styles.topBarTitleText}>Health Center Locator</Text>
           </View>
-        </TouchableOpacity>
+        </View>
 
         {/* Header Section */}
         <View style={styles.headerContainer}>
@@ -295,14 +269,16 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
           <Text style={styles.header}>Find Hospitals Near You</Text>
         </View>
 
-        {/* Input Fields */} 
-        {renderPickerField("Select District...", district, 'district')}
-        {renderPickerField("Filter by Condition (Optional)...", condition, 'condition')}
-        
-        {/* Picker Modal */} 
+        {/* Search Section */}
+        <View style={styles.searchSection}>
+          {renderPickerField("Select District...", district, 'district')}
+          {renderPickerField("Filter by Condition (Optional)...", condition, 'condition')}
+        </View>
+
+        {/* Picker Modal */}
         {renderPickerModal()}
 
-        {/* Toggle Filters Button */} 
+        {/* Toggle Filters Button */}
         <TouchableOpacity 
           style={styles.toggleFiltersButton}
           onPress={() => setShowAdvancedFilters(!showAdvancedFilters)}
@@ -318,13 +294,12 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
           />
         </TouchableOpacity>
 
-        {/* Advanced Filters Section */} 
+        {/* Advanced Filters Section */}
         {showAdvancedFilters && (
           <View style={styles.advancedFiltersContainer}>
-            {/* Removed redundant header inside the container */}
             <Text style={styles.advancedFiltersTitle}>Available Services</Text>
             <View style={styles.serviceFiltersGrid}>
-              {/* Service Filter Buttons */} 
+              {/* Service Filter Buttons */}
               <TouchableOpacity
                 style={[styles.serviceFilter, filters.emergency && styles.serviceFilterActive]}
                 onPress={() => setFilters(prev => ({ ...prev, emergency: !prev.emergency }))}
@@ -368,7 +343,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
           </View>
         )}
 
-        {/* Search Button with Loading State */}
+        {/* Search Button */}
         <TouchableOpacity 
           style={[
             styles.button, 
@@ -389,8 +364,49 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
             <Text style={styles.buttonText}>Search Hospitals</Text>
           )}
         </TouchableOpacity>
-
       </ScrollView>
+
+      {/* Menu Modal */}
+      <Modal
+        transparent={true}
+        visible={menuVisible}
+        onRequestClose={() => setMenuVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setMenuVisible(false)}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.menuContainer}>
+              <View style={styles.menuHeader}>
+                <View style={styles.userInitialContainer}>
+                  <Text style={styles.userInitial}>
+                    {getUserInitial()}
+                  </Text>
+                </View>
+                <Text style={styles.userName}>{user?.name || user?.email || 'User'}</Text>
+              </View>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuVisible(false); navigation.navigate("Home"); }}>
+                <IconMaterialCommunity name="home" size={20} color="#4F46E5" style={styles.menuIcon} />
+                <Text style={styles.menuText}>Home</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuVisible(false); navigation.navigate("Hospitals"); }}>
+                <IconMaterialCommunity name="hospital" size={20} color="#14B8A6" style={styles.menuIcon} />
+                <Text style={styles.menuText}>Hospitals</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuVisible(false); navigation.navigate("About"); }}>
+                <IconMaterialCommunity name="information" size={20} color="#64748B" style={styles.menuIcon} />
+                <Text style={styles.menuText}>About</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuVisible(false); navigation.navigate("Login"); }}>
+                <IconMaterialCommunity name="logout" size={20} color="#EF4444" style={styles.menuIcon} />
+                <Text style={[styles.menuText, { color: "#EF4444" }]}>Logout</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </MainLayout>
   );
 }
@@ -399,185 +415,130 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
 //          STYLESHEET (Improved)
 // ==========================================
 const styles = StyleSheet.create({
-  // --- Base Layout --- 
   screen: {
     flex: 1,
-    backgroundColor: "#f8f9fa", // Lighter, cleaner background
+    backgroundColor: "#f8f9fa",
   },
-  contentContainer: { // Use contentContainerStyle for ScrollView padding
-    paddingHorizontal: 20, // Consistent horizontal padding
-    paddingVertical: 24, // Vertical padding
-    paddingTop: Platform.OS === 'ios' ? 70 : 60, // More space for status bar/notch + profile icon
-    paddingBottom: 40, // Ensure space below button
+  contentContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
-
-  // --- Profile Icon --- 
-  profileContainer: {
-    position: "absolute",
-    top: Platform.OS === "ios" ? 50 : 40, // Positioned relative to screen top
-    right: 20,
-    zIndex: 10, // Ensure it's above other content
+  topBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 12,
+    marginBottom: 16,
   },
-  profileAvatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20, // Perfect circle
-    backgroundColor: "#00796b", // Primary color
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 4, // Android shadow
-    shadowColor: "#000", // iOS shadow
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15,
-    shadowRadius: 4,
+  topBarTitle: {
+    flex: 1,
+    alignItems: 'center',
   },
-  profileText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
+  topBarTitleText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
   },
-
-  // --- Header --- 
+  menuButton: {
+    padding: 8,
+  },
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 24, // Space below header
-    marginTop: 10, // Space above header (below profile icon)
+    marginBottom: 24,
   },
   headerIcon: {
     marginRight: 10,
   },
   header: {
-    fontSize: 24, // Prominent header text
+    fontSize: 24,
     fontWeight: "600",
-    color: "#343a40", // Darker text for better readability
+    color: "#343a40",
     textAlign: "center",
   },
-
-  // --- Picker/Input Fields --- 
-  pickerContainer: {
-    flexDirection: 'row', // Layout for text/icon and clear button
-    alignItems: 'center',
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ced4da", // Standard border color
-    marginBottom: 16, // Space between fields
-    height: 52, // Consistent height
-    paddingHorizontal: 12, // Inner horizontal padding
-    elevation: 1, // Subtle shadow
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
+  searchSection: {
+    marginBottom: 20,
   },
-  pickerField: { // Container for the text and dropdown icon
-    flex: 1, // Take up available space
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginRight: 8, // Space before the clear button
-    overflow: 'hidden', // Prevent text overlap
+  filtersSection: {
+    marginBottom: 24,
   },
-  pickerText: {
-    fontSize: 16,
-    color: '#212529', // Main text color
-  },
-  pickerPlaceholder: {
-    fontSize: 16,
-    color: '#6c757d', // Standard placeholder color
-  },
-  clearButton: {
-    padding: 5, // Make touch target larger with hitSlop
-  },
-
-  // --- Filter Toggle --- 
   toggleFiltersButton: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: '#e9ecef', // Light background for secondary action
+    backgroundColor: '#e9ecef',
     borderRadius: 8,
-    marginVertical: 16, // Space above and below
-    alignSelf: 'center', // Center the button horizontally
+    marginBottom: 16,
   },
   toggleFiltersText: {
-    color: '#00796b', // Primary color text
+    color: '#00796b',
     fontWeight: '500',
     fontSize: 15,
   },
   toggleIcon: {
     marginLeft: 8,
   },
-
-  // --- Advanced Filters --- 
   advancedFiltersContainer: {
     backgroundColor: '#fff',
     borderRadius: 8,
     padding: 16,
-    marginBottom: 20, // Space below filters
     borderWidth: 1,
-    borderColor: '#e9ecef', // Light border
+    borderColor: '#e9ecef',
   },
   advancedFiltersTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#495057', // Slightly muted title color
+    color: '#495057',
     marginBottom: 12,
   },
   serviceFiltersGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 10, // Spacing between filter buttons
+    gap: 10,
   },
   serviceFilter: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#e0f2f1', // Very light primary color background
+    backgroundColor: '#e0f2f1',
     paddingVertical: 8,
     paddingHorizontal: 12,
-    borderRadius: 20, // Pill shape
+    borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'transparent', // No border by default
+    borderColor: 'transparent',
   },
   serviceFilterActive: {
-    backgroundColor: '#00796b', // Primary color background when active
+    backgroundColor: '#00796b',
     borderColor: '#00796b',
   },
   serviceFilterText: {
     marginLeft: 6,
     fontSize: 13,
-    color: '#004d40', // Darker primary color text
+    color: '#004d40',
     fontWeight: '500',
   },
   serviceFilterTextActive: {
-    color: '#fff', // White text when active
+    color: '#fff',
   },
-
-  // --- Main Action Button --- 
   button: {
-    backgroundColor: "#00796b", // Primary color
-    height: 52, // Match input field height
+    backgroundColor: "#00796b",
+    height: 52,
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
-    elevation: 3, // Standard button shadow
+    elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    marginTop: 8, // Space above button
-    width: '100%', // Full width button
   },
   buttonDisabled: {
-    backgroundColor: '#b2dfdb', // Lighter, disabled primary color
-    elevation: 0, // No shadow when disabled
+    backgroundColor: '#b2dfdb',
+    elevation: 0,
   },
   buttonLoading: {
-    backgroundColor: '#00796b',
     opacity: 0.8,
   },
   buttonContent: {
@@ -593,35 +554,118 @@ const styles = StyleSheet.create({
   buttonTextWithLoader: {
     marginLeft: 8,
   },
-
-  // --- Modal Styles --- 
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Darker overlay for focus
-    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+  },
+  menuContainer: {
+    backgroundColor: '#fff',
+    width: '80%',
+    maxWidth: 300,
+    height: '100%',
+    paddingTop: 40,
+    paddingHorizontal: 20,
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
+  },
+  menuHeader: {
     alignItems: 'center',
-    padding: 20,
+    marginBottom: 24,
+  },
+  userInitialContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#e3e3e3',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  userInitial: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  userName: {
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  menuIcon: {
+    marginRight: 12,
+  },
+  menuText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  pickerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#ced4da",
+    marginBottom: 16,
+    height: 52,
+    paddingHorizontal: 12,
+    elevation: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+  },
+  pickerField: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginRight: 8,
+    overflow: 'hidden',
+  },
+  pickerText: {
+    fontSize: 16,
+    color: '#212529',
+  },
+  pickerPlaceholder: {
+    fontSize: 16,
+    color: '#6c757d',
+  },
+  clearButton: {
+    padding: 5,
   },
   modalContent: {
     width: '90%',
-    maxHeight: '70%', // Limit modal height
+    maxHeight: '80%',
     backgroundColor: 'white',
-    borderRadius: 12, // Slightly larger radius
+    borderRadius: 12,
     overflow: 'hidden',
-    elevation: 10, // More prominent shadow for modal
+    elevation: 10,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
+    marginTop: 20,
+    marginBottom: 20,
   },
   modalScrollView: {
-    // Inherits max height from modalContent
+    maxHeight: '100%',
   },
   modalItem: {
     paddingVertical: 16,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#f1f3f5', // Lighter separator
+    borderBottomColor: '#f1f3f5',
   },
   modalItemText: {
     fontSize: 16,
@@ -629,13 +673,13 @@ const styles = StyleSheet.create({
   },
   modalCloseButton: {
     paddingVertical: 16,
-    backgroundColor: '#f8f9fa', // Light background for close button area
+    backgroundColor: '#f8f9fa',
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#e9ecef', // Match light borders
+    borderTopColor: '#e9ecef',
   },
   modalCloseButtonText: {
-    color: '#00796b', // Primary color
+    color: '#00796b',
     fontSize: 16,
     fontWeight: '600',
   },

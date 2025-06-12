@@ -9,30 +9,17 @@ import {
   TextInput,
 } from 'react-native';
 import { PhoneInput } from '../components/PhoneInput';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import { Ionicons } from '@expo/vector-icons';
 
-type BasicDetailsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'BasicDetails'>;
-
-interface BasicDetailsScreenProps {
-  navigation: BasicDetailsScreenNavigationProp;
-  route: {
-    params: {
-      formValues: {
-        country: string;
-        city: string;
-        address: string;
-        latitude?: number;
-        longitude?: number;
-      };
-      image: string;
-    };
-  };
-}
+type BasicDetailsScreenProps = {
+  navigation: StackNavigationProp<RootStackParamList, 'BasicDetails'>;
+  route: RouteProp<RootStackParamList, 'BasicDetails'>;
+};
 
 const BasicDetailsScreen: React.FC<BasicDetailsScreenProps> = ({ navigation, route }) => {
   const { token } = useAuth();

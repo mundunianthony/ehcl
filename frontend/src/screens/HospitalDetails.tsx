@@ -15,7 +15,6 @@ import WebMapComponent from '../components/WebMapComponent';
 import { FontAwesome5, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../types';
-import Navbar from '../components/Navbar';
 import ScrollableScreen from '../components/ScrollableScreen';
 import { getPlaceholderImageUrl, isValidImageUrl } from '../utils/hospitalImages';
 
@@ -142,13 +141,10 @@ const HospitalDetails = ({
 
   return (
     <SafeAreaView style={styles.screen}>
-      {/* Navbar will be positioned absolutely at the bottom */}
-      <Navbar containerStyles={styles.navbar} />
-      
       <ScrollableScreen 
         style={styles.container}
         contentContainerStyle={{ 
-          paddingBottom: 100,
+          paddingBottom: 20,
           paddingTop: 9,
         }}
         keyboardShouldPersistTaps="handled"
@@ -419,21 +415,6 @@ const styles = StyleSheet.create({
       display: 'flex',
       flexDirection: 'column'
     } : {})
-  },
-  navbar: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-    height: 80,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#e9ecef',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
   },
   container: { 
     flex: 1,

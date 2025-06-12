@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { RootStackParamList } from '../types';
-import Navbar from './Navbar';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -21,7 +20,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, route, navigation }) 
       <View style={styles.content}>
         {children}
       </View>
-      {showNavbar && <Navbar />}
     </View>
   );
 };

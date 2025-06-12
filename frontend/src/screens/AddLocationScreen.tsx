@@ -9,27 +9,17 @@ import {
   Alert,
   Dimensions,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import { Ionicons } from '@expo/vector-icons';
 
-type AddLocationScreenNavigationProp = StackNavigationProp<RootStackParamList, 'AddLocation'>;
-
-interface AddLocationScreenProps {
-  navigation: AddLocationScreenNavigationProp;
-  route: {
-    params: {
-      propertyDetails: {
-        country: string;
-        city: string;
-        address: string;
-      };
-    };
-  };
-}
+type AddLocationScreenProps = {
+  navigation: StackNavigationProp<RootStackParamList, 'AddLocation'>;
+  route: RouteProp<RootStackParamList, 'AddLocation'>;
+};
 
 const AddLocationScreen: React.FC<AddLocationScreenProps> = ({ navigation, route }) => {
   const [formValues, setFormValues] = useState({

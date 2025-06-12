@@ -1,8 +1,7 @@
 import React, { useLayoutEffect, useRef, useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, Animated, Dimensions, Linking, Alert, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Platform, Animated, Dimensions, Linking, Alert } from "react-native";
 import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { Video, ResizeMode, AVPlaybackStatus } from 'expo-av';
 
 // Remember to replace '[App Name]' with your actual app name.
 
@@ -372,51 +371,6 @@ export default function AboutScreen() {
           </View>
         </AnimatedSection>
 
-        {/* Section 9: Video Tutorial */}
-        <AnimatedSection>
-          <View style={styles.card}>
-            <FontAwesome5 name="play-circle" size={40} color="#3498db" style={styles.cardIcon} />
-            <Text style={styles.cardTitle}>How to Use the App</Text>
-            <Text style={styles.cardParagraph}>
-              Watch this quick tutorial to learn how to make the most of Health Center Emergency Locator App.
-            </Text>
-            <View style={styles.videoContainer}>
-              {isLoading && (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color="#3498db" />
-                  <Text style={styles.loadingText}>Loading video...</Text>
-                </View>
-              )}
-              <Video
-                ref={videoRef}
-                style={styles.video}
-                source={{ uri: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' }}
-                useNativeControls
-                resizeMode={ResizeMode.CONTAIN}
-                isLooping
-                shouldPlay={false}
-                onLoad={handleVideoLoad}
-                onError={handleVideoError}
-                onPlaybackStatusUpdate={status => setVideoStatus(status)}
-              />
-            </View>
-            <View style={styles.videoFeatures}>
-              <View style={styles.featureItem}>
-                <Ionicons name="location" size={24} color="#3498db" />
-                <Text style={styles.featureText}>Find Nearest Hospitals</Text>
-              </View>
-              <View style={styles.featureItem}>
-                <Ionicons name="navigate" size={24} color="#3498db" />
-                <Text style={styles.featureText}>Get Directions</Text>
-              </View>
-              <View style={styles.featureItem}>
-                <Ionicons name="information-circle" size={24} color="#3498db" />
-                <Text style={styles.featureText}>View Hospital Details</Text>
-              </View>
-            </View>
-          </View>
-        </AnimatedSection>
-
       </ScrollView>
     </View>
   );
@@ -504,38 +458,6 @@ const styles = StyleSheet.create({
   emergencyText: {
     color: '#e74c3c',
     fontWeight: 'bold',
-  },
-  videoContainer: {
-    width: '100%',
-    height: 200,
-    marginVertical: 15,
-    borderRadius: 12,
-    overflow: 'hidden',
-    backgroundColor: '#000',
-  },
-  video: {
-    width: '100%',
-    height: '100%',
-  },
-  videoFeatures: {
-    marginTop: 15,
-    width: '100%',
-  },
-  loadingContainer: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f0f4f8',
-    zIndex: 1,
-  },
-  loadingText: {
-    marginTop: 10,
-    color: '#3498db',
-    fontSize: 16,
   },
 });
 

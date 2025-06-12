@@ -43,9 +43,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:19006",
     "http://localhost:19000",
     "http://localhost:8000",
-    "http://10.10.162.57:8000",
-    "http://10.10.162.57:19006",
-    "exp://10.10.162.57:19000",
+    "http://10.10.162.84:8000",
+    "http://10.10.162.84:19006",
+    "exp://10.10.162.84:19000",
     "exp://localhost:19000",
     "exp://192.168.1.*:19000",  # Allow any local network IP
     "exp://*",  # Allow any Expo URL
@@ -70,11 +70,21 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+    'access-control-allow-origin',
+    'access-control-allow-headers',
+    'access-control-allow-methods',
+]
+
+CORS_EXPOSE_HEADERS = [
+    'Content-Type',
+    'X-CSRFToken',
+    'access-control-allow-origin',
+    'access-control-allow-headers',
+    'access-control-allow-methods',
 ]
 
 # For more specific control, add these settings
-# CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
-# CORS_PREFLIGHT_MAX_AGE = 86400  # Cache preflight requests for 1 day
+CORS_PREFLIGHT_MAX_AGE = 86400  # Cache preflight requests for 1 day
 
 INSTALLED_APPS = [
     'django.contrib.admin',

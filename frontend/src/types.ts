@@ -30,6 +30,7 @@ export type RootStackParamList = {
     lab?: string;
     userCoords?: { latitude: number; longitude: number };
   };
+  Profile: undefined;
   About: undefined;
   AddLocation: {
     propertyDetails?: {
@@ -92,5 +93,6 @@ export type RootStackParamList = {
     hospital: Hospital;
   };
   NetworkTest: undefined;
+  HospitalList: undefined;
 };
 

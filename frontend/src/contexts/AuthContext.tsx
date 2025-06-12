@@ -330,3 +330,16 @@ export const useAuth = () => {
     error: context.error
   };
 };
+
+// This is a dummy AuthContext to avoid conflicts with the correct one in 'context'
+console.warn('Using deprecated AuthContext from contexts/AuthContext.tsx. Please use the one from context/AuthContext.tsx');
+
+export function DummyAuthProvider({ children }: { children: React.ReactNode }) {
+  console.warn('Using deprecated AuthProvider from contexts/AuthContext.tsx. Please use the one from context/AuthContext.tsx');
+  return <>{children}</>;
+}
+
+export function useDummyAuth() {
+  console.warn('Using deprecated useAuth from contexts/AuthContext.tsx. Please use the one from context/AuthContext.tsx');
+  return { user: null, token: null, isLoading: false, login: () => {}, logout: () => {}, signup: () => {} };
+}

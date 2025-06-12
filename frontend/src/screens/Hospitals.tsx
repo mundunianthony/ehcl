@@ -22,7 +22,7 @@ import ScrollableScreen from "../components/ScrollableScreen";
 import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import * as Location from "expo-location";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 import { Hospital, RootStackParamList } from "../types";
 import { StackNavigationProp } from "@react-navigation/stack";

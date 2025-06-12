@@ -11,7 +11,7 @@ import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../types";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../context/AuthContext";
 
 type NavbarRouteProp = RouteProp<RootStackParamList, keyof RootStackParamList>;
 
@@ -38,8 +38,7 @@ const Navbar: React.FC<NavbarProps> = ({
 
   const handleLogout = () => {
     setMenuVisible(false);
-    // Navigate to SignUp page on logout
-    navigation.navigate("SignUp");
+    navigation.navigate("Login");
   };
 
   return (
@@ -49,39 +48,49 @@ const Navbar: React.FC<NavbarProps> = ({
         onPress={() => navigation.navigate("Home")}
       >
         <View style={styles.iconContainer}>
-          <Icon name="home-city" size={24} color="#4F46E5" />
+          <Icon name="home" size={24} color="#4F46E5" />
         </View>
         <Text style={[styles.navText, { color: "#4F46E5" }]}>Home</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.navItem}
-        onPress={navigateToHospitals}
+        onPress={() => navigation.navigate("Hospitals")}
       >
         <View style={styles.iconContainer}>
-          <Icon name="view-grid" size={24} color="#14B8A6" />
+          <Icon name="hospital" size={24} color="#14B8A6" />
         </View>
         <Text style={[styles.navText, { color: "#14B8A6" }]}>Hospitals</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.navItem}
-        onPress={() => navigation.navigate("About")}
+        onPress={() => navigation.navigate("Profile")}
       >
         <View style={styles.iconContainer}>
-          <Icon name="information" size={24} color="#F59E42" />
+          <Icon name="account" size={24} color="#64748B" />
         </View>
-        <Text style={[styles.navText, { color: "#F59E42" }]}>About</Text>
+        <Text style={[styles.navText, { color: "#64748B" }]}>Profile</Text>
       </TouchableOpacity>
 
-      {/* Menu Button */}
       <TouchableOpacity
-        style={styles.menuButton}
+        style={styles.navItem}
+        onPress={() => navigation.navigate("About" as keyof RootStackParamList)}
+      >
+        <View style={styles.iconContainer}>
+          <Icon name="information" size={24} color="#64748B" />
+        </View>
+        <Text style={[styles.navText, { color: "#64748B" }]}>About</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.navItem}
         onPress={() => setMenuVisible(true)}
       >
         <View style={styles.iconContainer}>
-          <Icon name="dots-vertical" size={24} color="#64748B" />
+          <Icon name="menu" size={24} color="#64748B" />
         </View>
+        <Text style={[styles.navText, { color: "#64748B" }]}>Menu</Text>
       </TouchableOpacity>
 
       {/* Menu Modal */}
@@ -94,11 +103,49 @@ const Navbar: React.FC<NavbarProps> = ({
           <View style={styles.menuContainer}>
             <TouchableOpacity
               style={styles.menuItem}
+              onPress={() => {
+                setMenuVisible(false);
+                navigation.navigate("Home" as keyof RootStackParamList);
+              }}
+            >
+              <Icon name="home" size={20} color="#4F46E5" style={styles.menuIcon} />
+              <Text style={styles.menuText}>Home</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => {
+                setMenuVisible(false);
+                navigation.navigate("Hospitals");
+              }}
+            >
+              <Icon name="hospital" size={20} color="#14B8A6" style={styles.menuIcon} />
+              <Text style={styles.menuText}>Hospitals</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => {
+                setMenuVisible(false);
+                navigation.navigate("Profile");
+              }}
+            >
+              <Icon name="account" size={20} color="#64748B" style={styles.menuIcon} />
+              <Text style={styles.menuText}>Profile</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => {
+                setMenuVisible(false);
+                navigation.navigate("About" as keyof RootStackParamList);
+              }}
+            >
+              <Icon name="information" size={20} color="#64748B" style={styles.menuIcon} />
+              <Text style={styles.menuText}>About</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuItem}
               onPress={handleLogout}
             >
-              <View style={styles.iconContainer}>
-                <Icon name="logout" size={20} color="#EF4444" style={styles.menuIcon} />
-              </View>
+              <Icon name="logout" size={20} color="#EF4444" style={styles.menuIcon} />
               <Text style={[styles.menuText, { color: "#EF4444" }]}>Logout</Text>
             </TouchableOpacity>
           </View>
@@ -113,7 +160,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    paddingVertical: 4,
+    paddingVertical: 8,
     backgroundColor: "#fff",
     elevation: 4,
     borderTopWidth: 1,
@@ -123,7 +170,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 2,
     width: "100%",
-    paddingBottom: 10,
     position: 'absolute',
     bottom: 0,
     left: 0,
@@ -131,20 +177,19 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   navItem: {
-    flexDirection: "row",
+    flexDirection: "column",
     alignItems: "center",
-    padding: 10,
+    padding: 8,
     borderRadius: 8,
-    marginVertical: 25,
   },
   iconContainer: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 15,
   },
   navText: {
-    marginLeft: 6,
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: "500",
   },
   menuButton: {
@@ -166,6 +211,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    bottom: 0,
   },
   menuItem: {
     flexDirection: 'row',
@@ -179,8 +228,7 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   menuIcon: {
-    width: 24,
-    textAlign: 'center',
+    marginRight: 8,
   },
   addButton: {
     backgroundColor: "#059669",

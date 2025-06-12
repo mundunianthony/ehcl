@@ -12,7 +12,7 @@
     },
     "scheme": "ehcl",
     "extra": {
-      "apiUrl": "http://10.10.162.68:8000/api"
+      "apiUrl": "http://10.10.162.84:8000/api"
     },
     "updates": {
       "url": "https://u.expo.dev/your-project-id"
