@@ -19,10 +19,6 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
-.env
-venv/
-ENV/
 
 # Django
 *.log
@@ -32,30 +28,10 @@ db.sqlite3-journal
 media/
 staticfiles/
 
-# React Native / Expo
-.expo/
-dist/
-npm-debug.*
-*.jks
-*.p8
-*.p12
-*.key
-*.mobileprovision
-*.orig.*
-web-build/
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# macOS
-.DS_Store
-*.pem
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
+# Virtual Environment
+venv/
+ENV/
+env/
 
 # IDE
 .idea/
@@ -63,21 +39,42 @@ Desktop.ini
 *.swp
 *.swo
 
+# OS
+.DS_Store
+Thumbs.db
+
 # Node
 node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# VS Code
-.vscode/
-
-# OS files
-.DS_Store
-Thumbs.db
+# Expo
+.expo/
+dist/
+web-build/
 
 # Environment variables
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# React Native / Expo
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# macOS
+*.pem
+
+# Windows
+ehthumbs.db
+Desktop.ini
 
 # Migrations (optional, keep if you want to track migrations)
 */migrations/__pycache__/

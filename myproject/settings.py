@@ -29,27 +29,29 @@ cloudinary.config(
 print("Loaded SECRET_KEY:", os.getenv('SECRET_KEY'))
 
 # Security settings
-# For development, using hardcoded secret key
-SECRET_KEY = 'django-insecure-temporary-key-for-development-only'
-DEBUG = True
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-temporary-key-for-development-only')
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-# Allow all hosts in development
-ALLOWED_HOSTS = ['*']
+# Allow all hosts in development, specific hosts in production
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 # CORS Configuration
-CORS_ALLOW_ALL_ORIGINS = True  # Allow requests from any origin (wildcard *)
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only allow all origins in development
 CORS_ALLOW_CREDENTIALS = False  # Disable credentials for mobile apps
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:19006",
     "http://localhost:19000",
     "http://localhost:8000",
-    "http://10.10.162.84:8000",
-    "http://10.10.162.84:19006",
-    "exp://10.10.162.84:19000",
     "exp://localhost:19000",
-    "exp://192.168.1.*:19000",  # Allow any local network IP
     "exp://*",  # Allow any Expo URL
 ]
+
+# Add your Railway.app URL here once deployed
+if not DEBUG:
+    CORS_ALLOWED_ORIGINS.extend([
+        "https://*.railway.app",  # Allow Railway.app domains
+        "https://*.ngrok-free.app",  # Allow ngrok domains for testing
+    ])
 
 CORS_ALLOW_METHODS = [
     'DELETE',

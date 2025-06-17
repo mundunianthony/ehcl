@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
 // API URL Configuration
-const DEV_API_URL = 'https://7599-62-8-83-27.ngrok-free.app/api';
+const DEV_API_URL = 'https://be21-41-75-174-170.ngrok-free.app/api';
 const PROD_API_URL = 'https://api.emergencyhealthcenter.com/api/';
 
 // Use environment-specific URL
