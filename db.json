@@ -1,5 +1,3 @@
-Loading .env from: E:\ehcl\.env
-Loaded SECRET_KEY: django-insecure-your-secret-key-here
 [
     {
         "model": "auth.permission",
