@@ -19,5 +19,7 @@ nosetests.xml
 coverage.xml
 *.cover
 *.log
-.pytest_cache/ 
-frontend/
+.pytest_cache/
+package.json
+package-lock.json
+node_modules/ 
