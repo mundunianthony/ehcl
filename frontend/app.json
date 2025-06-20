@@ -36,7 +36,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.munduni.emergencyhealthcenterlocator"
     },
     "web": {
       "favicon": "./assets/favicon.png",
