@@ -1,6 +1,7 @@
 import * as Network from 'expo-network';
 import { Alert, Platform } from 'react-native';
 import Constants from 'expo-constants';
+import { getApiUrl } from '../config/api'; // Import the dynamic API URL
 
 interface NetworkStatus {
   isConnected: boolean;
@@ -17,8 +18,6 @@ interface ApiResult {
   data?: any;
   error?: string;
 }
-
-const API_BASE_URL = 'http://10.10.162.68:8000';
 
 export const checkNetworkStatus = async (showAlerts = true): Promise<NetworkStatus> => {
   try {
@@ -68,7 +67,11 @@ export const checkNetworkStatus = async (showAlerts = true): Promise<NetworkStat
 export const testApiConnection = async (showAlerts = true): Promise<ApiResult> => {
   const startTime = Date.now();
   try {
-    const testUrl = `${API_BASE_URL}/users/`;
+    const apiUrl = getApiUrl();
+    if (!apiUrl) {
+      throw new Error('API URL not set. Cannot test connection.');
+    }
+    const testUrl = `${apiUrl}/users/`;
     console.log(`[Network] Testing API connection to: ${testUrl}`);
     
     // First check network connectivity
@@ -179,7 +182,11 @@ export const testApiConnection = async (showAlerts = true): Promise<ApiResult> =
  * Makes an API request with proper error handling
  */
 export const apiRequest = async (endpoint: string, options: RequestInit = {}) => {
-  const url = `${API_BASE_URL}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+  const apiUrl = getApiUrl();
+  if (!apiUrl) {
+    throw new Error('API URL not set. Cannot make request.');
+  }
+  const url = `${apiUrl}${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
   
   try {
     const response = await fetch(url, {

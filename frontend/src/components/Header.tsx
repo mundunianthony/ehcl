@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useAuth0 } from "@auth0/auth0-react";
 
 // Note: react-icons is not supported in React Native. We'll use simple text/icons instead.
 
-const Header = ({ navigation }) => {
+// Add type for navigation prop
+interface HeaderProps {
+  navigation?: any;
+}
+
+const Header: React.FC<HeaderProps> = ({ navigation }) => {
   const [menuOpened, setMenuOpened] = useState(false);
-  const { loginWithRedirect, isAuthenticated, logout } = useAuth0();
 
   const toggleMenu = () => setMenuOpened(!menuOpened);
 
@@ -18,15 +21,6 @@ const Header = ({ navigation }) => {
           {menuOpened ? "✕" : "☰"}
         </Text>
       </TouchableOpacity>
-      {!isAuthenticated ? (
-        <TouchableOpacity onPress={loginWithRedirect}>
-          <Text style={styles.loginButton}>Login</Text>
-        </TouchableOpacity>
-      ) : (
-        <TouchableOpacity onPress={() => logout({ returnTo: window.location.origin })}>
-          <Text style={styles.logoutButton}>Logout</Text>
-        </TouchableOpacity>
-      )}
     </View>
   );
 };

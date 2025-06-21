@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
 import { checkNetworkStatus, testApiConnection } from '../utils/network';
+import AutoIPDetection from '../components/AutoIPDetection';
 
 // Define types for network responses
 type NetworkStatus = {
@@ -69,8 +70,11 @@ export default function NetworkTestScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Network & API Tester</Text>
+      
+      {/* Auto IP Detection Component */}
+      <AutoIPDetection />
       
       <View style={styles.buttonContainer}>
         <Button
@@ -80,14 +84,14 @@ export default function NetworkTestScreen() {
         />
       </View>
       
-      <ScrollView style={styles.logsContainer}>
+      <View style={styles.logsContainer}>
         {logs.map((log, index) => (
           <Text key={index} style={styles.logText}>
             {log}
           </Text>
         ))}
-      </ScrollView>
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 

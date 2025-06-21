@@ -14,28 +14,14 @@ import {
 import WebMapComponent from '../components/WebMapComponent';
 import { FontAwesome5, MaterialIcons, Ionicons } from '@expo/vector-icons';
 import { RouteProp } from '@react-navigation/native';
-import { RootStackParamList } from '../types';
+import { RootStackParamList, Hospital } from '../types';
 import ScrollableScreen from '../components/ScrollableScreen';
 import { getPlaceholderImageUrl, isValidImageUrl } from '../utils/hospitalImages';
+import { useAuth } from '../context/AuthContext';
+import { createSystemNotification } from '../services/notificationService';
+import { cityCoords, getCoordsByCity } from '../utils/cityCoords';
 
 const { width } = Dimensions.get('window');
-
-type Hospital = {
-  id: string;
-  name: string;
-  district: string;
-  description: string;
-  address: string;
-  coords: { latitude: number; longitude: number };
-  image_url: string;
-  email: string;
-  phone: string;
-  imageUrl?: string;
-  is_emergency?: boolean;
-  has_ambulance?: boolean;
-  has_pharmacy?: boolean;
-  has_lab?: boolean;
-};
 
 type HospitalDetailsRouteProp = RouteProp<
   RootStackParamList,
@@ -50,12 +36,13 @@ const HospitalDetails = ({
   const hospital = route.params.hospital as Hospital;
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
+  const { user } = useAuth();
   
   // Get a valid image URL or fallback to placeholder
   const getImageUrl = () => {
-    // First try to use the Cloudinary image_url
-    if (isValidImageUrl(hospital.image_url)) {
-      return hospital.image_url;
+    // First try to use the Cloudinary imageUrl
+    if (isValidImageUrl(hospital.imageUrl)) {
+      return hospital.imageUrl;
     }
     // Then try the legacy imageUrl field
     if (isValidImageUrl(hospital.imageUrl)) {
@@ -131,20 +118,61 @@ const HospitalDetails = ({
   useEffect(() => {
     const imageUrl = getImageUrl();
     console.log('[HospitalDetails] Image URLs:', {
-      cloudinaryUrl: hospital.image_url,
+      cloudinaryUrl: hospital.imageUrl,
       legacyUrl: hospital.imageUrl,
       selectedUrl: imageUrl,
-      isValidCloudinary: isValidImageUrl(hospital.image_url),
+      isValidCloudinary: isValidImageUrl(hospital.imageUrl),
       isValidLegacy: isValidImageUrl(hospital.imageUrl)
     });
-  }, [hospital.image_url, hospital.imageUrl]);
+  }, [hospital.imageUrl]);
+
+  // Send notification when user views hospital details
+  useEffect(() => {
+    const sendHospitalViewNotification = async () => {
+      if (user?.email) {
+        try {
+          console.log('Hospital object:', hospital);
+          await createSystemNotification(
+            user.email,
+            'Hospital Details Viewed',
+            `You viewed details for ${hospital.name} in ${hospital.city || 'Unknown'} district.`
+          );
+          console.log('Hospital view notification sent');
+        } catch (error) {
+          console.error('Failed to send hospital view notification:', error);
+        }
+      }
+    };
+
+    // Send notification after a short delay
+    const timer = setTimeout(sendHospitalViewNotification, 1000);
+    return () => clearTimeout(timer);
+  }, [user?.email, hospital.name, hospital.city]);
+
+  // Before rendering the map or using coords
+  const getHospitalCoords = () => {
+    if (
+      hospital.coords &&
+      hospital.coords.latitude &&
+      hospital.coords.longitude &&
+      hospital.coords.latitude !== 0 &&
+      hospital.coords.longitude !== 0
+    ) {
+      return hospital.coords;
+    }
+    // Use normalized city name for lookup
+    return getCoordsByCity(hospital.city);
+  };
+
+  const coords = getHospitalCoords();
+  console.log('Rendering map with coords:', coords);
 
   return (
     <SafeAreaView style={styles.screen}>
       <ScrollableScreen 
         style={styles.container}
         contentContainerStyle={{ 
-          paddingBottom: 20,
+          paddingBottom: 100,
           paddingTop: 9,
         }}
         keyboardShouldPersistTaps="handled"
@@ -184,7 +212,7 @@ const HospitalDetails = ({
 
         <View style={styles.content}>
           <Text style={styles.title}>{hospital.name}</Text>
-          <Text style={styles.subtitle}>{hospital.district} District</Text>
+          <Text style={styles.subtitle}>{hospital.city || 'Unknown'} District</Text>
 
           {/* Available Services Section */}
           <View style={styles.servicesContainer}>
@@ -245,7 +273,11 @@ const HospitalDetails = ({
 
         <View style={styles.mapContainer}>
           <Text style={styles.mapTitle}>Location</Text>
-          <MapSection coords={hospital.coords} />
+          {(!coords || coords.latitude === 0 || coords.longitude === 0) ? (
+            <Text>Location not available for this hospital.</Text>
+          ) : (
+            <MapSection coords={coords} />
+          )}
         </View>
       </ScrollableScreen>
     </SafeAreaView>
@@ -264,9 +296,32 @@ const MapSection = React.memo(({ coords }: { coords: { latitude: number; longitu
   const [MapComponent, setMapComponent] = React.useState<React.ComponentType<any> | null>(null);
   const [MarkerComponent, setMarkerComponent] = React.useState<React.ComponentType<any> | null>(null);
   const [mapError, setMapError] = React.useState<string | null>(null);
+  
+  // Get valid coordinates with fallback
+  const getValidCoordinates = () => {
+    // Check if provided coordinates are valid
+    if (coords && 
+        coords.latitude && 
+        coords.longitude &&
+        coords.latitude !== 0 && 
+        coords.longitude !== 0 &&
+        coords.latitude >= -90 && coords.latitude <= 90 &&
+        coords.longitude >= -180 && coords.longitude <= 180) {
+      return coords;
+    }
+    
+    // Return default Uganda coordinates if invalid
+    return {
+      latitude: 1.3733, // Center of Uganda
+      longitude: 32.2903,
+    };
+  };
+  
+  const validCoords = getValidCoordinates();
+  
   const [region, setRegion] = React.useState({
-    latitude: coords?.latitude || 0,
-    longitude: coords?.longitude || 0,
+    latitude: validCoords.latitude,
+    longitude: validCoords.longitude,
     latitudeDelta: 0.01,
     longitudeDelta: 0.01,
   });
@@ -275,7 +330,7 @@ const MapSection = React.memo(({ coords }: { coords: { latitude: number; longitu
   if (Platform.OS === 'web') {
     return (
       <View style={styles.mapContainer}>
-        <WebMapComponent coords={coords} title="Hospital Location" />
+        <WebMapComponent coords={validCoords} title="Hospital Location" />
       </View>
     );
   }
@@ -297,14 +352,12 @@ const MapSection = React.memo(({ coords }: { coords: { latitude: number; longitu
   
   // Update region when coordinates change
   React.useEffect(() => {
-    if (coords?.latitude && coords?.longitude) {
-      setRegion(prev => ({
-        ...prev,
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-      }));
-    }
-  }, [coords?.latitude, coords?.longitude]);
+    setRegion(prev => ({
+      ...prev,
+      latitude: validCoords.latitude,
+      longitude: validCoords.longitude,
+    }));
+  }, [validCoords.latitude, validCoords.longitude]);
   
   // Handle error state
   if (mapError) {
@@ -322,17 +375,6 @@ const MapSection = React.memo(({ coords }: { coords: { latitude: number; longitu
     return (
       <View style={styles.mapPlaceholder}>
         <Text style={styles.mapPlaceholderText}>Loading map...</Text>
-      </View>
-    );
-  }
-  
-  // Validate coordinates
-  if (!coords || typeof coords.latitude !== 'number' || typeof coords.longitude !== 'number') {
-    return (
-      <View style={styles.mapPlaceholder}>
-        <Text style={styles.mapPlaceholderText}>
-          Invalid location coordinates
-        </Text>
       </View>
     );
   }
@@ -354,7 +396,7 @@ const MapSection = React.memo(({ coords }: { coords: { latitude: number; longitu
   };
 
   const openDirections = () => {
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${coords.latitude},${coords.longitude}`;
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${validCoords.latitude},${validCoords.longitude}`;
     Linking.openURL(url);
   };
 
@@ -365,11 +407,17 @@ const MapSection = React.memo(({ coords }: { coords: { latitude: number; longitu
           style={{ ...StyleSheet.absoluteFillObject }} 
           region={region}
           onRegionChangeComplete={setRegion}
+          showsUserLocation={true}
+          showsMyLocationButton={true}
+          showsCompass={true}
+          showsScale={true}
         >
           {MarkerComponent && (
             <MarkerComponent
-              coordinate={coords}
+              coordinate={validCoords}
               title="Hospital Location"
+              description="Tap for directions"
+              pinColor="red"
             />
           )}
         </MapComponent>
@@ -415,6 +463,21 @@ const styles = StyleSheet.create({
       display: 'flex',
       flexDirection: 'column'
     } : {})
+  },
+  navbar: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000,
+    height: 80,
+    backgroundColor: '#fff',
+    borderTopWidth: 1,
+    borderTopColor: '#e9ecef',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
   },
   container: { 
     flex: 1,

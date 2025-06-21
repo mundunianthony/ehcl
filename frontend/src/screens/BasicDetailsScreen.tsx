@@ -16,12 +16,13 @@ import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import { Ionicons } from '@expo/vector-icons';
 
-type BasicDetailsScreenProps = {
-  navigation: StackNavigationProp<RootStackParamList, 'BasicDetails'>;
-  route: RouteProp<RootStackParamList, 'BasicDetails'>;
-};
+type BasicDetailsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'BasicDetails'>;
+type BasicDetailsScreenRouteProp = RouteProp<RootStackParamList, 'BasicDetails'>;
 
-const BasicDetailsScreen: React.FC<BasicDetailsScreenProps> = ({ navigation, route }) => {
+const BasicDetailsScreen = ({ navigation, route }: {
+  navigation: BasicDetailsScreenNavigationProp;
+  route: BasicDetailsScreenRouteProp;
+}) => {
   const { token } = useAuth();
   const [formValues, setFormValues] = useState({
     name: '',
@@ -50,6 +51,12 @@ const BasicDetailsScreen: React.FC<BasicDetailsScreenProps> = ({ navigation, rou
     }
 
     try {
+      // Use default coordinates if none provided (Kampala, Uganda)
+      const defaultCoords = {
+        latitude: 0.3476,
+        longitude: 32.5825,
+      };
+
       const hospitalData = {
         name: formValues.name,
         district: route.params.formValues.city, // Using city as district
@@ -61,16 +68,13 @@ const BasicDetailsScreen: React.FC<BasicDetailsScreenProps> = ({ navigation, rou
         has_ambulance: formValues.has_ambulance,
         has_pharmacy: formValues.has_pharmacy,
         has_lab: formValues.has_lab,
-        coords: {
-          latitude: route.params.formValues.latitude || 0,
-          longitude: route.params.formValues.longitude || 0
-        }
+        coords: route.params.formValues.coords || defaultCoords
       };
 
       // Navigate to conditions screen instead of submitting
       navigation.navigate('AddHospitalConditions', {
         hospitalData,
-        images: [route.params.image]
+        images: [] // Initialize with empty array since image is not in route params
       });
     } catch (error) {
       console.error('Error preparing hospital data:', error);

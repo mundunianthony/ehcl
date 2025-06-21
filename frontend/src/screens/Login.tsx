@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, Dimensions, ImageBackground } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Dimensions, ImageBackground, Platform } from 'react-native';
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   Alert,
-  Platform,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -15,6 +14,8 @@ import { RootStackParamList } from '../types';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
+import { API_URL } from '../config/api';
+import HospitalMapBackground from '../components/HospitalMapBackground';
 
 const { width } = Dimensions.get('window');
 
@@ -28,13 +29,24 @@ const Login: React.FC<{ navigation: NativeStackNavigationProp<RootStackParamList
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
+  // Log API URL when component mounts
+  useEffect(() => {
+    console.log('API URL:', API_URL);
+  }, []);
+
   const handleLogin = async () => {
     console.log('\n[Login Screen]');
-    console.log('Current state:', { email, passwordLength: password.length, loading, error });
+    console.log('Current state:', { 
+      email, 
+      passwordLength: password?.length || 0, 
+      loading, 
+      error 
+    });
     
     if (!email || !password) {
-      console.log('Missing required fields');
-      setError('Please fill in all fields');
+      const errorMsg = 'Please fill in all fields';
+      console.log(errorMsg);
+      setError(errorMsg);
       return;
     }
 
@@ -42,17 +54,17 @@ const Login: React.FC<{ navigation: NativeStackNavigationProp<RootStackParamList
     setError('');
 
     try {
-      console.log('Attempting login with:', { email });
-      console.log('Password length:', password.length); // Don't log actual password
+      console.log('Attempting login with:', { 
+        email,
+        apiUrl: API_URL,
+        timestamp: new Date().toISOString()
+      });
       
-      // Log the current navigation state
-      console.log('Navigation state:', navigation.getState());
-      
+      // Directly attempt login without connection test
+      console.log('Initiating login request...');
       await login(email, password);
+      
       console.log('Login successful, navigating to Home');
-      
-
-      
       navigation.replace('Home');
     } catch (error: any) {
       console.error('\n[Login Error]');
@@ -78,12 +90,7 @@ const Login: React.FC<{ navigation: NativeStackNavigationProp<RootStackParamList
   };
 
   return (
-    <ImageBackground
-      source={{ uri: 'https://i.pinimg.com/736x/5c/4a/b5/5c4ab54f5e0d8b438d07d7375c997560.jpg' }}
-      style={styles.background}
-      resizeMode="cover"
-    >
-      <View style={styles.overlay} />
+    <HospitalMapBackground>
       <View style={styles.formContainer}>
         <View style={{ marginBottom: 24 }}>
           <Text style={styles.title}>Welcome Back</Text>
@@ -92,7 +99,7 @@ const Login: React.FC<{ navigation: NativeStackNavigationProp<RootStackParamList
         <View style={styles.inputContainer}>
           <TextInput
             placeholder="Email"
-            placeholderTextColor="#ddd"
+            placeholderTextColor="#333333"
             style={styles.input}
             value={email}
             onChangeText={setEmail}
@@ -105,7 +112,7 @@ const Login: React.FC<{ navigation: NativeStackNavigationProp<RootStackParamList
           <View style={styles.passwordContainer}>
             <TextInput
               placeholder="Password"
-              placeholderTextColor="#ddd"
+              placeholderTextColor="#333333"
               style={styles.passwordInput}
               value={password}
               onChangeText={setPassword}
@@ -152,21 +159,11 @@ const Login: React.FC<{ navigation: NativeStackNavigationProp<RootStackParamList
           </View>
         </View>
       </View>
-    </ImageBackground>
+    </HospitalMapBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    width,
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-  },
   formContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -182,40 +179,54 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: '#ffffff',
     borderRadius: 8,
     marginBottom: 16,
     height: 48,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
   },
   input: {
     flex: 1,
-    color: '#fff',
+    color: '#333333',
     paddingHorizontal: 16,
     height: '100%',
     fontSize: 16,
+    fontWeight: '700',
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    backgroundColor: '#ffffff',
     borderRadius: 8,
     marginBottom: 16,
     height: 48,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
   },
   passwordInput: {
     flex: 1,
-    color: '#fff',
+    color: '#333333',
     paddingHorizontal: 16,
     height: '100%',
     fontSize: 16,
+    fontWeight: '700',
   },
   eyeIcon: {
     padding: 10,
   },
   error: {
-    color: 'red',
+    color: '#ff6b6b',
     textAlign: 'center',
     marginBottom: 10,
+    fontSize: 14,
+    fontWeight: '600',
+    backgroundColor: '#fff5f5',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#ffebeb',
   },
   primaryButton: {
     backgroundColor: '#4CAF50',
@@ -223,11 +234,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     marginTop: 8,
+    borderWidth: 2,
+    borderColor: '#45a049',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
   },
   primaryButtonText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   bottomRow: {
     flexDirection: 'row',
@@ -235,12 +256,16 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   bottomText: {
-    color: '#ccc',
+    color: '#ffffff',
     marginRight: 8,
+    fontSize: 16,
+    fontWeight: '500',
   },
   linkText: {
     color: '#4CAF50',
     fontWeight: 'bold',
+    fontSize: 16,
+    textDecorationLine: 'underline',
   },
 });
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { api, setServerIP } from '../utils/api';
+import { api } from '../config/api';
 
 const ServerStatus = () => {
   const [serverStatus, setServerStatus] = useState<'checking' | 'connected' | 'error'>('checking');
@@ -25,7 +25,9 @@ const ServerStatus = () => {
 
   const handleServerIPChange = () => {
     if (serverIP.trim()) {
-      setServerIP(serverIP.trim());
+      // Note: setServerIP function is not available in the new API
+      // You may need to implement this functionality differently
+      console.log('Setting server IP:', serverIP.trim());
       // Wait a bit for the new URL to take effect
       setTimeout(() => {
         checkServerConnection();
@@ -36,7 +38,8 @@ const ServerStatus = () => {
   if (!showStatus) return null;
 
   // Only show on physical devices, not emulators or web
-  const shouldShowIPInput = Platform.OS !== 'web' && !['10.0.2.2', 'localhost'].includes(api.defaults.baseURL?.replace('http://', '').split(':')[0] || '');
+  const currentBaseURL = api.defaults.baseURL || '';
+  const shouldShowIPInput = Platform.OS !== 'web' && !['10.0.2.2', 'localhost'].includes(currentBaseURL.replace('http://', '').split(':')[0] || '');
 
   return (
     <View style={styles.container}>

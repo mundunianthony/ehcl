@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Emergency Health Center Locator",
-    "slug": "emergency-health-center-locator",
+    "name": "EHCL",
+    "slug": "ehcl",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -12,10 +12,7 @@
     },
     "scheme": "ehcl",
     "extra": {
-      "apiUrl": "https://ehcl-production.up.railway.app/api",
-      "eas": {
-        "projectId": "aa00d066-7bdd-4dcf-8221-998d2a4773f0"
-      }
+      "apiUrl": "http://192.168.91.156:8000/api"
     },
     "updates": {
       "url": "https://u.expo.dev/your-project-id"
@@ -29,7 +26,10 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app needs access to location to show nearby hospitals and help you find emergency health centers."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -37,14 +37,23 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.munduni.emergencyhealthcenterlocator"
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
     "plugins": [
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location to show nearby hospitals and emergency health centers."
+        }
+      ]
     ]
   }
 }

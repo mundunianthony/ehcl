@@ -191,7 +191,7 @@ export default api;
 // Hospital Management Functions
 export const getAllHospitals = async (
   search?: string, 
-  district?: string, 
+  city?: string, 
   condition?: string,
   emergency?: boolean,
   ambulance?: boolean,
@@ -201,7 +201,7 @@ export const getAllHospitals = async (
   try {
     const params: any = {};
     if (search) params.search = search;
-    if (district) params.district = district;
+    if (city) params.city = city;
     if (condition) params.condition = condition;
     if (emergency !== undefined) params.emergency = emergency;
     if (ambulance !== undefined) params.ambulance = ambulance;
@@ -301,7 +301,7 @@ const getToken = async () => {
 
 export const addHospital = async (hospitalData: {
   name: string;
-  district: string;
+  city: string;
   address: string;
   description: string;
   email: string;
@@ -320,7 +320,6 @@ export const addHospital = async (hospitalData: {
     // Use the create endpoint and format data for backend
     const response = await api.post('/hospitals/create/', {
       ...hospitalData,
-      city: hospitalData.district, // Map district to city for backend
       country: 'Uganda' // Add default country
     });
     
@@ -364,7 +363,7 @@ export const registerUser = async (userData: {
 
 export const loginUser = async (userData: { email: string; password: string }) => {
   try {
-    const response = await api.post("/users/login/", userData);
+    const response = await api.post("users/login/", userData);
     return response.data;
   } catch (error) {
     console.error("Failed to login user:", error);

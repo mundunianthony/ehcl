@@ -155,7 +155,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         // Make the login request
         console.log('Making login request...');
-        const response = await api.post('users/login/', 
+        const response = await api.post('users/login/',
           { email, password },
           { 
             signal: controller.signal,

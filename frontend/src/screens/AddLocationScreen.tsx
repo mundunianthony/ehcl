@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -12,85 +12,20 @@ import {
 import { useNavigation, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
-import MapView, { Marker } from 'react-native-maps';
-import * as Location from 'expo-location';
-import { Ionicons } from '@expo/vector-icons';
+import Map from '../components/Map';
 
-type AddLocationScreenProps = {
-  navigation: StackNavigationProp<RootStackParamList, 'AddLocation'>;
-  route: RouteProp<RootStackParamList, 'AddLocation'>;
-};
+type AddLocationScreenNavigationProp = StackNavigationProp<RootStackParamList, 'AddLocation'>;
+type AddLocationScreenRouteProp = RouteProp<RootStackParamList, 'AddLocation'>;
 
-const AddLocationScreen: React.FC<AddLocationScreenProps> = ({ navigation, route }) => {
+const AddLocationScreen = ({ navigation, route }: {
+  navigation: AddLocationScreenNavigationProp;
+  route: AddLocationScreenRouteProp;
+}) => {
   const [formValues, setFormValues] = useState({
     country: route.params?.propertyDetails?.country || '',
     city: route.params?.propertyDetails?.city || '',
     address: route.params?.propertyDetails?.address || '',
   });
-
-  const [region, setRegion] = useState({
-    latitude: 0,
-    longitude: 0,
-    latitudeDelta: 0.0922,
-    longitudeDelta: 0.0421,
-  });
-
-  const [marker, setMarker] = useState({
-    latitude: 0,
-    longitude: 0,
-  });
-
-  useEffect(() => {
-    // Get initial location
-    (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert('Permission Denied', 'Location permission is required to show the map');
-        return;
-      }
-
-      const location = await Location.getCurrentPositionAsync({});
-      setRegion({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-        latitudeDelta: 0.0922,
-        longitudeDelta: 0.0421,
-      });
-      setMarker({
-        latitude: location.coords.latitude,
-        longitude: location.coords.longitude,
-      });
-    })();
-  }, []);
-
-  const updateMapLocation = async () => {
-    if (!formValues.country || !formValues.city || !formValues.address) return;
-
-    try {
-      const address = `${formValues.address}, ${formValues.city}, ${formValues.country}`;
-      const locations = await Location.geocodeAsync(address);
-      
-      if (locations.length > 0) {
-        const { latitude, longitude } = locations[0];
-        setRegion({
-          latitude,
-          longitude,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        });
-        setMarker({
-          latitude,
-          longitude,
-        });
-      }
-    } catch (error) {
-      console.error('Error geocoding address:', error);
-    }
-  };
-
-  useEffect(() => {
-    updateMapLocation();
-  }, [formValues.country, formValues.city, formValues.address]);
 
   const handleSubmit = () => {
     // Validate form
@@ -99,17 +34,11 @@ const AddLocationScreen: React.FC<AddLocationScreenProps> = ({ navigation, route
       return;
     }
 
-    // Navigate directly to BasicDetails with form values
-    navigation.navigate('BasicDetails', { 
+    // Navigate to BasicDetails with form values
+    navigation.navigate('BasicDetails', {
       formValues: {
-        country: formValues.country,
-        city: formValues.city,
-        address: formValues.address,
-        coords: {
-          latitude: marker.latitude,
-          longitude: marker.longitude
-        }
-      }
+        ...formValues,
+      },
     });
   };
 
@@ -156,17 +85,11 @@ const AddLocationScreen: React.FC<AddLocationScreenProps> = ({ navigation, route
       </ScrollView>
 
       <View style={styles.mapContainer}>
-        <MapView
-          style={styles.map}
-          region={region}
-          onRegionChangeComplete={setRegion}
-        >
-          <Marker
-            coordinate={marker}
-            title="Hospital Location"
-            description={`${formValues.address}, ${formValues.city}, ${formValues.country}`}
-          />
-        </MapView>
+        <Map
+          address={formValues.address}
+          city={formValues.city}
+          country={formValues.country}
+        />
       </View>
     </View>
   );
@@ -230,6 +153,46 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  mapErrorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  mapErrorText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#666',
+  },
+  mapErrorSubtext: {
+    fontSize: 16,
+    color: '#666',
+  },
+  mapLoadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  mapLoadingText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#666',
+  },
+  mapPlaceholder: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  mapPlaceholderText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#666',
+  },
+  mapPlaceholderSubtext: {
+    fontSize: 16,
+    color: '#666',
   },
 });
 

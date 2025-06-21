@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
+import { StyleSheet, Dimensions, ImageBackground } from 'react-native';
 import {
   View,
   Text,
-  StyleSheet,
-  ImageBackground,
   TextInput,
   TouchableOpacity,
-  Dimensions,
   KeyboardAvoidingView,
   Platform,
   Alert,
@@ -15,6 +13,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import { useAuth } from '../context/AuthContext';
+import HospitalMapBackground from '../components/HospitalMapBackground';
 
 const { width } = Dimensions.get('window');
 
@@ -93,186 +92,226 @@ const SignUp = ({ navigation }: SignUpProps) => {
   };
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-    >
-      <View style={styles.background}>
-        <View style={styles.overlay}>
-          <View style={styles.formContainer}>
-            <Text style={styles.title}>Create Account</Text>
-            
-            <TextInput
-              style={styles.input}
-              placeholder="First Name"
-              value={firstName}
-              onChangeText={setFirstName}
-              autoCapitalize="words"
+    <HospitalMapBackground>
+      <View style={styles.formContainer}>
+        <View style={{ marginBottom: 24 }}>
+          <Text style={styles.title}>Create Account</Text>
+        </View>
+        
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="First Name"
+            placeholderTextColor="#333333"
+            style={styles.input}
+            value={firstName}
+            onChangeText={setFirstName}
+            autoCapitalize="words"
+          />
+        </View>
+        
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Last Name"
+            placeholderTextColor="#333333"
+            style={styles.input}
+            value={lastName}
+            onChangeText={setLastName}
+            autoCapitalize="words"
+          />
+        </View>
+        
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Email"
+            placeholderTextColor="#333333"
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            keyboardType="email-address"
+          />
+        </View>
+        
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Password"
+            placeholderTextColor="#333333"
+            style={styles.passwordInput}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+          />
+          <TouchableOpacity 
+            style={styles.eyeIcon}
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <Icon 
+              name={showPassword ? 'eye-off' : 'eye'} 
+              size={20} 
+              color="#666" 
+              style={{ marginRight: 10 }}
             />
-            
+          </TouchableOpacity>
+        </View>
+        
+        <View style={{ marginBottom: 16 }}>
+          <View style={styles.passwordContainer}>
             <TextInput
-              style={styles.input}
-              placeholder="Last Name"
-              value={lastName}
-              onChangeText={setLastName}
-              autoCapitalize="words"
+              placeholder="Confirm Password"
+              placeholderTextColor="#333333"
+              style={styles.passwordInput}
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              secureTextEntry={!showConfirmPassword}
             />
-
-            <TextInput
-              style={styles.input}
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-
-            <View style={styles.passwordContainer}>
-              <TextInput
-                style={[styles.input, styles.passwordInput]}
-                placeholder="Password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry={!showPassword}
-              />
-              <TouchableOpacity
-                style={styles.eyeIcon}
-                onPress={() => setShowPassword(!showPassword)}
-              >
-                <Icon
-                  name={showPassword ? 'eye-off' : 'eye'}
-                  size={24}
-                  color="#666"
-                />
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.passwordContainer}>
-              <TextInput
-                style={[styles.input, styles.passwordInput]}
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry={!showConfirmPassword}
-              />
-              <TouchableOpacity
-                style={styles.eyeIcon}
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                <Icon
-                  name={showConfirmPassword ? 'eye-off' : 'eye'}
-                  size={24}
-                  color="#666"
-                />
-              </TouchableOpacity>
-            </View>
-
-            {error ? <Text style={styles.errorText}>{error}</Text> : null}
-
-            <TouchableOpacity
-              style={[styles.button, loading && styles.buttonDisabled]}
-              onPress={handleSignUp}
-              disabled={loading}
+            <TouchableOpacity 
+              style={styles.eyeIcon}
+              onPress={() => setShowConfirmPassword(!showConfirmPassword)}
             >
-              <Text style={styles.buttonText}>
-                {loading ? 'Creating Account...' : 'Sign Up'}
-              </Text>
+              <Icon 
+                name={showConfirmPassword ? 'eye-off' : 'eye'} 
+                size={20} 
+                color="#666" 
+              />
             </TouchableOpacity>
+          </View>
+        </View>
 
-            <TouchableOpacity
-              style={styles.loginLink}
+        {error ? (
+          <View style={{ marginBottom: 16 }}>
+            <Text style={styles.error}>{error}</Text>
+          </View>
+        ) : null}
+
+        <View style={{ marginBottom: 16 }}>
+          <TouchableOpacity
+            style={[styles.primaryButton, loading && { opacity: 0.7 }]}
+            onPress={handleSignUp}
+            disabled={loading}
+          >
+            <Text style={styles.primaryButtonText}>
+              {loading ? 'Creating Account...' : 'Sign Up'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.bottomRow}>
+          <Text style={styles.bottomText}>Already have an account?</Text>
+          <View style={{ marginLeft: 4 }}>
+            <TouchableOpacity 
               onPress={() => navigation.navigate('Login')}
+              style={{ backgroundColor: 'transparent', padding: 0 }}
             >
-              <Text style={styles.loginLinkText}>
-                Already have an account? Login
-              </Text>
+              <Text style={styles.linkText}>Login</Text>
             </TouchableOpacity>
           </View>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </HospitalMapBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  background: {
-    flex: 1,
-    backgroundColor: '#f0f2f5',
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   formContainer: {
-    width: width * 0.9,
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 32,
   },
   title: {
-    fontSize: 24,
+    fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#333',
+    color: '#fff',
+    marginBottom: 24,
+    alignSelf: 'center',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    marginBottom: 16,
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
   },
   input: {
-    backgroundColor: '#f5f5f5',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
+    flex: 1,
+    color: '#333333',
+    paddingHorizontal: 16,
+    height: '100%',
     fontSize: 16,
+    fontWeight: '700',
   },
   passwordContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    height: 48,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
   },
   passwordInput: {
     flex: 1,
-    marginBottom: 0,
+    color: '#333333',
+    paddingHorizontal: 16,
+    height: '100%',
+    fontSize: 16,
+    fontWeight: '700',
   },
   eyeIcon: {
-    position: 'absolute',
-    right: 15,
+    padding: 12,
   },
-  button: {
-    backgroundColor: '#007AFF',
+  primaryButton: {
+    backgroundColor: '#4CAF50', // Updated to match Login screen's green color
     borderRadius: 8,
-    padding: 15,
+    height: 48,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 10,
+    borderWidth: 2,
+    borderColor: '#45a049',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
   },
-  buttonDisabled: {
-    backgroundColor: '#ccc',
-  },
-  buttonText: {
-    color: 'white',
+  primaryButtonText: {
+    color: '#ffffff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
-  loginLink: {
-    marginTop: 20,
-    alignItems: 'center',
+  bottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 16,
   },
-  loginLinkText: {
-    color: '#007AFF',
+  bottomText: {
+    color: '#ffffff',
     fontSize: 16,
+    fontWeight: '500',
   },
-  errorText: {
-    color: 'red',
-    marginBottom: 10,
+  linkText: {
+    color: '#4CAF50', // Updated to match the green theme
+    fontSize: 16,
+    fontWeight: '700',
+    textDecorationLine: 'underline',
+  },
+  error: {
+    color: '#ff6b6b',
+    fontSize: 14,
     textAlign: 'center',
+    marginTop: 8,
+    fontWeight: '600',
+    backgroundColor: '#fff5f5',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#ffebeb',
   },
 });
 

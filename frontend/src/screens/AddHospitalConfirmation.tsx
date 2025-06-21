@@ -14,6 +14,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
 import { Ionicons } from '@expo/vector-icons';
 import { addHospital } from '../utils/api';
+import { useAuth } from '../context/AuthContext';
+import { createSystemNotification } from '../services/notificationService';
 
 type AddHospitalConfirmationRouteProp = RouteProp<RootStackParamList, 'AddHospitalConfirmation'>;
 type AddHospitalConfirmationNavigationProp = StackNavigationProp<RootStackParamList, 'AddHospitalConfirmation'>;
@@ -22,13 +24,36 @@ export default function AddHospitalConfirmation({ route }: { route: AddHospitalC
   const navigation = useNavigation<AddHospitalConfirmationNavigationProp>();
   const [loading, setLoading] = useState(false);
   const { hospitalData } = route.params;
+  const { user } = useAuth();
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      await addHospital(hospitalData);
+      
+      // Add the missing images property
+      const hospitalDataWithImages = {
+        ...hospitalData,
+        images: [], // Add empty images array as required by the API
+        city: hospitalData.city || ''
+      };
+      
+      await addHospital(hospitalDataWithImages);
+      
+      // Send notification about the new hospital
+      if (user?.email) {
+        try {
+          await createSystemNotification(
+            user.email,
+            'New Hospital Added',
+            `A new hospital "${hospitalData.name}" has been added to the database in ${hospitalData.city || 'Unknown'} district.`
+          );
+        } catch (error) {
+          console.error('Failed to send hospital added notification:', error);
+        }
+      }
+      
       Alert.alert('Success', 'Hospital added successfully!');
-      navigation.navigate('Hospitals');
+      navigation.navigate('Hospitals', {});
     } catch (error) {
       console.error('Error adding hospital:', error);
       Alert.alert('Error', 'Failed to add hospital. Please try again.');
@@ -62,7 +87,7 @@ export default function AddHospitalConfirmation({ route }: { route: AddHospitalC
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.label}>District</Text>
-              <Text style={styles.value}>{hospitalData.district}</Text>
+              <Text style={styles.value}>{hospitalData.city || 'Unknown'}</Text>
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.label}>Address</Text>

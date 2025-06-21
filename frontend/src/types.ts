@@ -1,8 +1,22 @@
+export type User = {
+  id: string;
+  email: string;
+  username: string;
+  first_name?: string;
+  last_name?: string;
+  is_staff?: boolean;
+  is_admin?: boolean;
+  is_active?: boolean;
+  date_joined?: string;
+  last_login?: string;
+  groups?: string[];
+  user_permissions?: string[];
+};
+
 export type Hospital = {
   id: string;
   name: string;
-  district: string;
-  city?: string;
+  city: string;
   description: string;
   address: string;
   coords: { latitude: number; longitude: number };
@@ -15,6 +29,7 @@ export type Hospital = {
   has_ambulance?: boolean;
   has_pharmacy?: boolean;
   has_lab?: boolean;
+  distance?: number | null;
 };
 
 export type RootStackParamList = {
@@ -22,7 +37,6 @@ export type RootStackParamList = {
   SignUp: undefined;
   Home: undefined;
   Hospitals: {
-    district?: string;
     condition?: string;
     emergency?: string;
     ambulance?: string;
@@ -30,6 +44,12 @@ export type RootStackParamList = {
     lab?: string;
     userCoords?: { latitude: number; longitude: number };
   };
+  Listing: {
+    city: string;
+    userCoords: { latitude: number; longitude: number };
+  };
+  Notifications: undefined;
+  NotificationSettings: undefined;
   Profile: undefined;
   About: undefined;
   AddLocation: {
@@ -53,7 +73,7 @@ export type RootStackParamList = {
       country: string;
       city: string;
       address: string;
-      coords: {
+      coords?: {
         latitude: number;
         longitude: number;
       };
@@ -62,7 +82,7 @@ export type RootStackParamList = {
   AddHospitalConditions: {
     hospitalData: {
       name: string;
-      district: string;
+      city?: string;
       address: string;
       description: string;
       email: string;
@@ -77,7 +97,7 @@ export type RootStackParamList = {
   AddHospitalConfirmation: {
     hospitalData: {
       name: string;
-      district: string;
+      city?: string;
       address: string;
       description: string;
       email: string;
@@ -93,6 +113,5 @@ export type RootStackParamList = {
     hospital: Hospital;
   };
   NetworkTest: undefined;
-  HospitalList: undefined;
 };
 

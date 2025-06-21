@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { getCurrentApiUrl } from "../config/api";
+import { api } from "../services/api";
 import {
   View,
   Text,
@@ -13,17 +15,21 @@ import {
 } from "react-native";
 import * as Location from "expo-location";
 import { Picker } from "@react-native-picker/picker";
-import { StackNavigationProp } from "@react-navigation/stack";
 import { RootStackParamList } from "../types";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../context/AuthContext";
 import MainLayout from "../components/MainLayout";
 import { API_URL } from '../config/api';
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, ParamListBase } from "@react-navigation/native";
 import IconMaterialCommunity from "react-native-vector-icons/MaterialCommunityIcons";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { createSystemNotification, createEmergencyNotification } from "../services/notificationService";
+import NotificationBell from '../components/NotificationBell';
+
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 type HomeScreenProps = {
-  navigation: StackNavigationProp<RootStackParamList, 'Home'>;
+  navigation: HomeScreenNavigationProp;
   route: any;
 };
 
@@ -54,45 +60,83 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
 
   // Helper to get user initial
   const getUserInitial = () => {
-    if (user?.name && user.name.length > 0) return user.name[0].toUpperCase();
+    if (user?.first_name && user.first_name.length > 0) return user.first_name[0].toUpperCase();
     if (user?.email && user.email.length > 0) return user.email[0].toUpperCase();
     return 'U';
   };
+
+  // Send welcome notification on first visit
+  useEffect(() => {
+    const sendWelcomeNotification = async () => {
+      if (user?.email) {
+        try {
+          await createSystemNotification(
+            user.email,
+            'Welcome to Health Finder! 🏥',
+            'Find emergency health centers near you. Search by district and medical condition to get started.'
+          );
+          console.log('Welcome notification sent');
+        } catch (error) {
+          console.error('Failed to send welcome notification:', error);
+        }
+      }
+    };
+
+    // Send welcome notification after a short delay
+    const timer = setTimeout(sendWelcomeNotification, 2000);
+    return () => clearTimeout(timer);
+  }, [user?.email]);
 
   // Fetch available districts when component mounts
   useEffect(() => {
     const fetchDistricts = async () => {
       try {
-        console.log('Fetching districts from:', `${API_URL}/available-districts/`);
-        const response = await fetch(`${API_URL}/available-districts/`);
-        if (response.ok) {
-          const districts = await response.json();
+        setIsLoading(true);
+        console.log('Fetching districts...');
+        
+        // The endpoint is at /api/available-districts/
+        const response = await api.get('api/available-districts/');
+        
+        console.log('API response:', response);
+        
+        if (response.data && response.data.success && Array.isArray(response.data.districts)) {
+          const districts = response.data.districts;
           console.log('Received districts:', districts);
+          
           // Convert the array of district names to the format needed for the picker
           const formattedDistricts = districts.map((district: string) => ({
             label: district,
             value: district
           }));
+          
           console.log('Formatted districts:', formattedDistricts);
           setAvailableDistricts(formattedDistricts);
         } else {
-          console.error('Failed to fetch districts:', response.status);
-          // Add default districts if fetch fails
-          setAvailableDistricts([
-            { label: "Kampala", value: "Kampala" },
-            { label: "Mubende", value: "Mubende" }
-          ]);
+          console.warn('Invalid or empty districts data received:', response.data);
+          setDefaultDistricts();
         }
-      } catch (error) {
-        console.error('Error fetching districts:', error);
-        // Add default districts if fetch fails
-        setAvailableDistricts([
-          { label: "Kampala", value: "Kampala" },
-          { label: "Mubende", value: "Mubende" }
-        ]);
+      } catch (error: any) {
+        console.error('Error fetching districts:', {
+          message: error.message,
+          response: error.response?.data,
+        });
+        setDefaultDistricts();
+      } finally {
+        setIsLoading(false);
       }
     };
-
+    
+    const setDefaultDistricts = () => {
+      // Add default districts if fetch fails
+      const defaultDistricts = [
+        { label: "Kampala", value: "Kampala" },
+        { label: "Mubende", value: "Mubende" },
+        { label: "Wakiso", value: "Wakiso" },
+        { label: "Mukono", value: "Mukono" },
+      ];
+      setAvailableDistricts(defaultDistricts);
+    };
+    
     fetchDistricts();
   }, []);
 
@@ -115,7 +159,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
       } = await Location.getCurrentPositionAsync({});
       
       const queryParams: Record<string, string> = {
-        district,
+        ...(district && district !== 'All' ? { district } : {}),
         ...(condition && { condition }),
         ...(filters.emergency && { emergency: 'true' }),
         ...(filters.ambulance && { ambulance: 'true' }),
@@ -124,6 +168,43 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
       };
 
       console.log('Navigating to Hospitals with params:', queryParams);
+      
+      // Send notification about the search
+      if (user?.email) {
+        try {
+          const searchDescription = condition 
+            ? `Searching for ${condition} treatment in ${district}`
+            : `Searching for health centers in ${district}`;
+          
+          // Check if this is an emergency condition
+          const emergencyConditions = [
+            'Stroke (Poko)', 'Heart pain', 'Breathing problems', 
+            'Broken bones', 'Burns', 'Pregnancy problems'
+          ];
+          
+          const isEmergency = emergencyConditions.some(emergencyCondition => 
+            condition?.toLowerCase().includes(emergencyCondition.toLowerCase())
+          );
+          
+          if (isEmergency) {
+            // Send emergency notification
+            await createEmergencyNotification(
+              user.email,
+              'Emergency Search Detected',
+              `Emergency search for ${condition} in ${district}. Finding nearest emergency services...`
+            );
+          } else {
+            // Send regular search notification
+            await createSystemNotification(
+              user.email,
+              'Searching Health Centers',
+              searchDescription
+            );
+          }
+        } catch (error) {
+          console.error('Failed to send search notification:', error);
+        }
+      }
       
       navigation.navigate("Hospitals", {
         ...queryParams,
@@ -261,6 +342,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
           <View style={styles.topBarTitle}>
             <Text style={styles.topBarTitleText}>Health Center Locator</Text>
           </View>
+          <NotificationBell />
         </View>
 
         {/* Header Section */}
@@ -381,17 +463,42 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
                     {getUserInitial()}
                   </Text>
                 </View>
-                <Text style={styles.userName}>{user?.name || user?.email || 'User'}</Text>
+                <Text style={styles.userName}>
+                  {user?.first_name && user?.last_name 
+                    ? `${user.first_name} ${user.last_name}`
+                    : user?.email || 'User'}
+                </Text>
               </View>
 
-              <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuVisible(false); navigation.navigate("Home"); }}>
+              <TouchableOpacity style={styles.menuItem} onPress={() => { 
+                setMenuVisible(false); 
+                navigation.navigate('Home');
+              }}>
                 <IconMaterialCommunity name="home" size={20} color="#4F46E5" style={styles.menuIcon} />
                 <Text style={styles.menuText}>Home</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuVisible(false); navigation.navigate("Hospitals"); }}>
+              <TouchableOpacity style={styles.menuItem} onPress={() => { 
+                setMenuVisible(false); 
+                navigation.navigate('Hospitals', {
+                  ...(district && district !== 'All' ? { district } : {}),
+                  ...(condition && { condition }),
+                  ...(filters.emergency && { emergency: 'true' }),
+                  ...(filters.ambulance && { ambulance: 'true' }),
+                  ...(filters.pharmacy && { pharmacy: 'true' }),
+                  ...(filters.lab && { lab: 'true' })
+                });
+              }}>
                 <IconMaterialCommunity name="hospital" size={20} color="#14B8A6" style={styles.menuIcon} />
                 <Text style={styles.menuText}>Hospitals</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => { 
+                setMenuVisible(false); 
+                navigation.navigate('Notifications');
+              }}>
+                <NotificationBell />
+                <Text style={styles.menuText}>Notifications</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuVisible(false); navigation.navigate("About"); }}>
@@ -440,6 +547,9 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   menuButton: {
+    padding: 8,
+  },
+  notificationButton: {
     padding: 8,
   },
   headerContainer: {
@@ -557,8 +667,8 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-start',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   menuContainer: {
     backgroundColor: '#fff',
