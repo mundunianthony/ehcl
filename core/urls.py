@@ -5,7 +5,6 @@ from .views import (
     UploadImageView, AvailableDistrictsView, NotificationView, UserDetailView,
     CreateNotificationView
 )
-from .views_health import HealthCheckView, TestView
 
 urlpatterns = [
     path('users/register/', RegisterView.as_view(), name='register'),
@@ -23,10 +22,4 @@ urlpatterns = [
     
     # User details
     path('users/me/', UserDetailView.as_view(), name='user-details'),
-    
-    # Health check endpoint for server discovery
-    path('health/', HealthCheckView.as_view(), name='health-check'),
-    
-    # Test endpoint for debugging
-    path('test/', TestView.as_view(), name='test'),
 ]
