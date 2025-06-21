@@ -1,7 +1,7 @@
 [deploy]
 startCommand = "python manage.py migrate && gunicorn myproject.wsgi:application --bind 0.0.0.0:$PORT"
 #startCommand = "python manage.py migrate && python manage.py loaddata data.json && gunicorn myproject.wsgi:application --bind 0.0.0.0:$PORT"
-healthcheckPath = "/health/"
+healthcheckPath = "/"
 healthcheckTimeout = 100
 
 [service]
