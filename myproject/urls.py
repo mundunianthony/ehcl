@@ -10,9 +10,14 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 def healthcheck(request):
     return JsonResponse({"status": "ok"})
 
+# Additional health check endpoint
+def health_check_alt(request):
+    return JsonResponse({"status": "ok", "message": "Health check passed"})
+
 # Define URL patterns
 urlpatterns = [
     path('', healthcheck),
+    path('health/', health_check_alt),  # Backup health check endpoint
     
     # Admin site
     path('admin/', admin.site.urls),

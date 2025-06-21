@@ -19,7 +19,7 @@ if 'debug_toolbar' in INSTALLED_APPS:
 MIDDLEWARE = [mw for mw in MIDDLEWARE if 'debug_toolbar' not in mw]
 
 # Security settings
-SECURE_SSL_REDIRECT = not DEBUG
+SECURE_SSL_REDIRECT = False  # Disabled to prevent health check issues
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SECURE_BROWSER_XSS_FILTER = True
