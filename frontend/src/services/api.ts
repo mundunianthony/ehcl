@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
-import { api as configApi, getAuthToken, setAuthToken, tokenStorage } from '../config/api';
+import { API_URL } from '../config';
 import { Alert, Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // User interface for auth context
 interface User {
@@ -92,12 +93,40 @@ interface NearbyHospitalsParams {
   radius?: number;
 }
 
-// Use the working API client from config/api.ts directly
+// Create a simple axios instance with the working config
+const apiInstance = axios.create({
+  baseURL: API_URL,
+  timeout: 30000,
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+});
+
+// Add request interceptor to include auth token
+apiInstance.interceptors.request.use(
+  async (config) => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch (error) {
+      console.warn('Error getting token:', error);
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Use the simple API client
 export const api = {
   get: async (url: string, config?: any) => {
     console.log(`[API] GET ${url}`, { config });
     try {
-      const response = await configApi.get(url, config);
+      const response = await apiInstance.get(url, config);
       console.log(`[API] GET ${url} success`);
       return response;
     } catch (error) {
@@ -108,7 +137,7 @@ export const api = {
   post: async (url: string, data?: any, config?: any) => {
     console.log(`[API] POST ${url}`, { data, config });
     try {
-      const response = await configApi.post(url, data, config);
+      const response = await apiInstance.post(url, data, config);
       console.log(`[API] POST ${url} success`);
       return response;
     } catch (error) {
@@ -119,7 +148,7 @@ export const api = {
   put: async (url: string, data?: any, config?: any) => {
     console.log(`[API] PUT ${url}`, { data, config });
     try {
-      const response = await configApi.put(url, data, config);
+      const response = await apiInstance.put(url, data, config);
       console.log(`[API] PUT ${url} success`);
       return response;
     } catch (error) {
@@ -130,7 +159,7 @@ export const api = {
   delete: async (url: string, config?: any) => {
     console.log(`[API] DELETE ${url}`, { config });
     try {
-      const response = await configApi.delete(url, config);
+      const response = await apiInstance.delete(url, config);
       console.log(`[API] DELETE ${url} success`);
       return response;
     } catch (error) {
@@ -141,7 +170,7 @@ export const api = {
   request: async (config: any) => {
     console.log('[API] REQUEST', { config });
     try {
-      const response = await configApi.request(config);
+      const response = await apiInstance.request(config);
       console.log('[API] REQUEST success', { url: config.url });
       return response;
     } catch (error) {
@@ -259,13 +288,12 @@ const locationAPI = {
 // Auth API calls
 const authAPI = {
   login: async (credentials: { email: string; password: string }): Promise<AuthResponse> => {
-    console.log('[Auth] Sending login request...', { 
+    console.log('[Auth] Sending login request...', {
       email: credentials.email,
       endpoint: 'users/login/'
     });
-    setAuthToken(null);
-    await tokenStorage.remove();
-    
+    await AsyncStorage.removeItem('token');
+
     try {
       const response = await api.post('users/login/', credentials, {
         headers: { 'Content-Type': 'application/json' },
@@ -279,10 +307,10 @@ const authAPI = {
         headers: response.headers,
         data: data
       });
-      
+
       let accessToken: string | undefined;
       let refreshToken: string | undefined;
-      
+
       if (typeof data === 'object' && data !== null) {
         if ('access' in data) accessToken = data.access;
         if ('refresh' in data) refreshToken = data.refresh;
@@ -292,17 +320,16 @@ const authAPI = {
       } else if (typeof data === 'string') {
         accessToken = data;
       }
-      
+
       console.log('[Auth] Extracted tokens:', { accessToken, refreshToken });
-      
+
       if (!accessToken) {
         throw new Error('No access token found in response');
       }
-      
-      setAuthToken(accessToken);
-      await tokenStorage.set(accessToken);
+
+      await AsyncStorage.setItem('token', accessToken);
       console.log('[Auth] Token stored successfully');
-      
+
       let userData: User = data.user;
       if (!userData) {
         try {
@@ -343,12 +370,12 @@ const authAPI = {
           user_permissions: userData.user_permissions || []
         };
       }
-      
+
       console.log('[Auth] Login successful, user:', userData);
-      return { 
-        access: accessToken, 
-        refresh: refreshToken || '', 
-        user: userData 
+      return {
+        access: accessToken,
+        refresh: refreshToken || '',
+        user: userData
       };
     } catch (error: any) {
       console.error('[Auth] Login error:', {
@@ -357,7 +384,7 @@ const authAPI = {
         data: error.response?.data,
         config: error.config
       });
-      
+
       if (error.response) {
         if (error.response.status === 400) {
           throw new Error('Invalid email or password');
@@ -366,22 +393,22 @@ const authAPI = {
         } else if (error.response.status >= 500) {
           throw new Error('Server error. Please try again later.');
         } else if (error.response.data) {
-          const errorMessage = error.response.data.detail || 
-                             error.response.data.error ||
-                             error.response.data.message ||
-                             'An error occurred during login';
+          const errorMessage = error.response.data.detail ||
+            error.response.data.error ||
+            error.response.data.message ||
+            'An error occurred during login';
           throw new Error(errorMessage);
         }
       } else if (error.request) {
         console.error('No response received:', error.request);
         throw new Error('No response from server. Please check your internet connection.');
       }
-      
+
       console.error('Login request error:', error.message);
       throw error;
     }
   },
-  
+
   getUserDetails: async (token: string): Promise<User> => {
     try {
       const response = await api.get('api/users/me/', {
@@ -395,7 +422,7 @@ const authAPI = {
       throw error;
     }
   },
-  
+
   register: async (userData: { email: string; password: string; name: string }): Promise<RegisterResponse> => {
     try {
       const response = await api.post('/users/register/', userData);
@@ -409,10 +436,10 @@ const authAPI = {
       throw error;
     }
   },
-  
+
   logout: async (): Promise<void> => {
     try {
-      await api.post('/users/logout/');
+      await AsyncStorage.removeItem('token');
     } catch (error: any) {
       console.error('[Auth] Logout error:', {
         message: error.message,
@@ -430,18 +457,18 @@ const notificationAPI = {
     try {
       const response = await api.get('notifications/');
       console.log('Notifications response:', response.data);
-      
+
       if (response.data && response.data.results) {
         return response.data.results;
       }
-      
+
       return Array.isArray(response.data) ? response.data : [];
     } catch (error: any) {
       console.error('Error fetching notifications:', error.message);
       throw error;
     }
   },
-  
+
   markAsRead: async (id: number): Promise<void> => {
     try {
       await api.post(`notifications/${id}/mark_read/`);

@@ -14,7 +14,7 @@ import { RootStackParamList } from '../types';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
-import { API_URL } from '../config/api';
+import { API_URL } from '../config';
 import HospitalMapBackground from '../components/HospitalMapBackground';
 
 const { width } = Dimensions.get('window');

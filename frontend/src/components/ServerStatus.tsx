@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { api } from '../config/api';
+import { api } from '../services/api';
 
 const ServerStatus = () => {
   const [serverStatus, setServerStatus] = useState<'checking' | 'connected' | 'error'>('checking');

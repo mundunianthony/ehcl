@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { getCurrentApiUrl } from "../config/api";
 import { api } from "../services/api";
 import {
   View,
@@ -19,7 +18,6 @@ import { RootStackParamList } from "../types";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../context/AuthContext";
 import MainLayout from "../components/MainLayout";
-import { API_URL } from '../config/api';
 import { useNavigation, ParamListBase } from "@react-navigation/native";
 import IconMaterialCommunity from "react-native-vector-icons/MaterialCommunityIcons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -95,7 +93,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
         console.log('Fetching districts...');
         
         // The endpoint is at /api/available-districts/
-        const response = await api.get('api/available-districts/');
+        const response = await api.get('available-districts/');
         
         console.log('API response:', response);
         
