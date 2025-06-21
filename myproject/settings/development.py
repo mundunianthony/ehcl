@@ -4,6 +4,7 @@ Development settings for mobi-app.
 These settings are specific to the development environment.
 """
 from .base import *  # noqa
+from datetime import timedelta
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -77,6 +78,15 @@ INSTALLED_APPS += ['debug_toolbar']
 MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] + MIDDLEWARE
 INTERNAL_IPS = ['127.0.0.1']
 
+# Print important settings
+print('\n' + '='*50)
+print('RUNNING IN DEVELOPMENT MODE')
+print('='*50)
+print(f'DEBUG: {DEBUG}')
+print(f'ALLOWED_HOSTS: {ALLOWED_HOSTS}')
+print(f'DATABASES: {DATABASES["default"]["NAME"]}')
+print('='*50 + '\n')
+
 # Django REST Framework settings for development
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
@@ -92,12 +102,3 @@ SIMPLE_JWT.update({
     'ACCESS_TOKEN_LIFETIME': timedelta(hours=24),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 })
-
-# Print important settings
-print('\n' + '='*50)
-print('RUNNING IN DEVELOPMENT MODE')
-print('='*50)
-print(f'DEBUG: {DEBUG}')
-print(f'ALLOWED_HOSTS: {ALLOWED_HOSTS}')
-print(f'DATABASES: {DATABASES["default"]["NAME"]}')
-print('='*50 + '\n')

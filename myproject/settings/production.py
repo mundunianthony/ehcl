@@ -6,6 +6,7 @@ These settings are specific to the production environment.
 import os
 from .base import *  # noqa
 import dj_database_url
+from datetime import timedelta
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
@@ -99,6 +100,15 @@ LOGGING = {
     },
 }
 
+# Print important settings (without sensitive data)
+print('\n' + '='*50)
+print('RUNNING IN PRODUCTION MODE')
+print('='*50)
+print(f'DEBUG: {DEBUG}')
+print(f'ALLOWED_HOSTS: {ALLOWED_HOSTS}')
+print(f'DATABASES: Using PostgreSQL')
+print('='*50 + '\n')
+
 # Django REST Framework settings for production
 REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [
     'rest_framework.renderers.JSONRenderer',
@@ -109,12 +119,3 @@ SIMPLE_JWT.update({
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 })
-
-# Print important settings (without sensitive data)
-print('\n' + '='*50)
-print('RUNNING IN PRODUCTION MODE')
-print('='*50)
-print(f'DEBUG: {DEBUG}')
-print(f'ALLOWED_HOSTS: {ALLOWED_HOSTS}')
-print(f'DATABASES: Using PostgreSQL')
-print('='*50 + '\n')
