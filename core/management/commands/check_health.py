@@ -1,4 +1,4 @@
-""
+"""""
 Django management command to check the health of the application.
 
 This command performs various health checks on the application, including:
