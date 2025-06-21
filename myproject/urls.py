@@ -6,23 +6,16 @@ from django.http import JsonResponse
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
-# Import health check view directly
-from core.views_health import HealthCheckView
-
+# Simple health check for Railway
 def healthcheck(request):
     return JsonResponse({"status": "ok"})
 
 # Define URL patterns
 urlpatterns = [
-    # Simple health check for Railway
     path('', healthcheck),
     
     # Admin site
     path('admin/', admin.site.urls),
-    
-    # Health check (available at multiple endpoints for convenience)
-    path('health/', HealthCheckView.as_view(), name='health-check'),
-    path('api/health/', HealthCheckView.as_view(), name='api-health-check'),
     
     # API endpoints
     path('api/', include('core.urls')),  # All your core app endpoints under /api/
