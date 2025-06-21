@@ -1,1 +1,2100 @@
-﻿[{"model": "auth.permission", "pk": 1, "fields": {"name": "Can add log entry", "content_type": 1, "codename": "add_logentry"}}, {"model": "auth.permission", "pk": 2, "fields": {"name": "Can change log entry", "content_type": 1, "codename": "change_logentry"}}, {"model": "auth.permission", "pk": 3, "fields": {"name": "Can delete log entry", "content_type": 1, "codename": "delete_logentry"}}, {"model": "auth.permission", "pk": 4, "fields": {"name": "Can view log entry", "content_type": 1, "codename": "view_logentry"}}, {"model": "auth.permission", "pk": 5, "fields": {"name": "Can add permission", "content_type": 2, "codename": "add_permission"}}, {"model": "auth.permission", "pk": 6, "fields": {"name": "Can change permission", "content_type": 2, "codename": "change_permission"}}, {"model": "auth.permission", "pk": 7, "fields": {"name": "Can delete permission", "content_type": 2, "codename": "delete_permission"}}, {"model": "auth.permission", "pk": 8, "fields": {"name": "Can view permission", "content_type": 2, "codename": "view_permission"}}, {"model": "auth.permission", "pk": 9, "fields": {"name": "Can add group", "content_type": 3, "codename": "add_group"}}, {"model": "auth.permission", "pk": 10, "fields": {"name": "Can change group", "content_type": 3, "codename": "change_group"}}, {"model": "auth.permission", "pk": 11, "fields": {"name": "Can delete group", "content_type": 3, "codename": "delete_group"}}, {"model": "auth.permission", "pk": 12, "fields": {"name": "Can view group", "content_type": 3, "codename": "view_group"}}, {"model": "auth.permission", "pk": 13, "fields": {"name": "Can add content type", "content_type": 4, "codename": "add_contenttype"}}, {"model": "auth.permission", "pk": 14, "fields": {"name": "Can change content type", "content_type": 4, "codename": "change_contenttype"}}, {"model": "auth.permission", "pk": 15, "fields": {"name": "Can delete content type", "content_type": 4, "codename": "delete_contenttype"}}, {"model": "auth.permission", "pk": 16, "fields": {"name": "Can view content type", "content_type": 4, "codename": "view_contenttype"}}, {"model": "auth.permission", "pk": 17, "fields": {"name": "Can add session", "content_type": 5, "codename": "add_session"}}, {"model": "auth.permission", "pk": 18, "fields": {"name": "Can change session", "content_type": 5, "codename": "change_session"}}, {"model": "auth.permission", "pk": 19, "fields": {"name": "Can delete session", "content_type": 5, "codename": "delete_session"}}, {"model": "auth.permission", "pk": 20, "fields": {"name": "Can view session", "content_type": 5, "codename": "view_session"}}, {"model": "auth.permission", "pk": 21, "fields": {"name": "Can add blacklisted token", "content_type": 6, "codename": "add_blacklistedtoken"}}, {"model": "auth.permission", "pk": 22, "fields": {"name": "Can change blacklisted token", "content_type": 6, "codename": "change_blacklistedtoken"}}, {"model": "auth.permission", "pk": 23, "fields": {"name": "Can delete blacklisted token", "content_type": 6, "codename": "delete_blacklistedtoken"}}, {"model": "auth.permission", "pk": 24, "fields": {"name": "Can view blacklisted token", "content_type": 6, "codename": "view_blacklistedtoken"}}, {"model": "auth.permission", "pk": 25, "fields": {"name": "Can add outstanding token", "content_type": 7, "codename": "add_outstandingtoken"}}, {"model": "auth.permission", "pk": 26, "fields": {"name": "Can change outstanding token", "content_type": 7, "codename": "change_outstandingtoken"}}, {"model": "auth.permission", "pk": 27, "fields": {"name": "Can delete outstanding token", "content_type": 7, "codename": "delete_outstandingtoken"}}, {"model": "auth.permission", "pk": 28, "fields": {"name": "Can view outstanding token", "content_type": 7, "codename": "view_outstandingtoken"}}, {"model": "auth.permission", "pk": 29, "fields": {"name": "Can add user", "content_type": 8, "codename": "add_user"}}, {"model": "auth.permission", "pk": 30, "fields": {"name": "Can change user", "content_type": 8, "codename": "change_user"}}, {"model": "auth.permission", "pk": 31, "fields": {"name": "Can delete user", "content_type": 8, "codename": "delete_user"}}, {"model": "auth.permission", "pk": 32, "fields": {"name": "Can view user", "content_type": 8, "codename": "view_user"}}, {"model": "auth.permission", "pk": 33, "fields": {"name": "Can add health center", "content_type": 9, "codename": "add_healthcenter"}}, {"model": "auth.permission", "pk": 34, "fields": {"name": "Can change health center", "content_type": 9, "codename": "change_healthcenter"}}, {"model": "auth.permission", "pk": 35, "fields": {"name": "Can delete health center", "content_type": 9, "codename": "delete_healthcenter"}}, {"model": "auth.permission", "pk": 36, "fields": {"name": "Can view health center", "content_type": 9, "codename": "view_healthcenter"}}, {"model": "auth.permission", "pk": 37, "fields": {"name": "Can add notification", "content_type": 10, "codename": "add_notification"}}, {"model": "auth.permission", "pk": 38, "fields": {"name": "Can change notification", "content_type": 10, "codename": "change_notification"}}, {"model": "auth.permission", "pk": 39, "fields": {"name": "Can delete notification", "content_type": 10, "codename": "delete_notification"}}, {"model": "auth.permission", "pk": 40, "fields": {"name": "Can view notification", "content_type": 10, "codename": "view_notification"}}, {"model": "contenttypes.contenttype", "pk": 1, "fields": {"app_label": "admin", "model": "logentry"}}, {"model": "contenttypes.contenttype", "pk": 2, "fields": {"app_label": "auth", "model": "permission"}}, {"model": "contenttypes.contenttype", "pk": 3, "fields": {"app_label": "auth", "model": "group"}}, {"model": "contenttypes.contenttype", "pk": 4, "fields": {"app_label": "contenttypes", "model": "contenttype"}}, {"model": "contenttypes.contenttype", "pk": 5, "fields": {"app_label": "sessions", "model": "session"}}, {"model": "contenttypes.contenttype", "pk": 6, "fields": {"app_label": "token_blacklist", "model": "blacklistedtoken"}}, {"model": "contenttypes.contenttype", "pk": 7, "fields": {"app_label": "token_blacklist", "model": "outstandingtoken"}}, {"model": "contenttypes.contenttype", "pk": 8, "fields": {"app_label": "core", "model": "user"}}, {"model": "contenttypes.contenttype", "pk": 9, "fields": {"app_label": "core", "model": "healthcenter"}}, {"model": "contenttypes.contenttype", "pk": 10, "fields": {"app_label": "core", "model": "notification"}}, {"model": "core.user", "pk": 1, "fields": {"password": "pbkdf2_sha256$1000000$vT655bFFp0AAmhSAs0rqjy$Tv8cu4MWd6tuhvTvaT8M5PhEjiF3BCj/TgxZAUB06G0=", "last_login": null, "is_superuser": false, "name": "Admin User", "email": "admin@example.com", "is_active": true, "is_staff": true, "groups": [], "user_permissions": []}}, {"model": "core.user", "pk": 2, "fields": {"password": "pbkdf2_sha256$1000000$5zgb22iAQPAgoYgWaygnKK$cSfsKWK9CR78GvPZ4FtcKPi2iZyVjU4MWIgI5i7e0xw=", "last_login": null, "is_superuser": false, "name": "Jane Doe", "email": "jane@example.com", "is_active": true, "is_staff": false, "groups": [], "user_permissions": []}}, {"model": "core.healthcenter", "pk": 1, "fields": {"name": "Mbarara Regional Referral Hospital", "description": "A premier regional referral hospital providing comprehensive healthcare services, including advanced surgical procedures, diagnostic imaging, and specialized care for chronic and acute conditions.", "address": "Bishop Wills Rd, Mbarara", "city": "Mbarara", "country": "Uganda", "email": "info@mrr.go.ug", "phone": "+256 772 123456", "image": "image/upload/https://images.pexels.com/photos/263402/pexels-photo-263402.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Internal Medicine, Cardiology, Orthopedics, Radiology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Diabetes, Hypertension, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.722Z", "updatedAt": "2025-06-20T13:44:27.722Z"}}, {"model": "core.healthcenter", "pk": 2, "fields": {"name": "Mbarara Community Clinic", "description": "A community-focused healthcare facility offering primary care, maternal and child health services, and treatment for common infectious diseases.", "address": "Nyamitanga Hill, Mbarara", "city": "Mbarara", "country": "Uganda", "email": "communityclinic@mbr.ug", "phone": "+256 752 234567", "image": "image/upload/https://images.pexels.com/photos/668300/pexels-photo-668300.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Urine infection, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.733Z", "updatedAt": "2025-06-20T13:44:27.733Z"}}, {"model": "core.healthcenter", "pk": 3, "fields": {"name": "Holy Family Hospital Mbarara", "description": "A faith-based hospital delivering high-quality medical and surgical care, with a focus on pediatric services, maternal health, and emergency interventions.", "address": "Kakiika Rd, Mbarara", "city": "Mbarara", "country": "Uganda", "email": "holyfamily@mbr.ug", "phone": "+256 702 345678", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Burns, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.740Z", "updatedAt": "2025-06-20T13:44:27.740Z"}}, {"model": "core.healthcenter", "pk": 4, "fields": {"name": "Mbarara WomenÆs Clinic", "description": "A specialized healthcare facility dedicated to maternal health, gynecology, and family planning, offering prenatal care and treatment for womenÆs health conditions.", "address": "Kikagate Rd, Mbarara", "city": "Mbarara", "country": "Uganda", "email": "womensclinic@mbr.ug", "phone": "+256 782 567890", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "Obstetrics & Gynecology, Family Planning, Maternal-Fetal Medicine", "conditions_treated": "Pregnancy problems, Infertility, Family planning, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.747Z", "updatedAt": "2025-06-20T13:44:27.747Z"}}, {"model": "core.healthcenter", "pk": 5, "fields": {"name": "Lira Regional Referral Hospital", "description": "A leading referral hospital in Northern Uganda, providing advanced medical, surgical, and diagnostic services for a wide range of acute and chronic conditions.", "address": "LiraûGulu Rd, Lira", "city": "Lira", "country": "Uganda", "email": "info@lrr.go.ug", "phone": "+256 752 012345", "image": "image/upload/https://images.pexels.com/photos/1170979/pexels-photo-1170979.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.754Z", "updatedAt": "2025-06-20T13:44:27.754Z"}}, {"model": "core.healthcenter", "pk": 6, "fields": {"name": "Olive Health Clinic", "description": "A private healthcare facility specializing in womenÆs health, minor surgical procedures, and primary care for common ailments.", "address": "Health Centre Rd, Lira", "city": "Lira", "country": "Uganda", "email": "oliveclinic@lira.ug", "phone": "+256 772 123456", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "Obstetrics & Gynecology, General Medicine, Family Planning", "conditions_treated": "Pregnancy problems, Family planning, Malaria, Typhoid, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.763Z", "updatedAt": "2025-06-20T13:44:27.763Z"}}, {"model": "core.healthcenter", "pk": 7, "fields": {"name": "St. Charles Lwanga Hospital", "description": "A faith-based hospital offering comprehensive medical and surgical care, with a focus on maternal and pediatric health services.", "address": "Adiko Rd, Lira", "city": "Lira", "country": "Uganda", "email": "stcharles@lwanga.ug", "phone": "+256 772 234567", "image": "image/upload/https://images.pexels.com/photos/668300/pexels-photo-668300.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Burns, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.770Z", "updatedAt": "2025-06-20T13:44:27.770Z"}}, {"model": "core.healthcenter", "pk": 8, "fields": {"name": "Lira Medical Centre", "description": "A general healthcare facility providing outpatient care, diagnostic services, and treatment for common medical conditions.", "address": "Obote Avenue, Lira", "city": "Lira", "country": "Uganda", "email": "info@liramedical.ug", "phone": "+256 772 345678", "image": "image/upload/https://images.pexels.com/photos/247786/pexels-photo-247786.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Internal Medicine, Radiology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.779Z", "updatedAt": "2025-06-20T13:44:27.779Z"}}, {"model": "core.healthcenter", "pk": 9, "fields": {"name": "Mulago National Referral Hospital", "description": "UgandaÆs largest national referral hospital, offering advanced medical, surgical, and specialized care across multiple disciplines, including diagnostics and emergency services.", "address": "Mulago Hill, Kampala", "city": "Kampala", "country": "Uganda", "email": "info@mulago.go.ug", "phone": "+256 772 987654", "image": "image/upload/https://images.pexels.com/photos/247786/pexels-photo-247786.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Cardiology, Neurology, Oncology, Orthopedics, Radiology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Diabetes, Hypertension, HIV/AIDS, TB, Cancer, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.786Z", "updatedAt": "2025-06-20T13:44:27.786Z"}}, {"model": "core.healthcenter", "pk": 10, "fields": {"name": "Nsambya Hospital", "description": "A leading faith-based hospital providing comprehensive medical, surgical, and maternal health services, with a focus on high-quality patient care.", "address": "Nsambya Rd, Kampala", "city": "Kampala", "country": "Uganda", "email": "info@nsambyahospital.ug", "phone": "+256 772 456789", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.795Z", "updatedAt": "2025-06-20T13:44:27.795Z"}}, {"model": "core.healthcenter", "pk": 11, "fields": {"name": "Kampala International Hospital", "description": "A private hospital offering specialized medical services, diagnostic imaging, and emergency care for acute and chronic conditions.", "address": "Namuwongo Rd, Kampala", "city": "Kampala", "country": "Uganda", "email": "info@kih.ug", "phone": "+256 772 567890", "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Internal Medicine, Emergency Medicine, Radiology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Diabetes, Hypertension, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.803Z", "updatedAt": "2025-06-20T13:44:27.803Z"}}, {"model": "core.healthcenter", "pk": 12, "fields": {"name": "Kampala WomenÆs Clinic", "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services, with a focus on womenÆs wellness.", "address": "Bukoto Rd, Kampala", "city": "Kampala", "country": "Uganda", "email": "info@kampalawomens.ug", "phone": "+256 782 678901", "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "Obstetrics & Gynecology, Family Planning, Maternal-Fetal Medicine", "conditions_treated": "Pregnancy problems, Infertility, Family planning, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.812Z", "updatedAt": "2025-06-20T13:44:27.812Z"}}, {"model": "core.healthcenter", "pk": 13, "fields": {"name": "Jinja Regional Referral Hospital", "description": "A major referral hospital in Eastern Uganda, offering advanced medical, surgical, and diagnostic services for a wide range of conditions.", "address": "Jinja Main Street, Jinja", "city": "Jinja", "country": "Uganda", "email": "info@jinjahospital.go.ug", "phone": "+256 772 345678", "image": "image/upload/https://images.pexels.com/photos/668300/pexels-photo-668300.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.820Z", "updatedAt": "2025-06-20T13:44:27.820Z"}}, {"model": "core.healthcenter", "pk": 14, "fields": {"name": "Jinja General Hospital", "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common medical conditions.", "address": "Nile Avenue, Jinja", "city": "Jinja", "country": "Uganda", "email": "info@jinjageneral.ug", "phone": "+256 772 456789", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.828Z", "updatedAt": "2025-06-20T13:44:27.828Z"}}, {"model": "core.healthcenter", "pk": 15, "fields": {"name": "Jinja Community Clinic", "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.", "address": "Busoga Rd, Jinja", "city": "Jinja", "country": "Uganda", "email": "info@jinjacommunity.ug", "phone": "+256 772 567890", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.836Z", "updatedAt": "2025-06-20T13:44:27.836Z"}}, {"model": "core.healthcenter", "pk": 16, "fields": {"name": "Jinja Eye Care Clinic", "description": "A specialized healthcare facility providing ophthalmology services, vision care, and treatment for eye-related conditions.", "address": "Main Street, Jinja", "city": "Jinja", "country": "Uganda", "email": "info@jinjaeyecare.ug", "phone": "+256 782 678901", "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": false, "specialties": "Ophthalmology, Optometry", "conditions_treated": "Red eyes, Poor eyesight, Eye infections, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.844Z", "updatedAt": "2025-06-20T13:44:27.844Z"}}, {"model": "core.healthcenter", "pk": 17, "fields": {"name": "Gulu Regional Referral Hospital", "description": "A leading referral hospital in Northern Uganda, providing advanced medical, surgical, and emergency services for acute and chronic conditions.", "address": "Gulu-Lira Rd, Gulu", "city": "Gulu", "country": "Uganda", "email": "info@guluhospital.go.ug", "phone": "+256 772 456789", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.853Z", "updatedAt": "2025-06-20T13:44:27.853Z"}}, {"model": "core.healthcenter", "pk": 18, "fields": {"name": "St. MaryÆs Hospital Lacor", "description": "A faith-based hospital offering comprehensive medical, surgical, and pediatric care, with a focus on high-quality patient outcomes.", "address": "Lacor Rd, Gulu", "city": "Gulu", "country": "Uganda", "email": "info@lacorhospital.ug", "phone": "+256 772 567890", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.861Z", "updatedAt": "2025-06-20T13:44:27.861Z"}}, {"model": "core.healthcenter", "pk": 19, "fields": {"name": "Gulu Community Clinic", "description": "A community-based healthcare facility providing primary care, maternal health, and treatment for common infectious diseases.", "address": "Pece Rd, Gulu", "city": "Gulu", "country": "Uganda", "email": "info@gulucommunity.ug", "phone": "+256 782 678901", "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.870Z", "updatedAt": "2025-06-20T13:44:27.870Z"}}, {"model": "core.healthcenter", "pk": 20, "fields": {"name": "Gulu Dental Clinic", "description": "A specialized healthcare facility offering dental care, oral surgery, and treatment for oral health conditions.", "address": "Aworanga Rd, Gulu", "city": "Gulu", "country": "Uganda", "email": "info@guludental.ug", "phone": "+256 782 789012", "image": "image/upload/https://images.pexels.com/photos/1170979/pexels-photo-1170979.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": false, "specialties": "Dental, Oral Surgery", "conditions_treated": "Toothache, Gum disease, Tooth removal, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.879Z", "updatedAt": "2025-06-20T13:44:27.879Z"}}, {"model": "core.healthcenter", "pk": 21, "fields": {"name": "Mbale Regional Referral Hospital", "description": "A key referral hospital in Eastern Uganda, offering advanced medical, surgical, and diagnostic services for a wide range of conditions.", "address": "Pallisa Rd, Mbale", "city": "Mbale", "country": "Uganda", "email": "info@mbalehospital.go.ug", "phone": "+256 772 567890", "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology, Pathology", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.887Z", "updatedAt": "2025-06-20T13:44:27.887Z"}}, {"model": "core.healthcenter", "pk": 22, "fields": {"name": "Mbale General Hospital", "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common conditions.", "address": "Republic St, Mbale", "city": "Mbale", "country": "Uganda", "email": "info@mbalegeneral.ug", "phone": "+256 772 678901", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.896Z", "updatedAt": "2025-06-20T13:44:27.896Z"}}, {"model": "core.healthcenter", "pk": 23, "fields": {"name": "Mbale Community Clinic", "description": "A community-focused healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.", "address": "Kumi Rd, Mbale", "city": "Mbale", "country": "Uganda", "email": "info@mbalecommunity.ug", "phone": "+256 782 789012", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.904Z", "updatedAt": "2025-06-20T13:44:27.904Z"}}, {"model": "core.healthcenter", "pk": 24, "fields": {"name": "Mbale Eye Care Clinic", "description": "A specialized healthcare facility providing ophthalmology services, vision care, and treatment for eye-related conditions.", "address": "Cathedral Ave, Mbale", "city": "Mbale", "country": "Uganda", "email": "info@mbaleeyecare.ug", "phone": "+256 782 890123", "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": false, "specialties": "Ophthalmology, Optometry", "conditions_treated": "Red eyes, Poor eyesight, Eye infections, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.913Z", "updatedAt": "2025-06-20T13:44:27.913Z"}}, {"model": "core.healthcenter", "pk": 25, "fields": {"name": "Arua Regional Referral Hospital", "description": "A major referral hospital in West Nile, providing advanced medical, surgical, and emergency services for acute and chronic conditions.", "address": "Arua Town, Arua", "city": "Arua", "country": "Uganda", "email": "info@aruahospital.go.ug", "phone": "+256 772 678901", "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology, Infectious Diseases", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Snake bite, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.921Z", "updatedAt": "2025-06-20T13:44:27.921Z"}}, {"model": "core.healthcenter", "pk": 26, "fields": {"name": "Arua General Hospital", "description": "A general hospital offering outpatient and inpatient care, including surgical and maternal health services for common conditions.", "address": "Awindiri Rd, Arua", "city": "Arua", "country": "Uganda", "email": "info@aruageneral.ug", "phone": "+256 772 789012", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.930Z", "updatedAt": "2025-06-20T13:44:27.930Z"}}, {"model": "core.healthcenter", "pk": 27, "fields": {"name": "Arua Community Clinic", "description": "A community-based healthcare facility providing primary care, maternal health, and treatment for common infectious diseases.", "address": "Ediofe Rd, Arua", "city": "Arua", "country": "Uganda", "email": "info@aruacommunity.ug", "phone": "+256 782 890123", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.937Z", "updatedAt": "2025-06-20T13:44:27.937Z"}}, {"model": "core.healthcenter", "pk": 28, "fields": {"name": "Arua Dental Clinic", "description": "A specialized healthcare facility offering dental care, oral surgery, and treatment for oral health conditions.", "address": "Weatherhead Lane, Arua", "city": "Arua", "country": "Uganda", "email": "info@aruadental.ug", "phone": "+256 782 901234", "image": "image/upload/https://images.pexels.com/photos/1170979/pexels-photo-1170979.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": false, "specialties": "Dental, Oral Surgery", "conditions_treated": "Toothache, Gum disease, Tooth removal, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.946Z", "updatedAt": "2025-06-20T13:44:27.946Z"}}, {"model": "core.healthcenter", "pk": 29, "fields": {"name": "Fort Portal Regional Referral Hospital", "description": "A leading referral hospital in Western Uganda, offering advanced medical, surgical, and diagnostic services for a wide range of conditions.", "address": "Fort Portal Town, Kabarole", "city": "Fort Portal", "country": "Uganda", "email": "info@fortportalhospital.go.ug", "phone": "+256 772 789012", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology, Cardiology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Diabetes, Hypertension, HIV/AIDS, TB, Pregnancy problems, Broken bones, Heart pain, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.954Z", "updatedAt": "2025-06-20T13:44:27.954Z"}}, {"model": "core.healthcenter", "pk": 30, "fields": {"name": "Fort Portal General Hospital", "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common conditions.", "address": "Boma Rd, Fort Portal", "city": "Fort Portal", "country": "Uganda", "email": "info@fortgeneral.ug", "phone": "+256 772 890123", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.963Z", "updatedAt": "2025-06-20T13:44:27.963Z"}}, {"model": "core.healthcenter", "pk": 31, "fields": {"name": "Fort Portal Community Clinic", "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.", "address": "Kasese Rd, Fort Portal", "city": "Fort Portal", "country": "Uganda", "email": "info@fortcommunity.ug", "phone": "+256 782 901234", "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.970Z", "updatedAt": "2025-06-20T13:44:27.970Z"}}, {"model": "core.healthcenter", "pk": 32, "fields": {"name": "Fort Portal WomenÆs Clinic", "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services.", "address": "Mpanga Rd, Fort Portal", "city": "Fort Portal", "country": "Uganda", "email": "info@fortwomens.ug", "phone": "+256 782 012345", "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "Obstetrics & Gynecology, Family Planning, Maternal-Fetal Medicine", "conditions_treated": "Pregnancy problems, Infertility, Family planning, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.978Z", "updatedAt": "2025-06-20T13:44:27.978Z"}}, {"model": "core.healthcenter", "pk": 33, "fields": {"name": "Hoima Regional Referral Hospital", "description": "A regional referral hospital serving the Bunyoro sub-region, offering comprehensive medical, surgical, and diagnostic services.", "address": "Hoima Town, Hoima", "city": "Hoima", "country": "Uganda", "email": "info@hoimahospital.go.ug", "phone": "+256 782 567890", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology, Pathology", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.986Z", "updatedAt": "2025-06-20T13:44:27.986Z"}}, {"model": "core.healthcenter", "pk": 34, "fields": {"name": "Hoima General Hospital", "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common conditions.", "address": "Main St, Hoima", "city": "Hoima", "country": "Uganda", "email": "info@hoimageneral.ug", "phone": "+256 782 678901", "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:27.995Z", "updatedAt": "2025-06-20T13:44:27.995Z"}}, {"model": "core.healthcenter", "pk": 35, "fields": {"name": "Hoima Community Clinic", "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.", "address": "Kampala Rd, Hoima", "city": "Hoima", "country": "Uganda", "email": "info@hoimacommunity.0ug", "phone": "+256 782 789012", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.002Z", "updatedAt": "2025-06-20T13:44:28.002Z"}}, {"model": "core.healthcenter", "pk": 36, "fields": {"name": "Hoima Dental Clinic", "description": "A specialized healthcare facility offering dental care, oral surgery, and treatment for oral health conditions.", "address": "Bunyoro Rd, Hoima", "city": "Hoima", "country": "Uganda", "email": "info@hoimadental.ug", "phone": "+256 782 890123", "image": "image/upload/https://images.pexels.com/photos/1170979/pexels-photo-1170979.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": false, "specialties": "Dental, Oral Surgery", "conditions_treated": "Toothache, Gum disease, Tooth removal, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.010Z", "updatedAt": "2025-06-20T13:44:28.010Z"}}, {"model": "core.healthcenter", "pk": 37, "fields": {"name": "Masaka Regional Referral Hospital", "description": "A regional referral hospital serving the Central region, offering advanced medical, surgical, and diagnostic services.", "address": "Masaka Town, Masaka", "city": "Masaka", "country": "Uganda", "email": "info@masakahospital.go.ug", "phone": "+256 782 678901", "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology, Pathology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Diabetes, Hypertension, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.018Z", "updatedAt": "2025-06-20T13:44:28.018Z"}}, {"model": "core.healthcenter", "pk": 38, "fields": {"name": "Masaka General Hospital", "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common conditions.", "address": "Elgin St, Masaka", "city": "Masaka", "country": "Uganda", "email": "info@masakageneral.ug", "phone": "+256 782 789012", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.026Z", "updatedAt": "2025-06-20T13:44:28.026Z"}}, {"model": "core.healthcenter", "pk": 39, "fields": {"name": "Masaka Community Clinic", "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.", "address": "Kampala Rd, Masaka", "city": "Masaka", "country": "Uganda", "email": "info@masakacommunity.ug", "phone": "+256 782 890123", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.034Z", "updatedAt": "2025-06-20T13:44:28.034Z"}}, {"model": "core.healthcenter", "pk": 40, "fields": {"name": "Masaka WomenÆs Clinic", "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services.", "address": "Kizungu Rd, Masaka", "city": "Masaka", "country": "Uganda", "email": "info@masakawomens.ug", "phone": "+256 782 901234", "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "Obstetrics & Gynecology, Family Planning, Maternal-Fetal Medicine", "conditions_treated": "Pregnancy problems, Infertility, Family planning, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.041Z", "updatedAt": "2025-06-20T13:44:28.041Z"}}, {"model": "core.healthcenter", "pk": 41, "fields": {"name": "Soroti Regional Referral Hospital", "description": "A regional hospital serving the Teso sub-region, offering advanced medical, surgical, and diagnostic services.", "address": "Soroti Town, Soroti", "city": "Soroti", "country": "Uganda", "email": "info@sorotihospital.go.ug", "phone": "+256 782 789012", "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology, Pathology", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.050Z", "updatedAt": "2025-06-20T13:44:28.050Z"}}, {"model": "core.healthcenter", "pk": 42, "fields": {"name": "Soroti General Hospital", "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common conditions.", "address": "Gweri Rd, Soroti", "city": "Soroti", "country": "Uganda", "email": "info@sorotigeneral.ug", "phone": "+256 782 890123", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.058Z", "updatedAt": "2025-06-20T13:44:28.059Z"}}, {"model": "core.healthcenter", "pk": 43, "fields": {"name": "Soroti Community Clinic", "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.", "address": "Lira Rd, Soroti", "city": "Soroti", "country": "Uganda", "email": "info@soroticommunity.ug", "phone": "+256 782 901234", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.070Z", "updatedAt": "2025-06-20T13:44:28.070Z"}}, {"model": "core.healthcenter", "pk": 44, "fields": {"name": "Soroti Eye Care Clinic", "description": "A specialized healthcare facility providing ophthalmology services, vision care, and treatment for eye-related conditions.", "address": "Moroto Rd, Soroti", "city": "Soroti", "country": "Uganda", "email": "info@sorotieyecare.ug", "phone": "+256 782 012345", "image": "image/upload/https://images.pexels.com/photos/1170979/pexels-photo-1170979.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": false, "specialties": "Ophthalmology, Optometry", "conditions_treated": "Red eyes, Poor eyesight, Eye infections, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.087Z", "updatedAt": "2025-06-20T13:44:28.087Z"}}, {"model": "core.healthcenter", "pk": 45, "fields": {"name": "Moroto Regional Referral Hospital", "description": "A regional referral hospital serving the Karamoja sub-region, offering comprehensive medical, surgical, and diagnostic services, with a focus on nutrition and infectious diseases.", "address": "Moroto Town, Moroto", "city": "Moroto", "country": "Uganda", "email": "info@mrr.go.ug", "phone": "+256 772 456789", "image": "image/upload/https://images.pexels.com/photos/668300/pexels-photo-668300.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology, Nutrition", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Malnutrition, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.096Z", "updatedAt": "2025-06-20T13:44:28.096Z"}}, {"model": "core.healthcenter", "pk": 46, "fields": {"name": "Moroto General Hospital", "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common conditions.", "address": "Loputuk Rd, Moroto", "city": "Moroto", "country": "Uganda", "email": "info@morotogeneral.ug", "phone": "+256 772 567890", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.105Z", "updatedAt": "2025-06-20T13:44:28.105Z"}}, {"model": "core.healthcenter", "pk": 47, "fields": {"name": "Moroto Community Clinic", "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases, with a focus on nutrition.", "address": "Nakiloro Rd, Moroto", "city": "Moroto", "country": "Uganda", "email": "info@morotocommunity.ug", "phone": "+256 782 678901", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology, Nutrition", "conditions_treated": "Malaria, Typhoid, Pneumonia, Malnutrition, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.113Z", "updatedAt": "2025-06-20T13:44:28.113Z"}}, {"model": "core.healthcenter", "pk": 48, "fields": {"name": "Moroto Nutrition Clinic", "description": "A specialized healthcare facility providing nutritional support, maternal health, and treatment for malnutrition-related conditions.", "address": "Rupa Rd, Moroto", "city": "Moroto", "country": "Uganda", "email": "info@morotonutrition.ug", "phone": "+256 782 789012", "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "Nutrition, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malnutrition, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.120Z", "updatedAt": "2025-06-20T13:44:28.120Z"}}, {"model": "core.healthcenter", "pk": 49, "fields": {"name": "Kasese Regional Referral Hospital", "description": "A regional referral hospital serving the Rwenzori region, offering advanced medical, surgical, and diagnostic services, with specialized burn care.", "address": "Kasese Town, Kasese", "city": "Kasese", "country": "Uganda", "email": "info@krr.go.ug", "phone": "+256 772 345678", "image": "image/upload/https://images.pexels.com/photos/247786/pexels-photo-247786.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology, Burn Care", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Burns, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.129Z", "updatedAt": "2025-06-20T13:44:28.129Z"}}, {"model": "core.healthcenter", "pk": 50, "fields": {"name": "Kasese General Hospital", "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common conditions.", "address": "Kilembe Rd, Kasese", "city": "Kasese", "country": "Uganda", "email": "info@kasesegeneral.ug", "phone": "+256 772 456789", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.137Z", "updatedAt": "2025-06-20T13:44:28.137Z"}}, {"model": "core.healthcenter", "pk": 51, "fields": {"name": "Kasese Community Clinic", "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.", "address": "Rwenzori Rd, Kasese", "city": "Kasese", "country": "Uganda", "email": "info@kasesecommunity.ug", "phone": "+256 782 567890", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.146Z", "updatedAt": "2025-06-20T13:44:28.146Z"}}, {"model": "core.healthcenter", "pk": 52, "fields": {"name": "Kasese Burn Care Clinic", "description": "A specialized healthcare facility providing burn care, wound management, and treatment for related conditions.", "address": "Hima Rd, Kasese", "city": "Kasese", "country": "Uganda", "email": "info@kaseseburncare.ug", "phone": "+256 782 678901", "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "Burn Care, Surgery, Emergency Medicine", "conditions_treated": "Burns, Accident injuries, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.153Z", "updatedAt": "2025-06-20T13:44:28.153Z"}}, {"model": "core.healthcenter", "pk": 53, "fields": {"name": "Kamuli General Hospital", "description": "A general hospital providing comprehensive medical, surgical, and maternal health services for the Kamuli district.", "address": "Kamuli Town, Kamuli", "city": "Kamuli", "country": "Uganda", "email": "info@kamiluhospital.go.ug", "phone": "+256 782 890123", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.161Z", "updatedAt": "2025-06-20T13:44:28.161Z"}}, {"model": "core.healthcenter", "pk": 54, "fields": {"name": "Kamuli Mission Hospital", "description": "A faith-based hospital offering medical, surgical, and maternal health services, with a focus on community healthcare.", "address": "Busoga Rd, Kamuli", "city": "Kamuli", "country": "Uganda", "email": "info@kamulimission.ug", "phone": "+256 782 901234", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.170Z", "updatedAt": "2025-06-20T13:44:28.170Z"}}, {"model": "core.healthcenter", "pk": 55, "fields": {"name": "Kamuli Community Clinic", "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.", "address": "Namasagali Rd, Kamuli", "city": "Kamuli", "country": "Uganda", "email": "info@kamulicommunity.ug", "phone": "+256 782 012345", "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.180Z", "updatedAt": "2025-06-20T13:44:28.180Z"}}, {"model": "core.healthcenter", "pk": 56, "fields": {"name": "Kamuli WomenÆs Clinic", "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services.", "address": "Kitayunjwa Rd, Kamuli", "city": "Kamuli", "country": "Uganda", "email": "info@kamuliwomens.ug", "phone": "+256 782 123456", "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "Obstetrics & Gynecology, Family Planning, Maternal-Fetal Medicine", "conditions_treated": "Pregnancy problems, Infertility, Family planning, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.188Z", "updatedAt": "2025-06-20T13:44:28.188Z"}}, {"model": "core.healthcenter", "pk": 57, "fields": {"name": "Iganga General Hospital", "description": "A general hospital providing comprehensive medical, surgical, and maternal health services for the Iganga district.", "address": "Iganga Town, Iganga", "city": "Iganga", "country": "Uganda", "email": "info@igangahospital.go.ug", "phone": "+256 772 456789", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.197Z", "updatedAt": "2025-06-20T13:44:28.197Z"}}, {"model": "core.healthcenter", "pk": 58, "fields": {"name": "Iganga Mission Hospital", "description": "A faith-based hospital offering medical, surgical, and maternal health services, with a focus on community healthcare.", "address": "Busoga Rd, Iganga", "city": "Iganga", "country": "Uganda", "email": "info@igangamission.ug", "phone": "+256 772 567890", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.205Z", "updatedAt": "2025-06-20T13:44:28.205Z"}}, {"model": "core.healthcenter", "pk": 59, "fields": {"name": "Iganga Community Clinic", "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.", "address": "Nakalama Rd, Iganga", "city": "Iganga", "country": "Uganda", "email": "info@igangacommunity.ug", "phone": "+256 782 678901", "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.213Z", "updatedAt": "2025-06-20T13:44:28.213Z"}}, {"model": "core.healthcenter", "pk": 60, "fields": {"name": "Iganga Eye Care Clinic", "description": "A specialized healthcare facility providing ophthalmology services, vision care, and treatment for eye-related conditions.", "address": "Main St, Iganga", "city": "Iganga", "country": "Uganda", "email": "info@igangaeyecare.ug", "phone": "+256 782 789012", "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": false, "specialties": "Ophthalmology, Optometry", "conditions_treated": "Red eyes, Poor eyesight, Eye infections, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.220Z", "updatedAt": "2025-06-20T13:44:28.220Z"}}, {"model": "core.healthcenter", "pk": 61, "fields": {"name": "Kitgum General Hospital", "description": "A general hospital providing comprehensive medical, surgical, and maternal health services for the Kitgum district.", "address": "Kitgum Town, Kitgum", "city": "Kitgum", "country": "Uganda", "email": "info@kitgumhospital.go.ug", "phone": "+256 782 456780", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology, Mental Health Services", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Mental illness, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.229Z", "updatedAt": "2025-06-20T13:44:28.229Z"}}, {"model": "core.healthcenter", "pk": 62, "fields": {"name": "Kitgum Mission Hospital", "description": "A faith-based hospital offering medical, surgical, and maternal health services, with a focus on community healthcare.", "address": "Pandwong Rd, Kitgum", "city": "Kitgum", "country": "Uganda", "email": "info@kitgummission.ug", "phone": "+256 782 567890", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.237Z", "updatedAt": "2025-06-20T13:44:28.238Z"}}, {"model": "core.healthcenter", "pk": 63, "fields": {"name": "Kitgum Community Clinic", "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.", "address": "Lakwor Rd, Kitgum", "city": "Kitgum", "country": "Uganda", "email": "info@kitgumcommunity.ug", "phone": "+256 782 678901", "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.245Z", "updatedAt": "2025-06-20T13:44:28.245Z"}}, {"model": "core.healthcenter", "pk": 64, "fields": {"name": "Kitgum Mental Health Clinic", "description": "A specialized healthcare facility providing mental health services, counseling, and treatment for psychiatric conditions.", "address": "Gulu Rd, Kitgum", "city": "Kitgum", "country": "Uganda", "email": "info@kitgummh.ug", "phone": "+256 782 789012", "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "Psychiatry, Mental Health Services", "conditions_treated": "Mental illness, Depression, Anxiety, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.254Z", "updatedAt": "2025-06-20T13:44:28.254Z"}}, {"model": "core.healthcenter", "pk": 65, "fields": {"name": "Nebbi General Hospital", "description": "A general hospital providing comprehensive medical, surgical, and maternal health services for the Nebbi district.", "address": "Nebbi Town, Nebbi", "city": "Nebbi", "country": "Uganda", "email": "info@nebbihospital.go.ug", "phone": "+256 782 012345", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology, Physiotherapy", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.262Z", "updatedAt": "2025-06-20T13:44:28.262Z"}}, {"model": "core.healthcenter", "pk": 66, "fields": {"name": "Nebbi Mission Hospital", "description": "A faith-based hospital offering medical, surgical, and maternal health services, with a focus on community healthcare.", "address": "Pakwach Rd, Nebbi", "city": "Nebbi", "country": "Uganda", "email": "info@nebbimission.ug", "phone": "+256 782 123456", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.270Z", "updatedAt": "2025-06-20T13:44:28.270Z"}}, {"model": "core.healthcenter", "pk": 67, "fields": {"name": "Nebbi Community Clinic", "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.", "address": "Arua Rd, Nebbi", "city": "Nebbi", "country": "Uganda", "email": "info@nebbicommunity.ug", "phone": "+256 782 234567", "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.278Z", "updatedAt": "2025-06-20T13:44:28.278Z"}}, {"model": "core.healthcenter", "pk": 68, "fields": {"name": "Nebbi WomenÆs Clinic", "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services.", "address": "Panyimur Rd, Nebbi", "city": "Nebbi", "country": "Uganda", "email": "info@nebbiwomens.ug", "phone": "+256 782 345678", "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "Obstetrics & Gynecology, Family Planning, Maternal-Fetal Medicine", "conditions_treated": "Pregnancy problems, Infertility, Family planning, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.287Z", "updatedAt": "2025-06-20T13:44:28.287Z"}}, {"model": "core.healthcenter", "pk": 69, "fields": {"name": "Masindi General Hospital", "description": "A general hospital providing comprehensive medical, surgical, and maternal health services for the Masindi district.", "address": "Masindi Town, Masindi", "city": "Masindi", "country": "Uganda", "email": "info@masindihospital.go.ug", "phone": "+256 782 123450", "image": "image/upload/https://images.pexels.com/photos/1170979/pexels-photo-1170979.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology, Dental Services", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Toothache, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.295Z", "updatedAt": "2025-06-20T13:44:28.295Z"}}, {"model": "core.healthcenter", "pk": 70, "fields": {"name": "Masindi Mission Hospital", "description": "A faith-based hospital offering medical, surgical, and maternal health services, with a focus on community healthcare.", "address": "Hoima Rd, Masindi", "city": "Masindi", "country": "Uganda", "email": "info@masindimission.ug", "phone": "+256 782 234567", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.304Z", "updatedAt": "2025-06-20T13:44:28.304Z"}}, {"model": "core.healthcenter", "pk": 71, "fields": {"name": "Masindi Community Clinic", "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.", "address": "Kampala Rd, Masindi", "city": "Masindi", "country": "Uganda", "email": "info@masindicommunity.ug", "phone": "+256 782 345678", "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": false, "has_ambulance": false, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.311Z", "updatedAt": "2025-06-20T13:44:28.311Z"}}, {"model": "core.healthcenter", "pk": 72, "fields": {"name": "Masindi Dental Clinic", "description": "A specialized healthcare facility offering dental care, oral surgery, and treatment for oral health conditions.", "address": "Port Rd, Masindi", "city": "Masindi", "country": "Uganda", "email": "info@masindidental.ug", "phone": "+256 782 456789", "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": false, "has_pharmacy": true, "has_lab": false, "specialties": "Dental, Oral Surgery", "conditions_treated": "Toothache, Gum disease, Tooth removal, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.319Z", "updatedAt": "2025-06-20T13:44:28.319Z"}}, {"model": "core.healthcenter", "pk": 73, "fields": {"name": "Kisoro General Hospital", "description": "A general hospital providing comprehensive medical, surgical, and maternal health services for the Kisoro district.", "address": "Kisoro Town, Kisoro", "city": "Kisoro", "country": "Uganda", "email": "info@kisorohospital.go.ug", "phone": "+256 782 901234", "image": "image/upload/https://images.pexels.com/photos/247786/pexels-photo-247786.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology", "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.326Z", "updatedAt": "2025-06-20T13:44:28.326Z"}}, {"model": "core.healthcenter", "pk": 74, "fields": {"name": "Kisoro Mission Hospital", "description": "A faith-based hospital offering medical, surgical, and maternal health services, with a focus on community healthcare.", "address": "Mutolere Rd, Kisoro", "city": "Kisoro", "country": "Uganda", "email": "info@kisoromission.ug", "phone": "+256 782 012345", "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600", "is_emergency": true, "has_ambulance": true, "has_pharmacy": true, "has_lab": true, "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine", "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers", "createdAt": "2025-06-20T13:44:28.334Z", "updatedAt": "2025-06-20T13:44:28.334Z"}}]
+[
+{
+  "model": "auth.permission",
+  "pk": 1,
+  "fields": {
+    "name": "Can add log entry",
+    "content_type": 1,
+    "codename": "add_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 2,
+  "fields": {
+    "name": "Can change log entry",
+    "content_type": 1,
+    "codename": "change_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 3,
+  "fields": {
+    "name": "Can delete log entry",
+    "content_type": 1,
+    "codename": "delete_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 4,
+  "fields": {
+    "name": "Can view log entry",
+    "content_type": 1,
+    "codename": "view_logentry"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 5,
+  "fields": {
+    "name": "Can add permission",
+    "content_type": 2,
+    "codename": "add_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 6,
+  "fields": {
+    "name": "Can change permission",
+    "content_type": 2,
+    "codename": "change_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 7,
+  "fields": {
+    "name": "Can delete permission",
+    "content_type": 2,
+    "codename": "delete_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 8,
+  "fields": {
+    "name": "Can view permission",
+    "content_type": 2,
+    "codename": "view_permission"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 9,
+  "fields": {
+    "name": "Can add group",
+    "content_type": 3,
+    "codename": "add_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 10,
+  "fields": {
+    "name": "Can change group",
+    "content_type": 3,
+    "codename": "change_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 11,
+  "fields": {
+    "name": "Can delete group",
+    "content_type": 3,
+    "codename": "delete_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 12,
+  "fields": {
+    "name": "Can view group",
+    "content_type": 3,
+    "codename": "view_group"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 13,
+  "fields": {
+    "name": "Can add content type",
+    "content_type": 4,
+    "codename": "add_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 14,
+  "fields": {
+    "name": "Can change content type",
+    "content_type": 4,
+    "codename": "change_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 15,
+  "fields": {
+    "name": "Can delete content type",
+    "content_type": 4,
+    "codename": "delete_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 16,
+  "fields": {
+    "name": "Can view content type",
+    "content_type": 4,
+    "codename": "view_contenttype"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 17,
+  "fields": {
+    "name": "Can add session",
+    "content_type": 5,
+    "codename": "add_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 18,
+  "fields": {
+    "name": "Can change session",
+    "content_type": 5,
+    "codename": "change_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 19,
+  "fields": {
+    "name": "Can delete session",
+    "content_type": 5,
+    "codename": "delete_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 20,
+  "fields": {
+    "name": "Can view session",
+    "content_type": 5,
+    "codename": "view_session"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 21,
+  "fields": {
+    "name": "Can add blacklisted token",
+    "content_type": 6,
+    "codename": "add_blacklistedtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 22,
+  "fields": {
+    "name": "Can change blacklisted token",
+    "content_type": 6,
+    "codename": "change_blacklistedtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 23,
+  "fields": {
+    "name": "Can delete blacklisted token",
+    "content_type": 6,
+    "codename": "delete_blacklistedtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 24,
+  "fields": {
+    "name": "Can view blacklisted token",
+    "content_type": 6,
+    "codename": "view_blacklistedtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 25,
+  "fields": {
+    "name": "Can add outstanding token",
+    "content_type": 7,
+    "codename": "add_outstandingtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 26,
+  "fields": {
+    "name": "Can change outstanding token",
+    "content_type": 7,
+    "codename": "change_outstandingtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 27,
+  "fields": {
+    "name": "Can delete outstanding token",
+    "content_type": 7,
+    "codename": "delete_outstandingtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 28,
+  "fields": {
+    "name": "Can view outstanding token",
+    "content_type": 7,
+    "codename": "view_outstandingtoken"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 29,
+  "fields": {
+    "name": "Can add user",
+    "content_type": 8,
+    "codename": "add_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 30,
+  "fields": {
+    "name": "Can change user",
+    "content_type": 8,
+    "codename": "change_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 31,
+  "fields": {
+    "name": "Can delete user",
+    "content_type": 8,
+    "codename": "delete_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 32,
+  "fields": {
+    "name": "Can view user",
+    "content_type": 8,
+    "codename": "view_user"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 33,
+  "fields": {
+    "name": "Can add health center",
+    "content_type": 9,
+    "codename": "add_healthcenter"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 34,
+  "fields": {
+    "name": "Can change health center",
+    "content_type": 9,
+    "codename": "change_healthcenter"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 35,
+  "fields": {
+    "name": "Can delete health center",
+    "content_type": 9,
+    "codename": "delete_healthcenter"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 36,
+  "fields": {
+    "name": "Can view health center",
+    "content_type": 9,
+    "codename": "view_healthcenter"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 37,
+  "fields": {
+    "name": "Can add notification",
+    "content_type": 10,
+    "codename": "add_notification"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 38,
+  "fields": {
+    "name": "Can change notification",
+    "content_type": 10,
+    "codename": "change_notification"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 39,
+  "fields": {
+    "name": "Can delete notification",
+    "content_type": 10,
+    "codename": "delete_notification"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 40,
+  "fields": {
+    "name": "Can view notification",
+    "content_type": 10,
+    "codename": "view_notification"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 1,
+  "fields": {
+    "app_label": "admin",
+    "model": "logentry"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 2,
+  "fields": {
+    "app_label": "auth",
+    "model": "permission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 3,
+  "fields": {
+    "app_label": "auth",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 4,
+  "fields": {
+    "app_label": "contenttypes",
+    "model": "contenttype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 5,
+  "fields": {
+    "app_label": "sessions",
+    "model": "session"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 6,
+  "fields": {
+    "app_label": "token_blacklist",
+    "model": "blacklistedtoken"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 7,
+  "fields": {
+    "app_label": "token_blacklist",
+    "model": "outstandingtoken"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 8,
+  "fields": {
+    "app_label": "core",
+    "model": "user"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 9,
+  "fields": {
+    "app_label": "core",
+    "model": "healthcenter"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 10,
+  "fields": {
+    "app_label": "core",
+    "model": "notification"
+  }
+},
+{
+  "model": "core.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$vT655bFFp0AAmhSAs0rqjy$Tv8cu4MWd6tuhvTvaT8M5PhEjiF3BCj/TgxZAUB06G0=",
+    "last_login": null,
+    "is_superuser": false,
+    "name": "Admin User",
+    "email": "admin@example.com",
+    "is_active": true,
+    "is_staff": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$5zgb22iAQPAgoYgWaygnKK$cSfsKWK9CR78GvPZ4FtcKPi2iZyVjU4MWIgI5i7e0xw=",
+    "last_login": null,
+    "is_superuser": false,
+    "name": "Jane Doe",
+    "email": "jane@example.com",
+    "is_active": true,
+    "is_staff": false,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 1,
+  "fields": {
+    "name": "Mbarara Regional Referral Hospital",
+    "description": "A premier regional referral hospital providing comprehensive healthcare services, including advanced surgical procedures, diagnostic imaging, and specialized care for chronic and acute conditions.",
+    "address": "Bishop Wills Rd, Mbarara",
+    "city": "Mbarara",
+    "country": "Uganda",
+    "email": "info@mrr.go.ug",
+    "phone": "+256 772 123456",
+    "image": "image/upload/https://images.pexels.com/photos/263402/pexels-photo-263402.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Internal Medicine, Cardiology, Orthopedics, Radiology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Diabetes, Hypertension, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.722Z",
+    "updatedAt": "2025-06-20T13:44:27.722Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 2,
+  "fields": {
+    "name": "Mbarara Community Clinic",
+    "description": "A community-focused healthcare facility offering primary care, maternal and child health services, and treatment for common infectious diseases.",
+    "address": "Nyamitanga Hill, Mbarara",
+    "city": "Mbarara",
+    "country": "Uganda",
+    "email": "communityclinic@mbr.ug",
+    "phone": "+256 752 234567",
+    "image": "image/upload/https://images.pexels.com/photos/668300/pexels-photo-668300.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Urine infection, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.733Z",
+    "updatedAt": "2025-06-20T13:44:27.733Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 3,
+  "fields": {
+    "name": "Holy Family Hospital Mbarara",
+    "description": "A faith-based hospital delivering high-quality medical and surgical care, with a focus on pediatric services, maternal health, and emergency interventions.",
+    "address": "Kakiika Rd, Mbarara",
+    "city": "Mbarara",
+    "country": "Uganda",
+    "email": "holyfamily@mbr.ug",
+    "phone": "+256 702 345678",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Burns, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.740Z",
+    "updatedAt": "2025-06-20T13:44:27.740Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 4,
+  "fields": {
+    "name": "Mbarara Women’s Clinic",
+    "description": "A specialized healthcare facility dedicated to maternal health, gynecology, and family planning, offering prenatal care and treatment for women’s health conditions.",
+    "address": "Kikagate Rd, Mbarara",
+    "city": "Mbarara",
+    "country": "Uganda",
+    "email": "womensclinic@mbr.ug",
+    "phone": "+256 782 567890",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "Obstetrics & Gynecology, Family Planning, Maternal-Fetal Medicine",
+    "conditions_treated": "Pregnancy problems, Infertility, Family planning, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.747Z",
+    "updatedAt": "2025-06-20T13:44:27.747Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 5,
+  "fields": {
+    "name": "Lira Regional Referral Hospital",
+    "description": "A leading referral hospital in Northern Uganda, providing advanced medical, surgical, and diagnostic services for a wide range of acute and chronic conditions.",
+    "address": "Lira–Gulu Rd, Lira",
+    "city": "Lira",
+    "country": "Uganda",
+    "email": "info@lrr.go.ug",
+    "phone": "+256 752 012345",
+    "image": "image/upload/https://images.pexels.com/photos/1170979/pexels-photo-1170979.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.754Z",
+    "updatedAt": "2025-06-20T13:44:27.754Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 6,
+  "fields": {
+    "name": "Olive Health Clinic",
+    "description": "A private healthcare facility specializing in women’s health, minor surgical procedures, and primary care for common ailments.",
+    "address": "Health Centre Rd, Lira",
+    "city": "Lira",
+    "country": "Uganda",
+    "email": "oliveclinic@lira.ug",
+    "phone": "+256 772 123456",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "Obstetrics & Gynecology, General Medicine, Family Planning",
+    "conditions_treated": "Pregnancy problems, Family planning, Malaria, Typhoid, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.763Z",
+    "updatedAt": "2025-06-20T13:44:27.763Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 7,
+  "fields": {
+    "name": "St. Charles Lwanga Hospital",
+    "description": "A faith-based hospital offering comprehensive medical and surgical care, with a focus on maternal and pediatric health services.",
+    "address": "Adiko Rd, Lira",
+    "city": "Lira",
+    "country": "Uganda",
+    "email": "stcharles@lwanga.ug",
+    "phone": "+256 772 234567",
+    "image": "image/upload/https://images.pexels.com/photos/668300/pexels-photo-668300.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Burns, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.770Z",
+    "updatedAt": "2025-06-20T13:44:27.770Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 8,
+  "fields": {
+    "name": "Lira Medical Centre",
+    "description": "A general healthcare facility providing outpatient care, diagnostic services, and treatment for common medical conditions.",
+    "address": "Obote Avenue, Lira",
+    "city": "Lira",
+    "country": "Uganda",
+    "email": "info@liramedical.ug",
+    "phone": "+256 772 345678",
+    "image": "image/upload/https://images.pexels.com/photos/247786/pexels-photo-247786.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Internal Medicine, Radiology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.779Z",
+    "updatedAt": "2025-06-20T13:44:27.779Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 9,
+  "fields": {
+    "name": "Mulago National Referral Hospital",
+    "description": "Uganda’s largest national referral hospital, offering advanced medical, surgical, and specialized care across multiple disciplines, including diagnostics and emergency services.",
+    "address": "Mulago Hill, Kampala",
+    "city": "Kampala",
+    "country": "Uganda",
+    "email": "info@mulago.go.ug",
+    "phone": "+256 772 987654",
+    "image": "image/upload/https://images.pexels.com/photos/247786/pexels-photo-247786.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Cardiology, Neurology, Oncology, Orthopedics, Radiology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Diabetes, Hypertension, HIV/AIDS, TB, Cancer, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.786Z",
+    "updatedAt": "2025-06-20T13:44:27.786Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 10,
+  "fields": {
+    "name": "Nsambya Hospital",
+    "description": "A leading faith-based hospital providing comprehensive medical, surgical, and maternal health services, with a focus on high-quality patient care.",
+    "address": "Nsambya Rd, Kampala",
+    "city": "Kampala",
+    "country": "Uganda",
+    "email": "info@nsambyahospital.ug",
+    "phone": "+256 772 456789",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.795Z",
+    "updatedAt": "2025-06-20T13:44:27.795Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 11,
+  "fields": {
+    "name": "Kampala International Hospital",
+    "description": "A private hospital offering specialized medical services, diagnostic imaging, and emergency care for acute and chronic conditions.",
+    "address": "Namuwongo Rd, Kampala",
+    "city": "Kampala",
+    "country": "Uganda",
+    "email": "info@kih.ug",
+    "phone": "+256 772 567890",
+    "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Internal Medicine, Emergency Medicine, Radiology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Diabetes, Hypertension, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.803Z",
+    "updatedAt": "2025-06-20T13:44:27.803Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 12,
+  "fields": {
+    "name": "Kampala Women’s Clinic",
+    "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services, with a focus on women’s wellness.",
+    "address": "Bukoto Rd, Kampala",
+    "city": "Kampala",
+    "country": "Uganda",
+    "email": "info@kampalawomens.ug",
+    "phone": "+256 782 678901",
+    "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "Obstetrics & Gynecology, Family Planning, Maternal-Fetal Medicine",
+    "conditions_treated": "Pregnancy problems, Infertility, Family planning, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.812Z",
+    "updatedAt": "2025-06-20T13:44:27.812Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 13,
+  "fields": {
+    "name": "Jinja Regional Referral Hospital",
+    "description": "A major referral hospital in Eastern Uganda, offering advanced medical, surgical, and diagnostic services for a wide range of conditions.",
+    "address": "Jinja Main Street, Jinja",
+    "city": "Jinja",
+    "country": "Uganda",
+    "email": "info@jinjahospital.go.ug",
+    "phone": "+256 772 345678",
+    "image": "image/upload/https://images.pexels.com/photos/668300/pexels-photo-668300.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.820Z",
+    "updatedAt": "2025-06-20T13:44:27.820Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 14,
+  "fields": {
+    "name": "Jinja General Hospital",
+    "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common medical conditions.",
+    "address": "Nile Avenue, Jinja",
+    "city": "Jinja",
+    "country": "Uganda",
+    "email": "info@jinjageneral.ug",
+    "phone": "+256 772 456789",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.828Z",
+    "updatedAt": "2025-06-20T13:44:27.828Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 15,
+  "fields": {
+    "name": "Jinja Community Clinic",
+    "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.",
+    "address": "Busoga Rd, Jinja",
+    "city": "Jinja",
+    "country": "Uganda",
+    "email": "info@jinjacommunity.ug",
+    "phone": "+256 772 567890",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.836Z",
+    "updatedAt": "2025-06-20T13:44:27.836Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 16,
+  "fields": {
+    "name": "Jinja Eye Care Clinic",
+    "description": "A specialized healthcare facility providing ophthalmology services, vision care, and treatment for eye-related conditions.",
+    "address": "Main Street, Jinja",
+    "city": "Jinja",
+    "country": "Uganda",
+    "email": "info@jinjaeyecare.ug",
+    "phone": "+256 782 678901",
+    "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": false,
+    "specialties": "Ophthalmology, Optometry",
+    "conditions_treated": "Red eyes, Poor eyesight, Eye infections, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.844Z",
+    "updatedAt": "2025-06-20T13:44:27.844Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 17,
+  "fields": {
+    "name": "Gulu Regional Referral Hospital",
+    "description": "A leading referral hospital in Northern Uganda, providing advanced medical, surgical, and emergency services for acute and chronic conditions.",
+    "address": "Gulu-Lira Rd, Gulu",
+    "city": "Gulu",
+    "country": "Uganda",
+    "email": "info@guluhospital.go.ug",
+    "phone": "+256 772 456789",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.853Z",
+    "updatedAt": "2025-06-20T13:44:27.853Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 18,
+  "fields": {
+    "name": "St. Mary’s Hospital Lacor",
+    "description": "A faith-based hospital offering comprehensive medical, surgical, and pediatric care, with a focus on high-quality patient outcomes.",
+    "address": "Lacor Rd, Gulu",
+    "city": "Gulu",
+    "country": "Uganda",
+    "email": "info@lacorhospital.ug",
+    "phone": "+256 772 567890",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.861Z",
+    "updatedAt": "2025-06-20T13:44:27.861Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 19,
+  "fields": {
+    "name": "Gulu Community Clinic",
+    "description": "A community-based healthcare facility providing primary care, maternal health, and treatment for common infectious diseases.",
+    "address": "Pece Rd, Gulu",
+    "city": "Gulu",
+    "country": "Uganda",
+    "email": "info@gulucommunity.ug",
+    "phone": "+256 782 678901",
+    "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.870Z",
+    "updatedAt": "2025-06-20T13:44:27.870Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 20,
+  "fields": {
+    "name": "Gulu Dental Clinic",
+    "description": "A specialized healthcare facility offering dental care, oral surgery, and treatment for oral health conditions.",
+    "address": "Aworanga Rd, Gulu",
+    "city": "Gulu",
+    "country": "Uganda",
+    "email": "info@guludental.ug",
+    "phone": "+256 782 789012",
+    "image": "image/upload/https://images.pexels.com/photos/1170979/pexels-photo-1170979.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": false,
+    "specialties": "Dental, Oral Surgery",
+    "conditions_treated": "Toothache, Gum disease, Tooth removal, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.879Z",
+    "updatedAt": "2025-06-20T13:44:27.879Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 21,
+  "fields": {
+    "name": "Mbale Regional Referral Hospital",
+    "description": "A key referral hospital in Eastern Uganda, offering advanced medical, surgical, and diagnostic services for a wide range of conditions.",
+    "address": "Pallisa Rd, Mbale",
+    "city": "Mbale",
+    "country": "Uganda",
+    "email": "info@mbalehospital.go.ug",
+    "phone": "+256 772 567890",
+    "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology, Pathology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.887Z",
+    "updatedAt": "2025-06-20T13:44:27.887Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 22,
+  "fields": {
+    "name": "Mbale General Hospital",
+    "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common conditions.",
+    "address": "Republic St, Mbale",
+    "city": "Mbale",
+    "country": "Uganda",
+    "email": "info@mbalegeneral.ug",
+    "phone": "+256 772 678901",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.896Z",
+    "updatedAt": "2025-06-20T13:44:27.896Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 23,
+  "fields": {
+    "name": "Mbale Community Clinic",
+    "description": "A community-focused healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.",
+    "address": "Kumi Rd, Mbale",
+    "city": "Mbale",
+    "country": "Uganda",
+    "email": "info@mbalecommunity.ug",
+    "phone": "+256 782 789012",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.904Z",
+    "updatedAt": "2025-06-20T13:44:27.904Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 24,
+  "fields": {
+    "name": "Mbale Eye Care Clinic",
+    "description": "A specialized healthcare facility providing ophthalmology services, vision care, and treatment for eye-related conditions.",
+    "address": "Cathedral Ave, Mbale",
+    "city": "Mbale",
+    "country": "Uganda",
+    "email": "info@mbaleeyecare.ug",
+    "phone": "+256 782 890123",
+    "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": false,
+    "specialties": "Ophthalmology, Optometry",
+    "conditions_treated": "Red eyes, Poor eyesight, Eye infections, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.913Z",
+    "updatedAt": "2025-06-20T13:44:27.913Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 25,
+  "fields": {
+    "name": "Arua Regional Referral Hospital",
+    "description": "A major referral hospital in West Nile, providing advanced medical, surgical, and emergency services for acute and chronic conditions.",
+    "address": "Arua Town, Arua",
+    "city": "Arua",
+    "country": "Uganda",
+    "email": "info@aruahospital.go.ug",
+    "phone": "+256 772 678901",
+    "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology, Infectious Diseases",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Snake bite, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.921Z",
+    "updatedAt": "2025-06-20T13:44:27.921Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 26,
+  "fields": {
+    "name": "Arua General Hospital",
+    "description": "A general hospital offering outpatient and inpatient care, including surgical and maternal health services for common conditions.",
+    "address": "Awindiri Rd, Arua",
+    "city": "Arua",
+    "country": "Uganda",
+    "email": "info@aruageneral.ug",
+    "phone": "+256 772 789012",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.930Z",
+    "updatedAt": "2025-06-20T13:44:27.930Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 27,
+  "fields": {
+    "name": "Arua Community Clinic",
+    "description": "A community-based healthcare facility providing primary care, maternal health, and treatment for common infectious diseases.",
+    "address": "Ediofe Rd, Arua",
+    "city": "Arua",
+    "country": "Uganda",
+    "email": "info@aruacommunity.ug",
+    "phone": "+256 782 890123",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.937Z",
+    "updatedAt": "2025-06-20T13:44:27.937Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 28,
+  "fields": {
+    "name": "Arua Dental Clinic",
+    "description": "A specialized healthcare facility offering dental care, oral surgery, and treatment for oral health conditions.",
+    "address": "Weatherhead Lane, Arua",
+    "city": "Arua",
+    "country": "Uganda",
+    "email": "info@aruadental.ug",
+    "phone": "+256 782 901234",
+    "image": "image/upload/https://images.pexels.com/photos/1170979/pexels-photo-1170979.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": false,
+    "specialties": "Dental, Oral Surgery",
+    "conditions_treated": "Toothache, Gum disease, Tooth removal, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.946Z",
+    "updatedAt": "2025-06-20T13:44:27.946Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 29,
+  "fields": {
+    "name": "Fort Portal Regional Referral Hospital",
+    "description": "A leading referral hospital in Western Uganda, offering advanced medical, surgical, and diagnostic services for a wide range of conditions.",
+    "address": "Fort Portal Town, Kabarole",
+    "city": "Fort Portal",
+    "country": "Uganda",
+    "email": "info@fortportalhospital.go.ug",
+    "phone": "+256 772 789012",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology, Cardiology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Diabetes, Hypertension, HIV/AIDS, TB, Pregnancy problems, Broken bones, Heart pain, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.954Z",
+    "updatedAt": "2025-06-20T13:44:27.954Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 30,
+  "fields": {
+    "name": "Fort Portal General Hospital",
+    "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common conditions.",
+    "address": "Boma Rd, Fort Portal",
+    "city": "Fort Portal",
+    "country": "Uganda",
+    "email": "info@fortgeneral.ug",
+    "phone": "+256 772 890123",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.963Z",
+    "updatedAt": "2025-06-20T13:44:27.963Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 31,
+  "fields": {
+    "name": "Fort Portal Community Clinic",
+    "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.",
+    "address": "Kasese Rd, Fort Portal",
+    "city": "Fort Portal",
+    "country": "Uganda",
+    "email": "info@fortcommunity.ug",
+    "phone": "+256 782 901234",
+    "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.970Z",
+    "updatedAt": "2025-06-20T13:44:27.970Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 32,
+  "fields": {
+    "name": "Fort Portal Women’s Clinic",
+    "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services.",
+    "address": "Mpanga Rd, Fort Portal",
+    "city": "Fort Portal",
+    "country": "Uganda",
+    "email": "info@fortwomens.ug",
+    "phone": "+256 782 012345",
+    "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "Obstetrics & Gynecology, Family Planning, Maternal-Fetal Medicine",
+    "conditions_treated": "Pregnancy problems, Infertility, Family planning, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.978Z",
+    "updatedAt": "2025-06-20T13:44:27.978Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 33,
+  "fields": {
+    "name": "Hoima Regional Referral Hospital",
+    "description": "A regional referral hospital serving the Bunyoro sub-region, offering comprehensive medical, surgical, and diagnostic services.",
+    "address": "Hoima Town, Hoima",
+    "city": "Hoima",
+    "country": "Uganda",
+    "email": "info@hoimahospital.go.ug",
+    "phone": "+256 782 567890",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology, Pathology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.986Z",
+    "updatedAt": "2025-06-20T13:44:27.986Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 34,
+  "fields": {
+    "name": "Hoima General Hospital",
+    "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common conditions.",
+    "address": "Main St, Hoima",
+    "city": "Hoima",
+    "country": "Uganda",
+    "email": "info@hoimageneral.ug",
+    "phone": "+256 782 678901",
+    "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:27.995Z",
+    "updatedAt": "2025-06-20T13:44:27.995Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 35,
+  "fields": {
+    "name": "Hoima Community Clinic",
+    "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.",
+    "address": "Kampala Rd, Hoima",
+    "city": "Hoima",
+    "country": "Uganda",
+    "email": "info@hoimacommunity.0ug",
+    "phone": "+256 782 789012",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.002Z",
+    "updatedAt": "2025-06-20T13:44:28.002Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 36,
+  "fields": {
+    "name": "Hoima Dental Clinic",
+    "description": "A specialized healthcare facility offering dental care, oral surgery, and treatment for oral health conditions.",
+    "address": "Bunyoro Rd, Hoima",
+    "city": "Hoima",
+    "country": "Uganda",
+    "email": "info@hoimadental.ug",
+    "phone": "+256 782 890123",
+    "image": "image/upload/https://images.pexels.com/photos/1170979/pexels-photo-1170979.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": false,
+    "specialties": "Dental, Oral Surgery",
+    "conditions_treated": "Toothache, Gum disease, Tooth removal, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.010Z",
+    "updatedAt": "2025-06-20T13:44:28.010Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 37,
+  "fields": {
+    "name": "Masaka Regional Referral Hospital",
+    "description": "A regional referral hospital serving the Central region, offering advanced medical, surgical, and diagnostic services.",
+    "address": "Masaka Town, Masaka",
+    "city": "Masaka",
+    "country": "Uganda",
+    "email": "info@masakahospital.go.ug",
+    "phone": "+256 782 678901",
+    "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology, Pathology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Diabetes, Hypertension, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.018Z",
+    "updatedAt": "2025-06-20T13:44:28.018Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 38,
+  "fields": {
+    "name": "Masaka General Hospital",
+    "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common conditions.",
+    "address": "Elgin St, Masaka",
+    "city": "Masaka",
+    "country": "Uganda",
+    "email": "info@masakageneral.ug",
+    "phone": "+256 782 789012",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.026Z",
+    "updatedAt": "2025-06-20T13:44:28.026Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 39,
+  "fields": {
+    "name": "Masaka Community Clinic",
+    "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.",
+    "address": "Kampala Rd, Masaka",
+    "city": "Masaka",
+    "country": "Uganda",
+    "email": "info@masakacommunity.ug",
+    "phone": "+256 782 890123",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.034Z",
+    "updatedAt": "2025-06-20T13:44:28.034Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 40,
+  "fields": {
+    "name": "Masaka Women’s Clinic",
+    "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services.",
+    "address": "Kizungu Rd, Masaka",
+    "city": "Masaka",
+    "country": "Uganda",
+    "email": "info@masakawomens.ug",
+    "phone": "+256 782 901234",
+    "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "Obstetrics & Gynecology, Family Planning, Maternal-Fetal Medicine",
+    "conditions_treated": "Pregnancy problems, Infertility, Family planning, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.041Z",
+    "updatedAt": "2025-06-20T13:44:28.041Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 41,
+  "fields": {
+    "name": "Soroti Regional Referral Hospital",
+    "description": "A regional hospital serving the Teso sub-region, offering advanced medical, surgical, and diagnostic services.",
+    "address": "Soroti Town, Soroti",
+    "city": "Soroti",
+    "country": "Uganda",
+    "email": "info@sorotihospital.go.ug",
+    "phone": "+256 782 789012",
+    "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology, Pathology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.050Z",
+    "updatedAt": "2025-06-20T13:44:28.050Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 42,
+  "fields": {
+    "name": "Soroti General Hospital",
+    "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common conditions.",
+    "address": "Gweri Rd, Soroti",
+    "city": "Soroti",
+    "country": "Uganda",
+    "email": "info@sorotigeneral.ug",
+    "phone": "+256 782 890123",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.058Z",
+    "updatedAt": "2025-06-20T13:44:28.059Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 43,
+  "fields": {
+    "name": "Soroti Community Clinic",
+    "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.",
+    "address": "Lira Rd, Soroti",
+    "city": "Soroti",
+    "country": "Uganda",
+    "email": "info@soroticommunity.ug",
+    "phone": "+256 782 901234",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.070Z",
+    "updatedAt": "2025-06-20T13:44:28.070Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 44,
+  "fields": {
+    "name": "Soroti Eye Care Clinic",
+    "description": "A specialized healthcare facility providing ophthalmology services, vision care, and treatment for eye-related conditions.",
+    "address": "Moroto Rd, Soroti",
+    "city": "Soroti",
+    "country": "Uganda",
+    "email": "info@sorotieyecare.ug",
+    "phone": "+256 782 012345",
+    "image": "image/upload/https://images.pexels.com/photos/1170979/pexels-photo-1170979.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": false,
+    "specialties": "Ophthalmology, Optometry",
+    "conditions_treated": "Red eyes, Poor eyesight, Eye infections, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.087Z",
+    "updatedAt": "2025-06-20T13:44:28.087Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 45,
+  "fields": {
+    "name": "Moroto Regional Referral Hospital",
+    "description": "A regional referral hospital serving the Karamoja sub-region, offering comprehensive medical, surgical, and diagnostic services, with a focus on nutrition and infectious diseases.",
+    "address": "Moroto Town, Moroto",
+    "city": "Moroto",
+    "country": "Uganda",
+    "email": "info@mrr.go.ug",
+    "phone": "+256 772 456789",
+    "image": "image/upload/https://images.pexels.com/photos/668300/pexels-photo-668300.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology, Nutrition",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Malnutrition, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.096Z",
+    "updatedAt": "2025-06-20T13:44:28.096Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 46,
+  "fields": {
+    "name": "Moroto General Hospital",
+    "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common conditions.",
+    "address": "Loputuk Rd, Moroto",
+    "city": "Moroto",
+    "country": "Uganda",
+    "email": "info@morotogeneral.ug",
+    "phone": "+256 772 567890",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.105Z",
+    "updatedAt": "2025-06-20T13:44:28.105Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 47,
+  "fields": {
+    "name": "Moroto Community Clinic",
+    "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases, with a focus on nutrition.",
+    "address": "Nakiloro Rd, Moroto",
+    "city": "Moroto",
+    "country": "Uganda",
+    "email": "info@morotocommunity.ug",
+    "phone": "+256 782 678901",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology, Nutrition",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Malnutrition, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.113Z",
+    "updatedAt": "2025-06-20T13:44:28.113Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 48,
+  "fields": {
+    "name": "Moroto Nutrition Clinic",
+    "description": "A specialized healthcare facility providing nutritional support, maternal health, and treatment for malnutrition-related conditions.",
+    "address": "Rupa Rd, Moroto",
+    "city": "Moroto",
+    "country": "Uganda",
+    "email": "info@morotonutrition.ug",
+    "phone": "+256 782 789012",
+    "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "Nutrition, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malnutrition, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.120Z",
+    "updatedAt": "2025-06-20T13:44:28.120Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 49,
+  "fields": {
+    "name": "Kasese Regional Referral Hospital",
+    "description": "A regional referral hospital serving the Rwenzori region, offering advanced medical, surgical, and diagnostic services, with specialized burn care.",
+    "address": "Kasese Town, Kasese",
+    "city": "Kasese",
+    "country": "Uganda",
+    "email": "info@krr.go.ug",
+    "phone": "+256 772 345678",
+    "image": "image/upload/https://images.pexels.com/photos/247786/pexels-photo-247786.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Orthopedics, Radiology, Burn Care",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Burns, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.129Z",
+    "updatedAt": "2025-06-20T13:44:28.129Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 50,
+  "fields": {
+    "name": "Kasese General Hospital",
+    "description": "A general hospital providing outpatient and inpatient care, including surgical and maternal health services for common conditions.",
+    "address": "Kilembe Rd, Kasese",
+    "city": "Kasese",
+    "country": "Uganda",
+    "email": "info@kasesegeneral.ug",
+    "phone": "+256 772 456789",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.137Z",
+    "updatedAt": "2025-06-20T13:44:28.137Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 51,
+  "fields": {
+    "name": "Kasese Community Clinic",
+    "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.",
+    "address": "Rwenzori Rd, Kasese",
+    "city": "Kasese",
+    "country": "Uganda",
+    "email": "info@kasesecommunity.ug",
+    "phone": "+256 782 567890",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.146Z",
+    "updatedAt": "2025-06-20T13:44:28.146Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 52,
+  "fields": {
+    "name": "Kasese Burn Care Clinic",
+    "description": "A specialized healthcare facility providing burn care, wound management, and treatment for related conditions.",
+    "address": "Hima Rd, Kasese",
+    "city": "Kasese",
+    "country": "Uganda",
+    "email": "info@kaseseburncare.ug",
+    "phone": "+256 782 678901",
+    "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "Burn Care, Surgery, Emergency Medicine",
+    "conditions_treated": "Burns, Accident injuries, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.153Z",
+    "updatedAt": "2025-06-20T13:44:28.153Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 53,
+  "fields": {
+    "name": "Kamuli General Hospital",
+    "description": "A general hospital providing comprehensive medical, surgical, and maternal health services for the Kamuli district.",
+    "address": "Kamuli Town, Kamuli",
+    "city": "Kamuli",
+    "country": "Uganda",
+    "email": "info@kamiluhospital.go.ug",
+    "phone": "+256 782 890123",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.161Z",
+    "updatedAt": "2025-06-20T13:44:28.161Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 54,
+  "fields": {
+    "name": "Kamuli Mission Hospital",
+    "description": "A faith-based hospital offering medical, surgical, and maternal health services, with a focus on community healthcare.",
+    "address": "Busoga Rd, Kamuli",
+    "city": "Kamuli",
+    "country": "Uganda",
+    "email": "info@kamulimission.ug",
+    "phone": "+256 782 901234",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.170Z",
+    "updatedAt": "2025-06-20T13:44:28.170Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 55,
+  "fields": {
+    "name": "Kamuli Community Clinic",
+    "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.",
+    "address": "Namasagali Rd, Kamuli",
+    "city": "Kamuli",
+    "country": "Uganda",
+    "email": "info@kamulicommunity.ug",
+    "phone": "+256 782 012345",
+    "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.180Z",
+    "updatedAt": "2025-06-20T13:44:28.180Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 56,
+  "fields": {
+    "name": "Kamuli Women’s Clinic",
+    "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services.",
+    "address": "Kitayunjwa Rd, Kamuli",
+    "city": "Kamuli",
+    "country": "Uganda",
+    "email": "info@kamuliwomens.ug",
+    "phone": "+256 782 123456",
+    "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "Obstetrics & Gynecology, Family Planning, Maternal-Fetal Medicine",
+    "conditions_treated": "Pregnancy problems, Infertility, Family planning, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.188Z",
+    "updatedAt": "2025-06-20T13:44:28.188Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 57,
+  "fields": {
+    "name": "Iganga General Hospital",
+    "description": "A general hospital providing comprehensive medical, surgical, and maternal health services for the Iganga district.",
+    "address": "Iganga Town, Iganga",
+    "city": "Iganga",
+    "country": "Uganda",
+    "email": "info@igangahospital.go.ug",
+    "phone": "+256 772 456789",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.197Z",
+    "updatedAt": "2025-06-20T13:44:28.197Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 58,
+  "fields": {
+    "name": "Iganga Mission Hospital",
+    "description": "A faith-based hospital offering medical, surgical, and maternal health services, with a focus on community healthcare.",
+    "address": "Busoga Rd, Iganga",
+    "city": "Iganga",
+    "country": "Uganda",
+    "email": "info@igangamission.ug",
+    "phone": "+256 772 567890",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.205Z",
+    "updatedAt": "2025-06-20T13:44:28.205Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 59,
+  "fields": {
+    "name": "Iganga Community Clinic",
+    "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.",
+    "address": "Nakalama Rd, Iganga",
+    "city": "Iganga",
+    "country": "Uganda",
+    "email": "info@igangacommunity.ug",
+    "phone": "+256 782 678901",
+    "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.213Z",
+    "updatedAt": "2025-06-20T13:44:28.213Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 60,
+  "fields": {
+    "name": "Iganga Eye Care Clinic",
+    "description": "A specialized healthcare facility providing ophthalmology services, vision care, and treatment for eye-related conditions.",
+    "address": "Main St, Iganga",
+    "city": "Iganga",
+    "country": "Uganda",
+    "email": "info@igangaeyecare.ug",
+    "phone": "+256 782 789012",
+    "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": false,
+    "specialties": "Ophthalmology, Optometry",
+    "conditions_treated": "Red eyes, Poor eyesight, Eye infections, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.220Z",
+    "updatedAt": "2025-06-20T13:44:28.220Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 61,
+  "fields": {
+    "name": "Kitgum General Hospital",
+    "description": "A general hospital providing comprehensive medical, surgical, and maternal health services for the Kitgum district.",
+    "address": "Kitgum Town, Kitgum",
+    "city": "Kitgum",
+    "country": "Uganda",
+    "email": "info@kitgumhospital.go.ug",
+    "phone": "+256 782 456780",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology, Mental Health Services",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Mental illness, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.229Z",
+    "updatedAt": "2025-06-20T13:44:28.229Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 62,
+  "fields": {
+    "name": "Kitgum Mission Hospital",
+    "description": "A faith-based hospital offering medical, surgical, and maternal health services, with a focus on community healthcare.",
+    "address": "Pandwong Rd, Kitgum",
+    "city": "Kitgum",
+    "country": "Uganda",
+    "email": "info@kitgummission.ug",
+    "phone": "+256 782 567890",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.237Z",
+    "updatedAt": "2025-06-20T13:44:28.238Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 63,
+  "fields": {
+    "name": "Kitgum Community Clinic",
+    "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.",
+    "address": "Lakwor Rd, Kitgum",
+    "city": "Kitgum",
+    "country": "Uganda",
+    "email": "info@kitgumcommunity.ug",
+    "phone": "+256 782 678901",
+    "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.245Z",
+    "updatedAt": "2025-06-20T13:44:28.245Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 64,
+  "fields": {
+    "name": "Kitgum Mental Health Clinic",
+    "description": "A specialized healthcare facility providing mental health services, counseling, and treatment for psychiatric conditions.",
+    "address": "Gulu Rd, Kitgum",
+    "city": "Kitgum",
+    "country": "Uganda",
+    "email": "info@kitgummh.ug",
+    "phone": "+256 782 789012",
+    "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "Psychiatry, Mental Health Services",
+    "conditions_treated": "Mental illness, Depression, Anxiety, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.254Z",
+    "updatedAt": "2025-06-20T13:44:28.254Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 65,
+  "fields": {
+    "name": "Nebbi General Hospital",
+    "description": "A general hospital providing comprehensive medical, surgical, and maternal health services for the Nebbi district.",
+    "address": "Nebbi Town, Nebbi",
+    "city": "Nebbi",
+    "country": "Uganda",
+    "email": "info@nebbihospital.go.ug",
+    "phone": "+256 782 012345",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology, Physiotherapy",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.262Z",
+    "updatedAt": "2025-06-20T13:44:28.262Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 66,
+  "fields": {
+    "name": "Nebbi Mission Hospital",
+    "description": "A faith-based hospital offering medical, surgical, and maternal health services, with a focus on community healthcare.",
+    "address": "Pakwach Rd, Nebbi",
+    "city": "Nebbi",
+    "country": "Uganda",
+    "email": "info@nebbimission.ug",
+    "phone": "+256 782 123456",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.270Z",
+    "updatedAt": "2025-06-20T13:44:28.270Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 67,
+  "fields": {
+    "name": "Nebbi Community Clinic",
+    "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.",
+    "address": "Arua Rd, Nebbi",
+    "city": "Nebbi",
+    "country": "Uganda",
+    "email": "info@nebbicommunity.ug",
+    "phone": "+256 782 234567",
+    "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.278Z",
+    "updatedAt": "2025-06-20T13:44:28.278Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 68,
+  "fields": {
+    "name": "Nebbi Women’s Clinic",
+    "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services.",
+    "address": "Panyimur Rd, Nebbi",
+    "city": "Nebbi",
+    "country": "Uganda",
+    "email": "info@nebbiwomens.ug",
+    "phone": "+256 782 345678",
+    "image": "image/upload/https://images.pexels.com/photos/5726705/pexels-photo-5726705.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "Obstetrics & Gynecology, Family Planning, Maternal-Fetal Medicine",
+    "conditions_treated": "Pregnancy problems, Infertility, Family planning, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.287Z",
+    "updatedAt": "2025-06-20T13:44:28.287Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 69,
+  "fields": {
+    "name": "Masindi General Hospital",
+    "description": "A general hospital providing comprehensive medical, surgical, and maternal health services for the Masindi district.",
+    "address": "Masindi Town, Masindi",
+    "city": "Masindi",
+    "country": "Uganda",
+    "email": "info@masindihospital.go.ug",
+    "phone": "+256 782 123450",
+    "image": "image/upload/https://images.pexels.com/photos/1170979/pexels-photo-1170979.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology, Dental Services",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Toothache, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.295Z",
+    "updatedAt": "2025-06-20T13:44:28.295Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 70,
+  "fields": {
+    "name": "Masindi Mission Hospital",
+    "description": "A faith-based hospital offering medical, surgical, and maternal health services, with a focus on community healthcare.",
+    "address": "Hoima Rd, Masindi",
+    "city": "Masindi",
+    "country": "Uganda",
+    "email": "info@masindimission.ug",
+    "phone": "+256 782 234567",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.304Z",
+    "updatedAt": "2025-06-20T13:44:28.304Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 71,
+  "fields": {
+    "name": "Masindi Community Clinic",
+    "description": "A community-based healthcare facility offering primary care, maternal health, and treatment for common infectious diseases.",
+    "address": "Kampala Rd, Masindi",
+    "city": "Masindi",
+    "country": "Uganda",
+    "email": "info@masindicommunity.ug",
+    "phone": "+256 782 345678",
+    "image": "image/upload/https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": false,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Pediatrics, Obstetrics & Gynecology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Diarrhea, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.311Z",
+    "updatedAt": "2025-06-20T13:44:28.311Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 72,
+  "fields": {
+    "name": "Masindi Dental Clinic",
+    "description": "A specialized healthcare facility offering dental care, oral surgery, and treatment for oral health conditions.",
+    "address": "Port Rd, Masindi",
+    "city": "Masindi",
+    "country": "Uganda",
+    "email": "info@masindidental.ug",
+    "phone": "+256 782 456789",
+    "image": "image/upload/https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": false,
+    "has_pharmacy": true,
+    "has_lab": false,
+    "specialties": "Dental, Oral Surgery",
+    "conditions_treated": "Toothache, Gum disease, Tooth removal, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.319Z",
+    "updatedAt": "2025-06-20T13:44:28.319Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 73,
+  "fields": {
+    "name": "Kisoro General Hospital",
+    "description": "A general hospital providing comprehensive medical, surgical, and maternal health services for the Kisoro district.",
+    "address": "Kisoro Town, Kisoro",
+    "city": "Kisoro",
+    "country": "Uganda",
+    "email": "info@kisorohospital.go.ug",
+    "phone": "+256 782 901234",
+    "image": "image/upload/https://images.pexels.com/photos/247786/pexels-photo-247786.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine, Radiology",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, HIV/AIDS, TB, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.326Z",
+    "updatedAt": "2025-06-20T13:44:28.326Z"
+  }
+},
+{
+  "model": "core.healthcenter",
+  "pk": 74,
+  "fields": {
+    "name": "Kisoro Mission Hospital",
+    "description": "A faith-based hospital offering medical, surgical, and maternal health services, with a focus on community healthcare.",
+    "address": "Mutolere Rd, Kisoro",
+    "city": "Kisoro",
+    "country": "Uganda",
+    "email": "info@kisoromission.ug",
+    "phone": "+256 782 012345",
+    "image": "image/upload/https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600",
+    "is_emergency": true,
+    "has_ambulance": true,
+    "has_pharmacy": true,
+    "has_lab": true,
+    "specialties": "General Medicine, Surgery, Pediatrics, Obstetrics & Gynecology, Emergency Medicine",
+    "conditions_treated": "Malaria, Typhoid, Pneumonia, Pregnancy problems, Broken bones, Stomach ulcers",
+    "createdAt": "2025-06-20T13:44:28.334Z",
+    "updatedAt": "2025-06-20T13:44:28.334Z"
+  }
+}
+]
