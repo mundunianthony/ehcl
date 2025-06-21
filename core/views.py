@@ -1,14 +1,17 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.generics import RetrieveAPIView
 from django.contrib.auth import authenticate, logout
-from .models import User, HealthCenter
-from .serializers import UserSerializer, HealthCenterSerializer
+from .models import User, HealthCenter, Notification
+from .serializers import UserSerializer, HealthCenterSerializer, NotificationSerializer
 from django.db.models import Q
 import logging
 import cloudinary.uploader
+from datetime import timedelta
+from django.utils import timezone
 
 logger = logging.getLogger(__name__)
 
@@ -299,9 +302,149 @@ class HospitalListView(APIView):
         if hospitals.count() > 0:
             logger.info(f"First few hospitals in final result: {[h.name for h in hospitals[:5]]}")
         
-        # Serialize and return the results
         serializer = HealthCenterSerializer(hospitals, many=True)
         return Response(serializer.data)
+
+class NotificationView(APIView):
+    """Handle notifications for the current user"""
+    permission_classes = [AllowAny]  # Allow both authenticated and unauthenticated access
+    
+    def get(self, request):
+        """Get all notifications for the current user"""
+        # Try to get user from authentication first
+        user = request.user if request.user.is_authenticated else None
+        
+        # If no authenticated user, try to get user by email from query params
+        if not user:
+            user_email = request.query_params.get('user_email')
+            if user_email:
+                try:
+                    user = User.objects.get(email=user_email)
+                except User.DoesNotExist:
+                    return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response({'error': 'Authentication required or user_email parameter needed'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        notifications = Notification.objects.filter(user=user).order_by('-created_at')
+        unread_count = notifications.filter(is_read=False).count()
+        
+        # Paginate the results
+        page = request.query_params.get('page', 1)
+        page_size = request.query_params.get('page_size', 10)
+        
+        start_index = (int(page) - 1) * int(page_size)
+        end_index = start_index + int(page_size)
+        
+        paginated_notifications = notifications[start_index:end_index]
+        serializer = NotificationSerializer(paginated_notifications, many=True)
+        
+        return Response({
+            'results': serializer.data,
+            'count': notifications.count(),
+            'unread_count': unread_count,
+            'page': int(page),
+            'total_pages': (notifications.count() + int(page_size) - 1) // int(page_size)
+        })
+
+    def post(self, request):
+        """Mark notifications as read"""
+        notification_ids = request.data.get('notification_ids', [])
+        
+        if not notification_ids:
+            return Response(
+                {'error': 'No notification IDs provided'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Try to get user from authentication first
+        user = request.user if request.user.is_authenticated else None
+        
+        # If no authenticated user, try to get user by email from request data
+        if not user:
+            user_email = request.data.get('user_email')
+            if user_email:
+                try:
+                    user = User.objects.get(email=user_email)
+                except User.DoesNotExist:
+                    return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response({'error': 'Authentication required or user_email parameter needed'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            notifications = user.notifications.filter(id__in=notification_ids)
+            updated_count = notifications.update(is_read=True)
+            # Add logging for debugging
+            logger.info(f"Marking notifications as read for user {user.email}: IDs={notification_ids}, Updated={updated_count}")
+            return Response(
+                {'message': f'Notifications marked as read. Updated: {updated_count}', 'updated_ids': list(notifications.values_list('id', flat=True))},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            logger.error(f"Error marking notifications as read for user {getattr(user, 'email', None)}: {str(e)}")
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+class CreateNotificationView(APIView):
+    """Create a simple notification"""
+    permission_classes = [AllowAny]  # Allow anyone to create notifications
+    
+    def post(self, request):
+        """Create a new notification"""
+        try:
+            # Get user email from request
+            user_email = request.data.get('user_email')
+            if not user_email:
+                return Response(
+                    {'error': 'User email is required'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Find the user
+            try:
+                user = User.objects.get(email=user_email)
+            except User.DoesNotExist:
+                return Response(
+                    {'error': 'User not found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            
+            # Check if notification already exists (to prevent duplicates)
+            title = request.data.get('title', 'New Notification')
+            message = request.data.get('message', 'You have a new notification')
+            
+            # Check for duplicate notifications in the last 5 minutes
+            recent_duplicate = Notification.objects.filter(
+                user=user,
+                title=title,
+                message=message,
+                created_at__gte=timezone.now() - timedelta(minutes=5)
+            ).first()
+            
+            if recent_duplicate:
+                return Response(
+                    {'message': 'Notification already exists', 'notification': NotificationSerializer(recent_duplicate).data},
+                    status=status.HTTP_200_OK
+                )
+            
+            # Create notification
+            notification = Notification.objects.create(
+                user=user,
+                title=title,
+                message=message,
+                notification_type=request.data.get('type', 'system'),
+                data=request.data.get('data', {})
+            )
+            
+            serializer = NotificationSerializer(notification)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            return Response(
+                {'error': str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class AvailableDistrictsView(APIView):
     permission_classes = [AllowAny]
@@ -326,7 +469,11 @@ class AvailableDistrictsView(APIView):
         # Debug logging
         logger.info(f"Available districts: {available_districts}")
         
-        return Response(available_districts, status=status.HTTP_200_OK)
+        # Return the districts in the response
+        return Response({
+            'success': True,
+            'districts': available_districts
+        }, status=status.HTTP_200_OK)
 
 class CreateHealthCenterView(APIView):
     permission_classes = [AllowAny]  # Public
@@ -387,6 +534,17 @@ class HealthCenterDetailView(APIView):
             return Response(serializer.data)
         except HealthCenter.DoesNotExist:
             return Response({'message': 'Health center not found'}, status=status.HTTP_404_NOT_FOUND)
+
+class UserDetailView(RetrieveAPIView):
+    """
+    View to return the current user's details.
+    """
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+
+    def get_object(self):
+        return self.request.user
+
 
 class UploadImageView(APIView):
     permission_classes = [AllowAny]

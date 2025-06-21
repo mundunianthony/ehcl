@@ -77,3 +77,26 @@ class HealthCenter(models.Model):
     class Meta:
         unique_together = ('address', 'name')
         ordering = ['name']
+
+class Notification(models.Model):
+    NOTIFICATION_TYPES = [
+        ('new_center', 'New Health Center Nearby'),
+        ('facility_update', 'Facility Update'),
+        ('system', 'System Announcement'),
+        ('account', 'Account Activity'),
+        ('emergency', 'Emergency Alert'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    title = models.CharField(max_length=255)
+    message = models.TextField()
+    notification_type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    data = models.JSONField(null=True, blank=True)  # Store additional context data
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.title} - {self.user.email}"

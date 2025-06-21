@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, HealthCenter
+from .models import User, HealthCenter, Notification
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -65,4 +65,16 @@ class HealthCenterSerializer(serializers.ModelSerializer):
         # Remove the original image field and use image_url instead
         if 'image' in data:
             del data['image']
+        return data
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ['id', 'title', 'message', 'notification_type', 'is_read', 'created_at', 'data']
+        read_only_fields = ['created_at']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # Format created_at to ISO format
+        data['created_at'] = instance.created_at.isoformat()
         return data
