@@ -10,6 +10,13 @@ import dj_database_url
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
+# Remove debug_toolbar from production
+if 'debug_toolbar' in INSTALLED_APPS:
+    INSTALLED_APPS.remove('debug_toolbar')
+
+# Remove debug_toolbar middleware if present
+MIDDLEWARE = [mw for mw in MIDDLEWARE if 'debug_toolbar' not in mw]
+
 # Security settings
 SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
