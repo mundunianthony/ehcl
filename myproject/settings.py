@@ -1,4 +1,5 @@
 import os
+import socket
 from pathlib import Path
 from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
@@ -6,7 +7,6 @@ from datetime import timedelta
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,30 +30,71 @@ cloudinary.config(
 print("Loaded SECRET_KEY:", os.getenv('SECRET_KEY'))
 
 # Security settings
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-temporary-key-for-development-only')
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-# Allow all hosts in development, specific hosts in production
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
+# Configure allowed hosts based on environment
+if DEBUG:
+    # In development, allow all hosts and configure CORS
+    ALLOWED_HOSTS = ['*']
+    
+    # Get all possible IPs the server might be accessed from
+    LOCAL_IPS = ['localhost', '127.0.0.1']
+    
+    # Get local network IP
+    try:
+        # Create a socket connection to an external server but don't send any data
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(0.1)
+        try:
+            # Doesn't have to be reachable
+            s.connect(('10.255.255.255', 1))
+            local_ip = s.getsockname()[0]
+            if local_ip not in LOCAL_IPS:
+                LOCAL_IPS.append(local_ip)
+                
+            # Add common hostnames
+            hostname = socket.gethostname()
+            LOCAL_IPS.append(hostname)
+            LOCAL_IPS.append(f'{hostname}.local')
+            
+        except Exception as e:
+            print(f"Could not determine local IP: {e}")
+        finally:
+            s.close()
+    except Exception as e:
+        print(f"Error setting up socket: {e}")
+    
+    print(f"Local network IPs: {', '.join(LOCAL_IPS)}")
+else:
+    # In production, use environment variable or default to empty list
+    ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else []
 
-# CORS Configuration
-CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only allow all origins in development
-CORS_ALLOW_CREDENTIALS = False  # Disable credentials for mobile apps
+# Add the domain name if running in a container
+if os.getenv('DOCKER_CONTAINER', 'false').lower() == 'true':
+    ALLOWED_HOSTS.extend(['host.docker.internal', 'localhost', '127.0.0.1'])
+
+# Ensure we have at least localhost
+if not ALLOWED_HOSTS:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+# CORS settings
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Only in development
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:19006",
-    "http://localhost:19000",
-    "http://localhost:8000",
-    "exp://localhost:19000",
-    "exp://*",  # Allow any Expo URL
-]
+    f'http://{host}:19006' for host in LOCAL_IPS
+] if not DEBUG else []
 
-# Add your Railway.app URL here once deployed
-if not DEBUG:
-    CORS_ALLOWED_ORIGINS.extend([
-        "https://*.railway.app",  # Allow Railway.app domains
-        "https://*.ngrok-free.app",  # Allow ngrok domains for testing
-    ])
+# Add Expo development server
+CORS_ALLOWED_ORIGINS.extend([
+    'http://localhost:19006',
+    'http://127.0.0.1:19006',
+    'http://localhost:19000',
+    'http://127.0.0.1:19000',
+    'exp://127.0.0.1:19000',
+    'exp://localhost:19000',
+])
 
+# CORS methods and headers
 CORS_ALLOW_METHODS = [
     'DELETE',
     'GET',
@@ -76,18 +117,14 @@ CORS_ALLOW_HEADERS = [
     'access-control-allow-origin',
     'access-control-allow-headers',
     'access-control-allow-methods',
+    'access-control-allow-credentials',
 ]
 
-CORS_EXPOSE_HEADERS = [
-    'Content-Type',
-    'X-CSRFToken',
-    'access-control-allow-origin',
-    'access-control-allow-headers',
-    'access-control-allow-methods',
-]
-
-# For more specific control, add these settings
-CORS_PREFLIGHT_MAX_AGE = 86400  # Cache preflight requests for 1 day
+# For development, print the detected local IP
+print(f"\n{'='*50}")
+print(f"Detected local IP: {LOCAL_IPS}")
+print(f"CORS Allowed Origins: {CORS_ALLOWED_ORIGINS}")
+print(f"{'='*50}\n")
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -97,9 +134,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'corsheaders',
     'rest_framework_simplejwt',
-    'rest_framework_simplejwt.token_blacklist',
+    'corsheaders',
+    'drf_spectacular',
     'cloudinary_storage',
     'cloudinary',
     'core',
@@ -108,12 +145,13 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware',  # CORS middleware (before CommonMiddleware)
+    'corsheaders.middleware.CorsMiddleware',  # CORS middleware should be as high as possible
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'myproject.middleware.HealthCheckMiddleware',  # Custom health check middleware
 ]
 
 ROOT_URLCONF = 'myproject.urls'
@@ -137,17 +175,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'myproject.wsgi.application'
 
 # Database configuration (SQLite for development)
-if os.getenv('DATABASE_URL'):
-    DATABASES = {
-        'default': dj_database_url.config(default=os.getenv('DATABASE_URL'))
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
+}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -176,7 +209,7 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
     'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
+    'SIGNING_KEY': 'django-insecure-temporary-key-for-development-only',
     'VERIFYING_KEY': None,
     'AUTH_HEADER_TYPES': ('Bearer',),
     'USER_ID_FIELD': 'id',
@@ -189,10 +222,30 @@ SIMPLE_JWT = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.AllowAny',
-    ),
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+    ],
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day'
+    }
 }
 
 USE_I18N = True
