@@ -63,5 +63,5 @@ export const ENDPOINTS = {
   healthCenters: `${API_URL}/health-centers/`,
 };
 
-export const APP_NAME = 'Health Center Locator';
+export const APP_NAME = 'ehcl';
 export const APP_VERSION = '1.0.0'; 
