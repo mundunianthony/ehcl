@@ -6,7 +6,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   slug: 'emergency-health-center-locator',
   version: '1.0.0',
   orientation: 'portrait',
-  icon: './assets/icon.png',
+  icon: './assets/logo.png',
   userInterfaceStyle: 'light',
   splash: {
     image: './assets/splash.png',
@@ -19,16 +19,20 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     adaptiveIcon: {
-      foregroundImage: './assets/adaptive-icon.png',
+      foregroundImage: './assets/logo.png',
       backgroundColor: '#ffffff'
-    }
+    },
+    package: 'com.munduni.emergencyhealthcenterlocator'
   },
   web: {
     favicon: './assets/favicon.png',
     bundler: 'metro'
   },
   extra: {
-    apiUrl: process.env.API_URL || 'https://ehcl-production.up.railway.app'
+    apiUrl: process.env.API_URL || 'https://ehcl-production.up.railway.app',
+    eas: {
+      projectId: 'aa00d066-7bdd-4dcf-8221-998d2a4773f0'
+    }
   },
   plugins: [
     'expo-secure-store'

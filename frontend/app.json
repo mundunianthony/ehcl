@@ -12,7 +12,10 @@
     },
     "scheme": "ehcl",
     "extra": {
-      "apiUrl": "http://192.168.91.156:8000/api"
+      "apiUrl": "https://ehcl-production.up.railway.app",
+      "eas": {
+        "projectId": "aa00d066-7bdd-4dcf-8221-998d2a4773f0"
+      }
     },
     "updates": {
       "url": "https://u.expo.dev/your-project-id"
