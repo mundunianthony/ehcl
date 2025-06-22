@@ -6,10 +6,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   slug: 'emergency-health-center-locator',
   version: '1.0.0',
   orientation: 'portrait',
-  icon: './assets/logo.png',
+  icon: './assets/logo.jpg',
   userInterfaceStyle: 'light',
   splash: {
-    image: './assets/splash.png',
+    image: './assets/splash-icon.png',
     resizeMode: 'contain',
     backgroundColor: '#ffffff'
   },
@@ -19,7 +19,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     adaptiveIcon: {
-      foregroundImage: './assets/logo.png',
+      foregroundImage: './assets/logo.jpg',
       backgroundColor: '#ffffff'
     },
     package: 'com.munduni.emergencyhealthcenterlocator'
