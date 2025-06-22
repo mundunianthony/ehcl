@@ -29,7 +29,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundler: 'metro'
   },
   extra: {
-    apiUrl: process.env.API_URL || 'https://ehcl-production.up.railway.app'
+    apiUrl: process.env.API_URL || 'https://ehcl-production.up.railway.app',
+    eas: {
+      projectId: '24962302-83ae-4aab-adae-38a3e2294643'
+    }
   },
   plugins: [
     'expo-secure-store'
