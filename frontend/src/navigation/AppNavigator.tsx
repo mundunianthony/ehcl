@@ -22,6 +22,7 @@ import AddHospitalConfirmation from '../screens/AddHospitalConfirmation';
 import Notifications from '../screens/Notifications';
 import NotificationSettings from '../screens/NotificationSettings';
 import NotificationBell from '../components/NotificationBell';
+import DebugScreen from '../screens/DebugScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -171,6 +172,15 @@ export default function AppNavigator() {
           component={AddHospitalConfirmation}
           options={{ 
             title: "Confirm Details",
+            headerBackTitle: 'Back'
+          }}
+        />
+        
+        <Stack.Screen 
+          name="Debug" 
+          component={DebugScreen}
+          options={{ 
+            title: "Debug Screen",
             headerBackTitle: 'Back'
           }}
         />

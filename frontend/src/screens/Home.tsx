@@ -504,6 +504,17 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
                 <Text style={styles.menuText}>About</Text>
               </TouchableOpacity>
 
+              {/* Debug Screen - Only show in development */}
+              {__DEV__ && (
+                <TouchableOpacity style={styles.menuItem} onPress={() => { 
+                  setMenuVisible(false); 
+                  navigation.navigate("Debug");
+                }}>
+                  <IconMaterialCommunity name="bug" size={20} color="#FF9800" style={styles.menuIcon} />
+                  <Text style={[styles.menuText, { color: "#FF9800" }]}>Debug</Text>
+                </TouchableOpacity>
+              )}
+
               <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuVisible(false); navigation.navigate("Login"); }}>
                 <IconMaterialCommunity name="logout" size={20} color="#EF4444" style={styles.menuIcon} />
                 <Text style={[styles.menuText, { color: "#EF4444" }]}>Logout</Text>

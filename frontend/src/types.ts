@@ -52,6 +52,7 @@ export type RootStackParamList = {
   NotificationSettings: undefined;
   Profile: undefined;
   About: undefined;
+  Debug: undefined;
   AddLocation: {
     propertyDetails?: {
       country: string;

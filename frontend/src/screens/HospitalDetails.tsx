@@ -10,6 +10,7 @@ import {
   Linking,
   Platform,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import WebMapComponent from '../components/WebMapComponent';
 import { FontAwesome5, MaterialIcons, Ionicons } from '@expo/vector-icons';
@@ -33,50 +34,87 @@ const HospitalDetails = ({
 }: {
   route: HospitalDetailsRouteProp;
 }) => {
-  const hospital = route.params.hospital as Hospital;
+  const hospital = route.params?.hospital as Hospital;
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const { user } = useAuth();
   
-  // Get a valid image URL or fallback to placeholder
-  const getImageUrl = () => {
-    // First try to use the Cloudinary imageUrl
-    if (isValidImageUrl(hospital.imageUrl)) {
-      return hospital.imageUrl;
-    }
-    // Then try the legacy imageUrl field
-    if (isValidImageUrl(hospital.imageUrl)) {
-      return hospital.imageUrl;
-    }
-    // Finally fallback to placeholder
-    return getPlaceholderImageUrl(hospital.name);
-  };
-
-  const handleEmail = async () => {
-    if (!hospital.email) {
-      alert('Email not available for this hospital.');
+  // Validate hospital data on component mount
+  useEffect(() => {
+    if (!hospital) {
+      console.error('Hospital data is missing');
+      Alert.alert('Error', 'Hospital information is not available.');
       return;
     }
 
-    const subject = 'Inquiry from Hospital Finder';
-    const gmailUrl = `googlegmail:///co?to=${encodeURIComponent(hospital.email)}&subject=${encodeURIComponent(subject)}`;
-    const mailtoUrl = `mailto:${hospital.email}?subject=${encodeURIComponent(subject)}`;
+    if (!hospital.id || !hospital.name) {
+      console.error('Invalid hospital data:', hospital);
+      Alert.alert('Error', 'Invalid hospital information.');
+      return;
+    }
 
+    console.log('HospitalDetails: Valid hospital data received:', {
+      id: hospital.id,
+      name: hospital.name,
+      hasCoords: !!hospital.coords,
+      hasImage: !!hospital.imageUrl
+    });
+  }, [hospital]);
+  
+  // Get a valid image URL or fallback to placeholder
+  const getImageUrl = () => {
     try {
+      // First try to use the Cloudinary imageUrl
+      if (isValidImageUrl(hospital?.imageUrl)) {
+        return hospital.imageUrl;
+      }
+      // Then try the legacy imageUrl field
+      if (isValidImageUrl(hospital?.imageUrl)) {
+        return hospital.imageUrl;
+      }
+      // Finally fallback to placeholder
+      return getPlaceholderImageUrl(hospital?.name || 'Hospital');
+    } catch (error) {
+      console.error('Error getting image URL:', error);
+      return getPlaceholderImageUrl('Hospital');
+    }
+  };
+
+  const handleEmail = async () => {
+    try {
+      if (!hospital?.email) {
+        Alert.alert('Email Not Available', 'Email not available for this hospital.');
+        return;
+      }
+
+      const subject = 'Inquiry from Hospital Finder';
+      const gmailUrl = `googlegmail:///co?to=${encodeURIComponent(hospital.email)}&subject=${encodeURIComponent(subject)}`;
+      const mailtoUrl = `mailto:${hospital.email}?subject=${encodeURIComponent(subject)}`;
+
       // First try to open Gmail app
       await Linking.openURL(gmailUrl);
     } catch (error) {
       console.log('Could not open Gmail, falling back to default mail handler');
-      // Fall back to default mail handler
-      await Linking.openURL(mailtoUrl);
+      try {
+        // Fall back to default mail handler
+        await Linking.openURL(mailtoUrl);
+      } catch (fallbackError) {
+        console.error('Failed to open email:', fallbackError);
+        Alert.alert('Error', 'Unable to open email application.');
+      }
     }
   };
 
   const handlePhoneCall = () => {
-    if (hospital.phone) {
+    try {
+      if (!hospital?.phone) {
+        Alert.alert('Phone Not Available', 'Phone number not available for this hospital.');
+        return;
+      }
       Linking.openURL(`tel:${hospital.phone}`);
-    } else {
-      alert('Phone number not available for this hospital.');
+    } catch (error) {
+      console.error('Failed to make phone call:', error);
+      Alert.alert('Error', 'Unable to make phone call.');
     }
   };
 
@@ -151,21 +189,40 @@ const HospitalDetails = ({
 
   // Before rendering the map or using coords
   const getHospitalCoords = () => {
-    if (
-      hospital.coords &&
-      hospital.coords.latitude &&
-      hospital.coords.longitude &&
-      hospital.coords.latitude !== 0 &&
-      hospital.coords.longitude !== 0
-    ) {
-      return hospital.coords;
+    try {
+      if (
+        hospital?.coords &&
+        hospital.coords.latitude &&
+        hospital.coords.longitude &&
+        hospital.coords.latitude !== 0 &&
+        hospital.coords.longitude !== 0
+      ) {
+        return hospital.coords;
+      }
+      // Use normalized city name for lookup
+      return getCoordsByCity(hospital?.city || '');
+    } catch (error) {
+      console.error('Error getting hospital coordinates:', error);
+      return null;
     }
-    // Use normalized city name for lookup
-    return getCoordsByCity(hospital.city);
   };
 
   const coords = getHospitalCoords();
   console.log('Rendering map with coords:', coords);
+
+  // Early return if hospital data is invalid
+  if (!hospital || !hospital.id || !hospital.name) {
+    return (
+      <SafeAreaView style={styles.screen}>
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>Hospital Not Found</Text>
+          <Text style={styles.errorMessage}>
+            The hospital information is not available or has been removed.
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -211,7 +268,7 @@ const HospitalDetails = ({
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.title}>{hospital.name}</Text>
+          <Text style={styles.title}>{hospital.name || 'Unknown Hospital'}</Text>
           <Text style={styles.subtitle}>{hospital.city || 'Unknown'} District</Text>
 
           {/* Available Services Section */}
@@ -247,7 +304,7 @@ const HospitalDetails = ({
 
           <View style={styles.infoRow}>
             <FontAwesome5 name="map-marker-alt" size={20} color="#00796b" />
-            <Text style={styles.infoText}>{hospital.address}</Text>
+            <Text style={styles.infoText}>{hospital.address || 'Address not available'}</Text>
           </View>
 
           <View style={styles.infoRow}>
@@ -268,7 +325,7 @@ const HospitalDetails = ({
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.description}>{hospital.description}</Text>
+          <Text style={styles.description}>{hospital.description || 'No description available'}</Text>
         </View>
 
         <View style={styles.mapContainer}>
@@ -296,25 +353,34 @@ const MapSection = React.memo(({ coords }: { coords: { latitude: number; longitu
   const [MapComponent, setMapComponent] = React.useState<React.ComponentType<any> | null>(null);
   const [MarkerComponent, setMarkerComponent] = React.useState<React.ComponentType<any> | null>(null);
   const [mapError, setMapError] = React.useState<string | null>(null);
+  const [isLoading, setIsLoading] = React.useState(true);
   
   // Get valid coordinates with fallback
   const getValidCoordinates = () => {
-    // Check if provided coordinates are valid
-    if (coords && 
-        coords.latitude && 
-        coords.longitude &&
-        coords.latitude !== 0 && 
-        coords.longitude !== 0 &&
-        coords.latitude >= -90 && coords.latitude <= 90 &&
-        coords.longitude >= -180 && coords.longitude <= 180) {
-      return coords;
+    try {
+      // Check if provided coordinates are valid
+      if (coords && 
+          coords.latitude && 
+          coords.longitude &&
+          coords.latitude !== 0 && 
+          coords.longitude !== 0 &&
+          coords.latitude >= -90 && coords.latitude <= 90 &&
+          coords.longitude >= -180 && coords.longitude <= 180) {
+        return coords;
+      }
+      
+      // Return default Uganda coordinates if invalid
+      return {
+        latitude: 1.3733, // Center of Uganda
+        longitude: 32.2903,
+      };
+    } catch (error) {
+      console.error('Error validating coordinates:', error);
+      return {
+        latitude: 1.3733,
+        longitude: 32.2903,
+      };
     }
-    
-    // Return default Uganda coordinates if invalid
-    return {
-      latitude: 1.3733, // Center of Uganda
-      longitude: 32.2903,
-    };
   };
   
   const validCoords = getValidCoordinates();
@@ -328,22 +394,39 @@ const MapSection = React.memo(({ coords }: { coords: { latitude: number; longitu
   
   // For web platform, use our WebMapComponent
   if (Platform.OS === 'web') {
-    return (
-      <View style={styles.mapContainer}>
-        <WebMapComponent coords={validCoords} title="Hospital Location" />
-      </View>
-    );
+    try {
+      return (
+        <View style={styles.mapContainer}>
+          <WebMapComponent coords={validCoords} title="Hospital Location" />
+        </View>
+      );
+    } catch (error) {
+      console.error('Web map error:', error);
+      return (
+        <View style={styles.mapPlaceholder}>
+          <Text style={[styles.mapPlaceholderText, {color: 'red'}]}>
+            Map not available
+          </Text>
+        </View>
+      );
+    }
   }
   
   // Load react-native-maps for native platforms
   React.useEffect(() => {
     const loadMap = async () => {
       try {
+        setIsLoading(true);
+        setMapError(null);
+        
         const module = await import('react-native-maps');
         setMapComponent(() => module.default);
         setMarkerComponent(() => module.Marker);
+        setIsLoading(false);
       } catch (error: any) {
+        console.error('Failed to load map:', error);
         setMapError(`Failed to load map: ${error.message}`);
+        setIsLoading(false);
       }
     };
     
@@ -352,11 +435,15 @@ const MapSection = React.memo(({ coords }: { coords: { latitude: number; longitu
   
   // Update region when coordinates change
   React.useEffect(() => {
-    setRegion(prev => ({
-      ...prev,
-      latitude: validCoords.latitude,
-      longitude: validCoords.longitude,
-    }));
+    try {
+      setRegion(prev => ({
+        ...prev,
+        latitude: validCoords.latitude,
+        longitude: validCoords.longitude,
+      }));
+    } catch (error) {
+      console.error('Error updating map region:', error);
+    }
   }, [validCoords.latitude, validCoords.longitude]);
   
   // Handle error state
@@ -371,33 +458,47 @@ const MapSection = React.memo(({ coords }: { coords: { latitude: number; longitu
   }
   
   // Handle loading state
-  if (!MapComponent || !MarkerComponent) {
+  if (isLoading || !MapComponent || !MarkerComponent) {
     return (
       <View style={styles.mapPlaceholder}>
+        <ActivityIndicator size="large" color="#00796b" />
         <Text style={styles.mapPlaceholderText}>Loading map...</Text>
       </View>
     );
   }
 
   const handleZoomIn = () => {
-    setRegion(prev => ({
-      ...prev,
-      latitudeDelta: Math.max(prev.latitudeDelta / 2, 0.001),
-      longitudeDelta: Math.max(prev.longitudeDelta / 2, 0.001),
-    }));
+    try {
+      setRegion(prev => ({
+        ...prev,
+        latitudeDelta: Math.max(prev.latitudeDelta / 2, 0.001),
+        longitudeDelta: Math.max(prev.longitudeDelta / 2, 0.001),
+      }));
+    } catch (error) {
+      console.error('Error zooming in:', error);
+    }
   };
 
   const handleZoomOut = () => {
-    setRegion(prev => ({
-      ...prev,
-      latitudeDelta: Math.min(prev.latitudeDelta * 2, 180),
-      longitudeDelta: Math.min(prev.longitudeDelta * 2, 360),
-    }));
+    try {
+      setRegion(prev => ({
+        ...prev,
+        latitudeDelta: Math.min(prev.latitudeDelta * 2, 180),
+        longitudeDelta: Math.min(prev.longitudeDelta * 2, 360),
+      }));
+    } catch (error) {
+      console.error('Error zooming out:', error);
+    }
   };
 
   const openDirections = () => {
-    const url = `https://www.google.com/maps/dir/?api=1&destination=${validCoords.latitude},${validCoords.longitude}`;
-    Linking.openURL(url);
+    try {
+      const url = `https://www.google.com/maps/dir/?api=1&destination=${validCoords.latitude},${validCoords.longitude}`;
+      Linking.openURL(url);
+    } catch (error) {
+      console.error('Error opening directions:', error);
+      Alert.alert('Error', 'Unable to open directions.');
+    }
   };
 
   return (
@@ -714,6 +815,23 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#495057',
     fontWeight: '600',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#1a3c34',
+    marginBottom: 16,
+  },
+  errorMessage: {
+    fontSize: 16,
+    color: '#495057',
+    textAlign: 'center',
   },
 });
 

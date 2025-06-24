@@ -31,6 +31,7 @@ import { hospitalAPI } from "../services/api";
 import { createSystemNotification, createEmergencyNotification, createEmergencyNotificationForUserAndStaff } from "../services/notificationService";
 import { cityCoords, getCoordsByCity } from '../utils/cityCoords';
 import { api } from '../services/api';
+import { crashReporter, withErrorHandlingHandler } from '../utils/crashReporter';
 
 type NavProp = StackNavigationProp<RootStackParamList, "Hospitals">;
 
@@ -516,10 +517,35 @@ export default function Hospitals({ route }: HospitalsScreenProps) {
       item.has_lab,
     ].filter(Boolean).length;
 
+    // Safe navigation handler with error handling
+    const handleHospitalPress = withErrorHandlingHandler(async () => {
+      // Validate hospital data before navigation
+      if (!item || !item.id || !item.name) {
+        console.error('Invalid hospital data:', item);
+        crashReporter.reportError('Invalid hospital data', { hospital: item });
+        Alert.alert('Error', 'Invalid hospital data. Please try again.');
+        return;
+      }
+
+      // Ensure all required fields are present
+      const hospitalData = {
+        ...item,
+        name: item.name || 'Unknown Hospital',
+        city: item.city || 'Unknown City',
+        address: item.address || 'No address available',
+        description: item.description || 'No description available',
+        coords: item.coords || { latitude: 0, longitude: 0 },
+        imageUrl: item.imageUrl || '',
+      };
+
+      console.log('Navigating to hospital details:', hospitalData);
+      navigation.navigate("HospitalDetails", { hospital: hospitalData });
+    }, 'hospital_card_press');
+
     return (
       <TouchableOpacity
         style={styles.hospitalCard}
-        onPress={() => navigation.navigate("HospitalDetails", { hospital: item })}
+        onPress={handleHospitalPress}
       >
         {/* Absolutely positioned distance badge */}
         {distance !== null && distance > 0 ? (
