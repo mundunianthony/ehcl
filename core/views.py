@@ -347,7 +347,16 @@ class NotificationView(APIView):
         })
 
     def post(self, request):
-        """Mark notifications as read"""
+        """Mark notifications as read or handle _method=DELETE"""
+        # Check if this is a DELETE request disguised as POST
+        if request.data.get('_method') == 'DELETE':
+            notification_id = request.path.split('/')[-2]  # Get ID from URL
+            if notification_id.isdigit():
+                return self.delete(request, int(notification_id))
+            else:
+                return Response({'error': 'Invalid notification ID'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Original POST logic for marking notifications as read
         notification_ids = request.data.get('notification_ids', [])
         
         if not notification_ids:
