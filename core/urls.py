@@ -17,6 +17,7 @@ urlpatterns = [
     path('hospitals/', HospitalListView.as_view(), name='hospital-list'),
     path('upload-image/', UploadImageView.as_view(), name='upload-image'),
     path('available-districts/', AvailableDistrictsView.as_view(), name='available-districts'),
+    path('notifications/<int:notification_id>/', NotificationView.as_view(), name='notification-detail'),
     path('notifications/', NotificationView.as_view(), name='notifications'),
     path('notifications/create/', CreateNotificationView.as_view(), name='create-notification'),
     

@@ -386,6 +386,35 @@ class NotificationView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+    def delete(self, request, notification_id=None):
+        """Delete a specific notification"""
+        # Try to get user from authentication first
+        user = request.user if request.user.is_authenticated else None
+        
+        # If no authenticated user, try to get user by email from query params
+        if not user:
+            user_email = request.query_params.get('user_email')
+            if user_email:
+                try:
+                    user = User.objects.get(email=user_email)
+                except User.DoesNotExist:
+                    return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response({'error': 'Authentication required or user_email parameter needed'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        try:
+            # Get the notification and verify it belongs to the user
+            notification = Notification.objects.get(id=notification_id, user=user)
+            notification.delete()
+            logger.info(f"Notification {notification_id} deleted for user {user.email}")
+            return Response({'message': 'Notification deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        except Notification.DoesNotExist:
+            logger.warn(f"Notification {notification_id} not found for user {getattr(user, 'email', 'unknown')}")
+            return Response({'error': 'Notification not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Error deleting notification {notification_id} for user {getattr(user, 'email', 'unknown')}: {str(e)}")
+            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 class CreateNotificationView(APIView):
     """Create a simple notification"""
     permission_classes = [AllowAny]  # Allow anyone to create notifications
