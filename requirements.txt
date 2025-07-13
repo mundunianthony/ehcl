@@ -11,5 +11,5 @@ drf-spectacular==0.26.5
 gunicorn==21.2.0
 whitenoise==6.5.0
 
-# PostgreSQL adapter - will be installed on Railway automatically
-psycopg2-binary==2.9.7  # Uncomment for local PostgreSQL testing
+# PostgreSQL adapter for production
+psycopg2-binary==2.9.7

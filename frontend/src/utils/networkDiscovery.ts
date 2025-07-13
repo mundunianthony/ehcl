@@ -334,7 +334,7 @@ const scanNetworkRange = async (networkRange: string, excludeIP: string): Promis
 export const discoverServer = async (forceRediscover = false): Promise<string | null> => {
   if (!__DEV__) {
     // In production, always use the deployed backend
-    return 'https://web-production-52fc7.up.railway.app';
+            return 'http://localhost:8000';
   }
   try {
     console.log('[NetworkDiscovery] Starting enhanced server discovery...');

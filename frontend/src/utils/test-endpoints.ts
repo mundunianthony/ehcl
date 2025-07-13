@@ -3,7 +3,7 @@ import { api } from '../config/api';
 export const testHospitalEndpoints = async () => {
   console.log('🧪 Testing Hospital Endpoints...');
 
-  const baseUrl = 'https://web-production-52fc7.up.railway.app'; // Use production backend for testing
+  const baseUrl = 'http://localhost:8000'; // Use local backend for testing
 
   const endpoints = [
     '/api/hospitals/',

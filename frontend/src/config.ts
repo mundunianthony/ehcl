@@ -13,8 +13,8 @@ const getBaseUrl = () => {
     return 'http://localhost:8000';
   }
 
-  // Production fallback: use deployed Railway backend
-  return 'https://web-production-52fc7.up.railway.app';
+  // Production fallback: use local backend
+  return 'http://localhost:8000';
 };
 
 // Use the appropriate base URL based on platform and environment

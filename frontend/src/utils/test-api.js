@@ -5,7 +5,7 @@ const { promisify } = require('util');
 const execAsync = promisify(exec);
 
 // Configuration
-const API_BASE_URL = 'https://web-production-52fc7.up.railway.app';
+const API_BASE_URL = 'http://localhost:8000';
 const TEST_CREDENTIALS = {
   email: 'test@example.com',
   password: 'testpass123'

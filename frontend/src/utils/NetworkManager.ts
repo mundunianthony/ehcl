@@ -47,7 +47,7 @@ class NetworkManagerImpl {
   public async getBaseUrl(): Promise<string | null> {
     if (!__DEV__) {
       // In production, always use the deployed backend
-      return 'https://web-production-52fc7.up.railway.app';
+      return 'http://localhost:8000';
     }
     // Dynamic discovery approach - no hardcoded IPs
 

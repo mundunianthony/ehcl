@@ -39,7 +39,7 @@ class DynamicConfig {
 
       // In production, always use the deployed backend and clear any cached value
       if (!__DEV__) {
-        this.apiUrl = 'https://web-production-52fc7.up.railway.app/api';
+        this.apiUrl = 'http://localhost:8000/api';
         await SecureStore.setItemAsync('cached_api_url', this.apiUrl);
         this.isInitialized = true;
         return;

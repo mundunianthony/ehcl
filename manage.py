@@ -7,9 +7,7 @@ import sys
 def main():
     """Run administrative tasks."""
     # Set default settings module based on environment
-    if os.environ.get('DJANGO_ENV') == 'railway':
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings.railway')
-    elif os.environ.get('DJANGO_ENV') == 'production':
+    if os.environ.get('DJANGO_ENV') == 'production':
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings.production')
     else:
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings.development')

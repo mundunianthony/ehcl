@@ -22,7 +22,7 @@ import axios from 'axios';
 import Constants from 'expo-constants';
 
 // Get the API URL from environment variables or use production backend
-const API_URL = process.env.API_URL || 'https://web-production-52fc7.up.railway.app';
+const API_URL = process.env.API_URL || 'http://localhost:8000';
 
 type UploadImageScreenNavigationProp = StackNavigationProp<RootStackParamList, 'UploadImage'>;
 

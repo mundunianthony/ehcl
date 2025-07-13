@@ -28,7 +28,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     bundler: 'metro'
   },
   extra: {
-    apiUrl: process.env.API_URL || 'https://web-production-52fc7.up.railway.app'
+          apiUrl: process.env.API_URL || 'http://localhost:8000'
   },
   plugins: [
     'expo-secure-store'

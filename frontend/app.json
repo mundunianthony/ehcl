@@ -12,7 +12,7 @@
     },
     "scheme": "ehcl",
     "extra": {
-      "apiUrl": "https://web-production-52fc7.up.railway.app/api"
+      "apiUrl": "http://localhost:8000/api"
     },
     "updates": {
       "url": "https://u.expo.dev/your-project-id"
