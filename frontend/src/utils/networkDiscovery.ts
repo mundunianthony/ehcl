@@ -31,15 +31,15 @@ interface ComputerIPInfo {
 const getNetworkInfo = async (): Promise<NetworkInfo> => {
   try {
     console.log('[NetworkDiscovery] Getting network info...');
-    
+
     // Get network state first
     const networkState = await Network.getNetworkStateAsync();
     console.log('[NetworkDiscovery] Network state:', networkState);
-    
+
     // For Android
     if (Platform.OS === 'android') {
       const { getCurrentNetworkInfo } = NativeModules.RNNetworkInfo || {};
-      
+
       if (getCurrentNetworkInfo) {
         // If we have the native module, use it
         try {
@@ -56,11 +56,11 @@ const getNetworkInfo = async (): Promise<NetworkInfo> => {
           console.warn('[NetworkDiscovery] Native module failed, using fallback:', error);
         }
       }
-      
+
       // Fallback for when native module is not available
       return await getNetworkInfoFallback(networkState);
     }
-    
+
     // For iOS, we'll use the fallback for now
     return await getNetworkInfoFallback(networkState);
   } catch (error) {
@@ -77,10 +77,10 @@ const getNetworkInfo = async (): Promise<NetworkInfo> => {
  */
 const getNetworkInfoFallback = async (networkState: any): Promise<NetworkInfo> => {
   console.log('[NetworkDiscovery] Using fallback network info method...');
-  
+
   // Try multiple methods to get IP address
   const ipAddress = await getIPAddressWithMultipleMethods();
-  
+
   return {
     ipAddress,
     isConnected: networkState.isConnected,
@@ -104,7 +104,7 @@ const getIPAddressWithMultipleMethods = async (): Promise<string | null> => {
   } catch (error) {
     console.warn('[NetworkDiscovery] Network API method failed:', error);
   }
-  
+
   // Method 2: Try localhost first (for development)
   try {
     const isLocalhostReachable = await checkServerReachable('http://localhost:8000');
@@ -115,7 +115,7 @@ const getIPAddressWithMultipleMethods = async (): Promise<string | null> => {
   } catch (error) {
     console.warn('[NetworkDiscovery] Localhost check failed:', error);
   }
-  
+
   // Method 3: Try WebSocket approach
   try {
     const wsIP = await getIPFromWebSocket();
@@ -126,7 +126,7 @@ const getIPAddressWithMultipleMethods = async (): Promise<string | null> => {
   } catch (error) {
     console.warn('[NetworkDiscovery] WebSocket method failed:', error);
   }
-  
+
   // Method 4: Try fetch approach
   try {
     const fetchIP = await getIPFromFetch();
@@ -137,7 +137,7 @@ const getIPAddressWithMultipleMethods = async (): Promise<string | null> => {
   } catch (error) {
     console.warn('[NetworkDiscovery] Fetch method failed:', error);
   }
-  
+
   console.warn('[NetworkDiscovery] All IP detection methods failed');
   return null;
 };
@@ -150,14 +150,14 @@ const getIPFromWebSocket = (): Promise<string | null> => {
     try {
       // Try to connect to a local server to get local IP
       const socket = new WebSocket('ws://localhost:8000/ws/');
-      
+
       socket.onopen = () => {
         try {
           // @ts-ignore - _url is not in the TypeScript type but exists at runtime
           const socketUrl = socket._url || '';
           const ipMatch = socketUrl.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/);
           const ipAddress = ipMatch ? ipMatch[1] : null;
-          
+
           socket.close();
           resolve(ipAddress);
         } catch (error) {
@@ -165,12 +165,12 @@ const getIPFromWebSocket = (): Promise<string | null> => {
           resolve(null);
         }
       };
-      
+
       socket.onerror = () => {
         socket.close();
         resolve(null);
       };
-      
+
       // Set a timeout
       setTimeout(() => {
         socket.close();
@@ -190,7 +190,7 @@ const getIPFromFetch = async (): Promise<string | null> => {
     // Try to fetch from a local endpoint to get local IP
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 2000);
-    
+
     const response = await fetch('http://localhost:8000/health/', {
       method: 'HEAD',
       signal: controller.signal,
@@ -199,9 +199,9 @@ const getIPFromFetch = async (): Promise<string | null> => {
         'Pragma': 'no-cache'
       }
     });
-    
+
     clearTimeout(timeoutId);
-    
+
     // If we can reach localhost, we're likely on the same machine
     // Return a common local IP pattern
     return '127.0.0.1';
@@ -215,22 +215,22 @@ const getIPFromFetch = async (): Promise<string | null> => {
  */
 const detectComputerIP = async (deviceIP: string): Promise<ComputerIPInfo> => {
   console.log('[NetworkDiscovery] Detecting computer IP for device IP:', deviceIP);
-  
+
   if (!deviceIP) {
     console.warn('[NetworkDiscovery] No device IP available for computer detection');
     return { computerIP: null, deviceIP: null, networkRange: null };
   }
-  
+
   // Extract network range from device IP (e.g., 192.168.1.x from 192.168.1.100)
   const ipParts = deviceIP.split('.');
   if (ipParts.length !== 4) {
     console.warn('[NetworkDiscovery] Invalid device IP format:', deviceIP);
     return { computerIP: null, deviceIP, networkRange: null };
   }
-  
+
   const networkRange = `${ipParts[0]}.${ipParts[1]}.${ipParts[2]}`;
   console.log('[NetworkDiscovery] Network range:', networkRange);
-  
+
   // Common computer IP patterns to check
   const computerIPCandidates = [
     `${networkRange}.1`,    // Router/Gateway
@@ -242,12 +242,12 @@ const detectComputerIP = async (deviceIP: string): Promise<ComputerIPInfo> => {
     `${networkRange}.200`,  // Common computer IP
     `${networkRange}.254`,  // Router/Gateway
   ];
-  
+
   // Remove device IP from candidates to avoid checking itself
   const filteredCandidates = computerIPCandidates.filter(ip => ip !== deviceIP);
-  
+
   console.log('[NetworkDiscovery] Checking computer IP candidates:', filteredCandidates);
-  
+
   // Check each candidate for Django server
   for (const candidateIP of filteredCandidates) {
     try {
@@ -265,11 +265,11 @@ const detectComputerIP = async (deviceIP: string): Promise<ComputerIPInfo> => {
       continue;
     }
   }
-  
+
   // If no specific computer found, try a broader scan
   console.log('[NetworkDiscovery] No specific computer found, trying broader scan...');
   const broaderScanResult = await scanNetworkRange(networkRange, deviceIP);
-  
+
   return {
     computerIP: broaderScanResult,
     deviceIP,
@@ -282,7 +282,7 @@ const detectComputerIP = async (deviceIP: string): Promise<ComputerIPInfo> => {
  */
 const scanNetworkRange = async (networkRange: string, excludeIP: string): Promise<string | null> => {
   console.log('[NetworkDiscovery] Scanning network range:', networkRange);
-  
+
   // Create a list of IPs to scan (excluding the device IP)
   const ipsToScan: string[] = [];
   for (let i = 1; i <= 254; i++) {
@@ -291,20 +291,20 @@ const scanNetworkRange = async (networkRange: string, excludeIP: string): Promis
       ipsToScan.push(ip);
     }
   }
-  
+
   // Scan in batches to avoid overwhelming the network
   const batchSize = 5; // Reduced for faster scanning
   const batches = [];
   for (let i = 0; i < ipsToScan.length; i += batchSize) {
     batches.push(ipsToScan.slice(i, i + batchSize));
   }
-  
+
   console.log('[NetworkDiscovery] Scanning', ipsToScan.length, 'IPs in', batches.length, 'batches');
-  
+
   for (let batchIndex = 0; batchIndex < batches.length; batchIndex++) {
     const batch = batches[batchIndex];
     console.log(`[NetworkDiscovery] Scanning batch ${batchIndex + 1}/${batches.length}:`, batch);
-    
+
     // Check all IPs in the current batch concurrently
     const promises = batch.map(async (ip) => {
       try {
@@ -314,16 +314,16 @@ const scanNetworkRange = async (networkRange: string, excludeIP: string): Promis
         return null;
       }
     });
-    
+
     const results = await Promise.all(promises);
     const foundIP = results.find(result => result !== null);
-    
+
     if (foundIP) {
       console.log('[NetworkDiscovery] Found Django server at:', foundIP);
       return foundIP;
     }
   }
-  
+
   console.log('[NetworkDiscovery] No Django server found in network range');
   return null;
 };
@@ -332,9 +332,13 @@ const scanNetworkRange = async (networkRange: string, excludeIP: string): Promis
  * Enhanced server discovery with automatic computer IP detection
  */
 export const discoverServer = async (forceRediscover = false): Promise<string | null> => {
+  if (!__DEV__) {
+    // In production, always use the deployed backend
+    return 'https://web-production-52fc7.up.railway.app';
+  }
   try {
     console.log('[NetworkDiscovery] Starting enhanced server discovery...');
-    
+
     // Quick localhost check first (fastest)
     if (__DEV__) {
       console.log('[NetworkDiscovery] Quick localhost check...');
@@ -350,7 +354,7 @@ export const discoverServer = async (forceRediscover = false): Promise<string | 
         console.warn('[NetworkDiscovery] Localhost check failed:', error);
       }
     }
-    
+
     // Check if we have a cached result and force rediscover is not requested
     if (!forceRediscover) {
       const cachedUrl = await SecureStore.getItemAsync('last_known_server_url');
@@ -371,38 +375,38 @@ export const discoverServer = async (forceRediscover = false): Promise<string | 
       console.warn('[NetworkDiscovery] Device is not connected to network');
       return null;
     }
-    
+
     if (!networkInfo.ipAddress) {
       console.warn('[NetworkDiscovery] Could not determine device IP address');
       return null;
     }
-    
+
     console.log('[NetworkDiscovery] Device IP address:', networkInfo.ipAddress);
-    
+
     // Method 1: Detect computer IP on the same network
     const computerInfo = await detectComputerIP(networkInfo.ipAddress);
-    
+
     if (computerInfo.computerIP) {
       const serverUrl = `http://${computerInfo.computerIP}:${DEFAULT_PORT}`;
       console.log('[NetworkDiscovery] Method 1 SUCCESS: Found Django server at:', serverUrl);
-      
+
       // Cache the result
       await SecureStore.setItemAsync('last_known_server_url', serverUrl);
       return serverUrl;
     }
-    
+
     // Method 2: Try common network ranges
     console.log('[NetworkDiscovery] Method 2: Trying common network ranges...');
     const commonRanges = [
       '192.168.1',
-      '192.168.0', 
+      '192.168.0',
       '192.168.2',
       '10.0.0',
       '10.0.1',
       '172.16.0',
       '172.16.1',
     ];
-    
+
     for (const range of commonRanges) {
       try {
         const foundIP = await scanNetworkRange(range, networkInfo.ipAddress);
@@ -417,7 +421,7 @@ export const discoverServer = async (forceRediscover = false): Promise<string | 
         continue;
       }
     }
-    
+
     // Method 3: Try specific common IPs (reduced list for faster discovery)
     console.log('[NetworkDiscovery] Method 3: Trying specific common IPs...');
     const commonIPs = [
@@ -425,7 +429,7 @@ export const discoverServer = async (forceRediscover = false): Promise<string | 
       '192.168.0.100', '192.168.0.101',
       '10.0.0.100', '10.0.0.101',
     ];
-    
+
     for (const ip of commonIPs) {
       try {
         const isReachable = await checkServerReachable(`http://${ip}:${DEFAULT_PORT}`);
@@ -439,10 +443,10 @@ export const discoverServer = async (forceRediscover = false): Promise<string | 
         continue;
       }
     }
-    
+
     console.log('[NetworkDiscovery] All methods failed: No Django server found');
     return null;
-    
+
   } catch (error) {
     console.error('[NetworkDiscovery] Error during server discovery:', error);
     return null;
@@ -455,17 +459,17 @@ export const discoverServer = async (forceRediscover = false): Promise<string | 
 export const checkServerReachable = async (baseUrl: string, timeout: number = CHECK_TIMEOUT): Promise<boolean> => {
   // Ensure the URL has the correct format
   const url = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
-  
+
   console.log(`[NetworkDiscovery] Checking server reachability: ${url}`);
-  
+
   // Try multiple endpoints to confirm it's our server
   const endpoints = ['/health/', '/api/', '/'];
-  
+
   for (const endpoint of endpoints) {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
-      
+
       const response = await fetch(`${url}${endpoint}`, {
         signal: controller.signal,
         method: 'HEAD',
@@ -475,9 +479,9 @@ export const checkServerReachable = async (baseUrl: string, timeout: number = CH
           'Accept': 'application/json'
         }
       });
-      
+
       clearTimeout(timeoutId);
-      
+
       // If we get any response, the server is reachable
       if (response.status < 500) {
         console.log(`[NetworkDiscovery] Server found at ${url} (${response.status} ${response.statusText})`);
@@ -488,7 +492,7 @@ export const checkServerReachable = async (baseUrl: string, timeout: number = CH
       continue;
     }
   }
-  
+
   return false;
 };
 

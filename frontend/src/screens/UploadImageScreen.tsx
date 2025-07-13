@@ -21,8 +21,8 @@ import { Hospital } from "../types";
 import axios from 'axios';
 import Constants from 'expo-constants';
 
-// Get the API URL from environment variables
-const API_URL = 'http://10.10.162.57:8000';  // Hardcode the IP for now to ensure it works
+// Get the API URL from environment variables or use production backend
+const API_URL = process.env.API_URL || 'https://web-production-52fc7.up.railway.app';
 
 type UploadImageScreenNavigationProp = StackNavigationProp<RootStackParamList, 'UploadImage'>;
 

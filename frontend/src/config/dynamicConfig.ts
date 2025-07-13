@@ -8,7 +8,7 @@ class DynamicConfig {
   private isInitialized: boolean = false;
   private initializationPromise: Promise<void> | null = null;
 
-  private constructor() {}
+  private constructor() { }
 
   public static getInstance(): DynamicConfig {
     if (!DynamicConfig.instance) {
@@ -36,8 +36,15 @@ class DynamicConfig {
   private async performInitialization(): Promise<void> {
     try {
       console.log('[DynamicConfig] Initializing dynamic configuration...');
-      
-      // Try to load cached API URL first
+
+      // In production, always use the deployed backend and clear any cached value
+      if (!__DEV__) {
+        this.apiUrl = 'https://web-production-52fc7.up.railway.app/api';
+        await SecureStore.setItemAsync('cached_api_url', this.apiUrl);
+        this.isInitialized = true;
+        return;
+      }
+      // Try to load cached API URL first (development only)
       const cachedUrl = await SecureStore.getItemAsync('cached_api_url');
       if (cachedUrl) {
         console.log('[DynamicConfig] Found cached API URL:', cachedUrl);
@@ -45,7 +52,6 @@ class DynamicConfig {
         this.isInitialized = true;
         return;
       }
-
       // For development, try localhost
       if (__DEV__) {
         const localhostUrl = 'http://localhost:8000/api';
@@ -55,9 +61,7 @@ class DynamicConfig {
         this.isInitialized = true;
         return;
       }
-
-      // For production, start with empty URL to force discovery
-      console.log('[DynamicConfig] Production mode: Starting with empty URL for dynamic discovery');
+      // Fallback (should not be reached)
       this.apiUrl = '';
       this.isInitialized = true;
     } catch (error) {

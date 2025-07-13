@@ -2,14 +2,19 @@ import { Platform } from 'react-native';
 
 // Function to get the base API URL
 const getBaseUrl = () => {
+  // Use environment variable if set (for production flexibility)
+  if (process.env.API_URL) {
+    return process.env.API_URL;
+  }
+
   // For development, try to use localhost first, then fallback to hardcoded IP
   if (__DEV__) {
     // Try localhost first
     return 'http://localhost:8000';
   }
-  
-  // Use the actual computer IP address as fallback
-  return 'http://192.168.141.68:8000';
+
+  // Production fallback: use deployed Railway backend
+  return 'https://web-production-52fc7.up.railway.app';
 };
 
 // Use the appropriate base URL based on platform and environment

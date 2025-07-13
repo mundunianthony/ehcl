@@ -17,7 +17,7 @@ interface NetworkState {
 class NetworkManagerImpl {
   // Singleton instance
   private static instance: NetworkManagerImpl | null = null;
-  
+
   // Instance properties
   private baseUrl: string | null = null;
   private subscribers: Subscriber[] = [];
@@ -29,10 +29,10 @@ class NetworkManagerImpl {
   private networkStateSubscription: { remove: () => void } | null = null;
   private appStateSubscription: NativeEventSubscription | null = null;
   private readonly DISCOVERY_INTERVAL = 5 * 60 * 1000; // 5 minutes
-  
+
   // Private constructor to prevent direct instantiation
-  private constructor() {}
-  
+  private constructor() { }
+
   /**
    * Get the singleton instance of NetworkManagerImpl
    */
@@ -42,11 +42,15 @@ class NetworkManagerImpl {
     }
     return NetworkManagerImpl.instance;
   }
-  
+
   // Public methods
   public async getBaseUrl(): Promise<string | null> {
+    if (!__DEV__) {
+      // In production, always use the deployed backend
+      return 'https://web-production-52fc7.up.railway.app';
+    }
     // Dynamic discovery approach - no hardcoded IPs
-    
+
     // Step 1: Try previously discovered/cached URL first
     if (this.baseUrl) {
       console.log('[NetworkManager] Step 1: Testing cached URL:', this.baseUrl);
@@ -64,7 +68,7 @@ class NetworkManagerImpl {
         this.baseUrl = null; // Clear invalid cached URL
       }
     }
-    
+
     // Step 2: Try localhost for development
     if (__DEV__) {
       console.log('[NetworkManager] Step 2: Testing localhost for development...');
@@ -83,7 +87,7 @@ class NetworkManagerImpl {
         console.warn('[NetworkManager] Step 2 ERROR: Localhost check failed:', error);
       }
     }
-    
+
     // Step 3: Perform network discovery
     console.log('[NetworkManager] Step 3: Performing network discovery...');
     try {
@@ -97,7 +101,7 @@ class NetworkManagerImpl {
     } catch (error) {
       console.warn('[NetworkManager] Step 3 ERROR: Network discovery failed:', error);
     }
-    
+
     // Step 4: Try common local network IPs as last resort
     console.log('[NetworkManager] Step 4: Trying common local network IPs...');
     const commonIPs = [
@@ -108,7 +112,7 @@ class NetworkManagerImpl {
       'http://10.0.0.100:8000',
       'http://10.0.0.101:8000',
     ];
-    
+
     for (const ip of commonIPs) {
       try {
         const isReachable = await checkServerReachable(ip);
@@ -123,20 +127,20 @@ class NetworkManagerImpl {
         continue;
       }
     }
-    
+
     console.log('[NetworkManager] ALL STEPS FAILED: No server found');
     return null;
   }
 
   public async refresh(): Promise<void> {
     console.log('[NetworkManager] Refreshing with dynamic discovery...');
-    
+
     // Clear current base URL to force fresh discovery
     this.baseUrl = null;
-    
+
     // Try to get a new base URL using the dynamic approach
     const newBaseUrl = await this.getBaseUrl();
-    
+
     if (newBaseUrl) {
       console.log('[NetworkManager] Refresh SUCCESS: Found new server URL:', newBaseUrl);
       this.notifySubscribers();
@@ -149,7 +153,7 @@ class NetworkManagerImpl {
     this.subscribers.push(callback);
     // Immediately notify new subscriber with current URL
     callback(this.baseUrl);
-    
+
     // Return unsubscribe function
     return () => this.unsubscribe(callback);
   }
@@ -171,16 +175,16 @@ class NetworkManagerImpl {
 
   public async initialize(): Promise<void> {
     if (this.isInitialized) return;
-    
+
     try {
       console.log('[NetworkManager] Initializing with dynamic discovery...');
-      
+
       // Initialize dynamic configuration first
       await dynamicConfig.initialize();
-      
+
       // Set up network listeners
       await this.setupNetworkListeners();
-      
+
       // Try to get base URL using dynamic discovery
       const baseUrl = await this.getBaseUrl();
       if (baseUrl) {
@@ -190,7 +194,7 @@ class NetworkManagerImpl {
       } else {
         console.log('[NetworkManager] Initialization: No server found initially, will retry on network changes');
       }
-      
+
       this.isInitialized = true;
       console.log('[NetworkManager] Initialization complete');
     } catch (error) {
@@ -205,18 +209,18 @@ class NetworkManagerImpl {
       this.networkStateSubscription.remove();
       this.networkStateSubscription = null;
     }
-    
+
     if (this.appStateSubscription) {
       this.appStateSubscription.remove();
       this.appStateSubscription = null;
     }
-    
+
     // Clear any pending timeouts
     if (this.discoveryTimeout) {
       clearTimeout(this.discoveryTimeout);
       this.discoveryTimeout = null;
     }
-    
+
     this.isInitialized = false;
   }
 
@@ -230,15 +234,15 @@ class NetworkManagerImpl {
   // Private methods
   private async performDiscovery(force = false): Promise<void> {
     if (this.discoveryInProgress) return;
-    
+
     const now = Date.now();
     if (!force && now - this.lastDiscoveryTime < this.DISCOVERY_INTERVAL) {
       return; // Too soon for another discovery
     }
-    
+
     this.discoveryInProgress = true;
     this.lastDiscoveryTime = now;
-    
+
     try {
       const result = await discoverServer(force);
       if (result) {
@@ -250,19 +254,19 @@ class NetworkManagerImpl {
       this.discoveryInProgress = false;
     }
   }
-  
+
   private async setBaseUrl(url: string): Promise<void> {
     if (!url) return;
-    
+
     // Normalize URL
     let normalizedUrl = url;
     if (!normalizedUrl.startsWith('http')) {
       normalizedUrl = `http://${normalizedUrl}`;
     }
-    
+
     // Remove trailing slashes
     normalizedUrl = normalizedUrl.replace(/\/+$/, '');
-    
+
     // Update base URL
     if (this.baseUrl !== normalizedUrl) {
       this.baseUrl = normalizedUrl;
@@ -270,7 +274,7 @@ class NetworkManagerImpl {
       this.notifySubscribers();
     }
   }
-  
+
   private notifySubscribers(): void {
     for (const subscriber of this.subscribers) {
       try {
@@ -280,7 +284,7 @@ class NetworkManagerImpl {
       }
     }
   }
-  
+
   private async setupNetworkListeners(): Promise<void> {
     // Network state listener
     this.networkStateSubscription = Network.addNetworkStateListener(async (state) => {
@@ -291,22 +295,22 @@ class NetworkManagerImpl {
         isWifi: state.type === Network.NetworkStateType.WIFI,
         isCellular: state.type === Network.NetworkStateType.CELLULAR
       };
-      
+
       const wasConnected = this.isConnected;
       this.isConnected = !!state.isConnected && !!state.isInternetReachable;
-      
+
       if (this.isConnected && !wasConnected) {
         // Network came back online
         await this.performDiscovery();
       }
-      
+
       this.notifySubscribers();
     });
-    
+
     // Initial network state
     const initialState = await Network.getNetworkStateAsync();
     this.isConnected = !!initialState.isConnected && !!initialState.isInternetReachable;
-    
+
     // App state listener
     this.appStateSubscription = AppState.addEventListener('change', async (nextAppState) => {
       if (nextAppState === 'active') {
