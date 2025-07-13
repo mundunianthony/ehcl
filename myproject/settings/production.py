@@ -5,21 +5,12 @@ These settings are specific to the production environment.
 """
 import os
 from .base import *  # noqa
-import dj_database_url
-from datetime import timedelta
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
-# Remove debug_toolbar from production
-if 'debug_toolbar' in INSTALLED_APPS:
-    INSTALLED_APPS.remove('debug_toolbar')
-
-# Remove debug_toolbar middleware if present
-MIDDLEWARE = [mw for mw in MIDDLEWARE if 'debug_toolbar' not in mw]
-
 # Security settings
-SECURE_SSL_REDIRECT = False  # Disabled to prevent health check issues
+SECURE_SSL_REDIRECT = not DEBUG
 SESSION_COOKIE_SECURE = not DEBUG
 CSRF_COOKIE_SECURE = not DEBUG
 SECURE_BROWSER_XSS_FILTER = True
@@ -34,6 +25,9 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 if not ALLOWED_HOSTS or ALLOWED_HOSTS == ['']:
     ALLOWED_HOSTS = ['*']  # Fallback, but should be set in production
+# Ensure 192.168.68.68 is included
+if '192.168.68.68' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('192.168.68.68')
 
 # CORS settings for production
 CORS_ALLOW_ALL_ORIGINS = False
@@ -41,14 +35,20 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', '').split(',')
 if not CORS_ALLOWED_ORIGINS or CORS_ALLOWED_ORIGINS == ['']:
     CORS_ALLOWED_ORIGINS = []
+# Ensure http://192.168.68.68:19006 is included
+if 'http://192.168.68.68:19006' not in CORS_ALLOWED_ORIGINS:
+    CORS_ALLOWED_ORIGINS.append('http://192.168.68.68:19006')
 
 # Database
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL'),
-        conn_max_age=600,
-        conn_health_checks=True,
-    )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+    }
 }
 
 # Email settings
@@ -75,39 +75,45 @@ LOGGING = {
             'style': '{',
         },
     },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+    },
     'handlers': {
         'console': {
             'level': 'INFO',
             'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'include_html': True,
+        },
+        'file': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': '/var/log/django/error.log',
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
             'formatter': 'verbose',
         },
     },
     'loggers': {
         'django': {
-            'handlers': ['console'],
+            'handlers': ['console', 'file', 'mail_admins'],
             'level': 'INFO',
             'propagate': True,
         },
         'core': {
-            'handlers': ['console'],
-            'level': 'INFO',
+            'handlers': ['console', 'file', 'mail_admins'],
+            'level': 'WARNING',
             'propagate': True,
         },
     },
-    'root': {
-        'handlers': ['console'],
-        'level': 'INFO',
-    },
 }
-
-# Print important settings (without sensitive data)
-print('\n' + '='*50)
-print('RUNNING IN PRODUCTION MODE')
-print('='*50)
-print(f'DEBUG: {DEBUG}')
-print(f'ALLOWED_HOSTS: {ALLOWED_HOSTS}')
-print(f'DATABASES: Using PostgreSQL')
-print('='*50 + '\n')
 
 # Django REST Framework settings for production
 REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] = [
@@ -119,3 +125,12 @@ SIMPLE_JWT.update({
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
 })
+
+# Print important settings (without sensitive data)
+print('\n' + '='*50)
+print('RUNNING IN PRODUCTION MODE')
+print('='*50)
+print(f'DEBUG: {DEBUG}')
+print(f'ALLOWED_HOSTS: {ALLOWED_HOSTS}')
+print(f'DATABASES: Using PostgreSQL')
+print('='*50 + '\n')

@@ -15,6 +15,7 @@ import { RootStackParamList } from '../types';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
 import { Ionicons } from '@expo/vector-icons';
+import StepProgress from '../components/StepProgress';
 
 type BasicDetailsScreenNavigationProp = StackNavigationProp<RootStackParamList, 'BasicDetails'>;
 type BasicDetailsScreenRouteProp = RouteProp<RootStackParamList, 'BasicDetails'>;
@@ -33,6 +34,10 @@ const BasicDetailsScreen = ({ navigation, route }: {
     has_ambulance: false,
     has_pharmacy: false,
     has_lab: false,
+    // Hospital user credentials
+    user_email: '',
+    password: '',
+    confirm_password: '',
   });
 
   // Validate form
@@ -40,17 +45,61 @@ const BasicDetailsScreen = ({ navigation, route }: {
     if (!formValues.name || !formValues.description || !formValues.phone || !formValues.email) {
       return false;
     }
+    
+    // Validate hospital user credentials
+    if (!formValues.user_email || !formValues.password || !formValues.confirm_password) {
+      return false;
+    }
+    
+    // Check if passwords match
+    if (formValues.password !== formValues.confirm_password) {
+      return false;
+    }
+    
+    // Check password length
+    if (formValues.password.length < 8) {
+      return false;
+    }
+    
     return true;
   };
 
   const handleSubmit = async () => {
+    // Step 1 Validation - Must complete all basic details first
+    console.log('[BasicDetails] Step 1: Validating basic details...');
+    
     // Validate form
     if (!validateForm()) {
-      Alert.alert('Error', 'Please fill in all fields');
+      if (!formValues.name || !formValues.description || !formValues.phone || !formValues.email) {
+        Alert.alert('Step 1 Required', 'Please fill in all hospital details (Name, Description, Phone, Email) before proceeding to Step 2.');
+        return;
+      }
+      
+      if (!formValues.user_email || !formValues.password || !formValues.confirm_password) {
+        Alert.alert('Step 1 Required', 'Please fill in all user credentials (Login Email, Password, Confirm Password) before proceeding to Step 2.');
+        return;
+      }
+      
+      if (formValues.password !== formValues.confirm_password) {
+        Alert.alert('Step 1 Required', 'Passwords do not match. Please fix this before proceeding to Step 2.');
+        return;
+      }
+      
+      if (formValues.password.length < 8) {
+        Alert.alert('Step 1 Required', 'Password must be at least 8 characters long. Please fix this before proceeding to Step 2.');
+        return;
+      }
+      
       return;
     }
 
     try {
+      console.log('[BasicDetails] Step 1 SUCCESS: All basic details completed');
+      
+      // Debug: Log the route params to see what's being received
+      console.log('[BasicDetails] Route params:', JSON.stringify(route.params, null, 2));
+      console.log('[BasicDetails] City from route params:', route.params.formValues?.city);
+      
       // Use default coordinates if none provided (Kampala, Uganda)
       const defaultCoords = {
         latitude: 0.3476,
@@ -59,7 +108,7 @@ const BasicDetailsScreen = ({ navigation, route }: {
 
       const hospitalData = {
         name: formValues.name,
-        district: route.params.formValues.city, // Using city as district
+        city: route.params.formValues.city, // Use city field directly
         address: route.params.formValues.address,
         description: formValues.description,
         email: formValues.email,
@@ -68,10 +117,18 @@ const BasicDetailsScreen = ({ navigation, route }: {
         has_ambulance: formValues.has_ambulance,
         has_pharmacy: formValues.has_pharmacy,
         has_lab: formValues.has_lab,
-        coords: route.params.formValues.coords || defaultCoords
+        coords: route.params.formValues.coords || defaultCoords,
+        // Hospital user credentials
+        user_email: formValues.user_email,
+        password: formValues.password,
+        // Mark Step 1 as completed
+        step1_completed: true,
+        step1_completion_time: new Date().toISOString(),
       };
 
-      // Navigate to conditions screen instead of submitting
+      console.log('[BasicDetails] Step 1 COMPLETE: Proceeding to Step 2 (Conditions)');
+      
+      // Navigate to conditions screen (Step 2)
       navigation.navigate('AddHospitalConditions', {
         hospitalData,
         images: [] // Initialize with empty array since image is not in route params
@@ -85,7 +142,13 @@ const BasicDetailsScreen = ({ navigation, route }: {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.formContainer}>
-        <Text style={styles.title}>Basic Hospital Details</Text>
+        <StepProgress
+          currentStep={1}
+          totalSteps={3}
+          stepTitles={['Basic Details', 'Conditions', 'Confirmation']}
+          completedSteps={[]}
+        />
+        <Text style={styles.title}>Hospital Registration - Details</Text>
         
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Hospital Name</Text>
@@ -127,6 +190,49 @@ const BasicDetailsScreen = ({ navigation, route }: {
             onChangeText={(text) => setFormValues(prev => ({ ...prev, email: text }))}
             placeholder="Enter email address"
             keyboardType="email-address"
+            autoCapitalize="none"
+          />
+        </View>
+
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Hospital Account Credentials</Text>
+          <Text style={styles.sectionSubtitle}>
+            Create login credentials for managing this hospital
+          </Text>
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Login Email</Text>
+          <TextInput
+            style={styles.input}
+            value={formValues.user_email}
+            onChangeText={(text) => setFormValues(prev => ({ ...prev, user_email: text }))}
+            placeholder="Enter login email address"
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Password</Text>
+          <TextInput
+            style={styles.input}
+            value={formValues.password}
+            onChangeText={(text) => setFormValues(prev => ({ ...prev, password: text }))}
+            placeholder="Enter password (min 8 characters)"
+            secureTextEntry
+            autoCapitalize="none"
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Confirm Password</Text>
+          <TextInput
+            style={styles.input}
+            value={formValues.confirm_password}
+            onChangeText={(text) => setFormValues(prev => ({ ...prev, confirm_password: text }))}
+            placeholder="Confirm password"
+            secureTextEntry
             autoCapitalize="none"
           />
         </View>
@@ -278,6 +384,24 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#1F2937',
     marginBottom: 15,
+  },
+  sectionHeader: {
+    marginTop: 20,
+    marginBottom: 15,
+    paddingTop: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 5,
+  },
+  sectionSubtitle: {
+    fontSize: 14,
+    color: '#6B7280',
+    fontStyle: 'italic',
   },
   checkboxContainer: {
     flexDirection: 'row',

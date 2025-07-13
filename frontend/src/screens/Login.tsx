@@ -14,7 +14,7 @@ import { RootStackParamList } from '../types';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAuth } from '../context/AuthContext';
-import { API_URL } from '../config';
+import { API_URL } from '../config/api';
 import HospitalMapBackground from '../components/HospitalMapBackground';
 
 const { width } = Dimensions.get('window');
@@ -158,6 +158,27 @@ const Login: React.FC<{ navigation: NativeStackNavigationProp<RootStackParamList
             </TouchableOpacity>
           </View>
         </View>
+
+        {/* Hospital Access */}
+        <View style={styles.hospitalAccessContainer}>
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>OR</Text>
+            <View style={styles.dividerLine} />
+          </View>
+          
+          <TouchableOpacity
+            style={styles.hospitalLoginButton}
+            onPress={() => navigation.navigate('HospitalLogin')}
+          >
+            <Icon name="medical" size={20} color="#fff" style={styles.hospitalIcon} />
+            <Text style={[styles.hospitalButtonText, { color: '#fff' }]}>Hospital Login</Text>
+          </TouchableOpacity>
+          
+
+          
+
+        </View>
       </View>
     </HospitalMapBackground>
   );
@@ -199,7 +220,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ffffff',
     borderRadius: 8,
-    marginBottom: 16,
     height: 48,
     borderWidth: 1,
     borderColor: '#e0e0e0',
@@ -213,27 +233,14 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   eyeIcon: {
-    padding: 10,
-  },
-  error: {
-    color: '#ff6b6b',
-    textAlign: 'center',
-    marginBottom: 10,
-    fontSize: 14,
-    fontWeight: '600',
-    backgroundColor: '#fff5f5',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#ffebeb',
+    paddingHorizontal: 16,
   },
   primaryButton: {
     backgroundColor: '#4CAF50',
-    paddingVertical: 14,
     borderRadius: 8,
+    height: 48,
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
     borderWidth: 2,
     borderColor: '#45a049',
     shadowColor: '#000',
@@ -247,26 +254,76 @@ const styles = StyleSheet.create({
   },
   primaryButtonText: {
     color: '#ffffff',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
   },
   bottomRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 16,
+    alignItems: 'center',
   },
   bottomText: {
     color: '#ffffff',
-    marginRight: 8,
-    fontSize: 16,
-    fontWeight: '500',
+    fontSize: 14,
   },
   linkText: {
     color: '#4CAF50',
-    fontWeight: 'bold',
     fontSize: 16,
+    fontWeight: '700',
     textDecorationLine: 'underline',
   },
+  error: {
+    color: '#ff4444',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  hospitalAccessContainer: {
+    marginTop: 24,
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  dividerText: {
+    color: '#ffffff',
+    fontSize: 12,
+    marginHorizontal: 16,
+    fontWeight: '600',
+  },
+  hospitalIcon: {
+    marginRight: 8,
+  },
+  hospitalButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  hospitalLoginButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#4CAF50',
+    borderRadius: 8,
+    height: 48,
+    borderWidth: 2,
+    borderColor: '#45a049',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+  },
+
+
 });
 
 export default Login;

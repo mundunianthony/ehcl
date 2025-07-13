@@ -13,7 +13,7 @@ To make it easy for you to get started with GitLab, here's a list of recommended
 
 ```
 cd existing_repo
-git remote add origin https://github.com/mundunianthony/ehcl.git
+git remote add origin https://gitlab.com/mactimothy07/mobi-app.git
 git branch -M main
 git push -uf origin main
 ```

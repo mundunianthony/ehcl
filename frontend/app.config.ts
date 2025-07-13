@@ -2,14 +2,14 @@ import { ExpoConfig, ConfigContext } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
-  name: 'ehcl',
-  slug: 'ehcl',
+  name: 'Emergency Health Center Locator',
+  slug: 'emergency-health-center-locator',
   version: '1.0.0',
   orientation: 'portrait',
-  icon: './assets/logo.jpg',
+  icon: './assets/icon.png',
   userInterfaceStyle: 'light',
   splash: {
-    image: './assets/splash-icon.png',
+    image: './assets/splash.png',
     resizeMode: 'contain',
     backgroundColor: '#ffffff'
   },
@@ -19,20 +19,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   android: {
     adaptiveIcon: {
-      foregroundImage: './assets/logo.jpg',
+      foregroundImage: './assets/adaptive-icon.png',
       backgroundColor: '#ffffff'
-    },
-    package: 'com.munduni.emergencyhealthcenterlocator'
+    }
   },
   web: {
     favicon: './assets/favicon.png',
     bundler: 'metro'
   },
   extra: {
-    apiUrl: process.env.API_URL || 'https://ehcl-production.up.railway.app',
-    eas: {
-      projectId: '24962302-83ae-4aab-adae-38a3e2294643'
-    }
+    apiUrl: process.env.API_URL || 'http://10.10.162.57:8000'
   },
   plugins: [
     'expo-secure-store'

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, HealthCenter, Notification
+from .models import User, HealthCenter, Notification, Appointment
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -78,3 +78,15 @@ class NotificationSerializer(serializers.ModelSerializer):
         # Format created_at to ISO format
         data['created_at'] = instance.created_at.isoformat()
         return data
+
+class AppointmentSerializer(serializers.ModelSerializer):
+    user_email = serializers.EmailField(source='user.email', read_only=True)
+    user_phone = serializers.CharField(source='phone', read_only=True)
+    hospital_name = serializers.CharField(source='hospital.name', read_only=True)
+
+    class Meta:
+        model = Appointment
+        fields = [
+            'id', 'user', 'user_email', 'user_phone', 'hospital', 'hospital_name', 'phone', 'date', 'message', 'status', 'created_at', 'updated_at'
+        ]
+        read_only_fields = ['id', 'created_at', 'updated_at', 'user_email', 'user_phone', 'hospital_name']

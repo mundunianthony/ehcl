@@ -34,6 +34,10 @@ const AddLocationScreen = ({ navigation, route }: {
       return;
     }
 
+    // Debug: Log the form values being sent
+    console.log('[AddLocationScreen] Sending form values:', JSON.stringify(formValues, null, 2));
+    console.log('[AddLocationScreen] City value:', formValues.city);
+
     // Navigate to BasicDetails with form values
     navigation.navigate('BasicDetails', {
       formValues: {
@@ -45,7 +49,7 @@ const AddLocationScreen = ({ navigation, route }: {
   return (
     <View style={styles.container}>
       <ScrollView style={styles.formContainer}>
-        <Text style={styles.title}>Add Hospital Location</Text>
+        <Text style={styles.title}>Hospital Registration - Location</Text>
         
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Country</Text>

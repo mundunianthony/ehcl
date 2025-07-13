@@ -2,6 +2,8 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, Ax
 import { Platform, Alert, AppState, AppStateStatus } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetworkManager from '../utils/NetworkManager';
+import { checkServerReachable } from '../utils/networkDiscovery';
+import { dynamicConfig } from './dynamicConfig';
 
 declare const __DEV__: boolean;
 
@@ -46,17 +48,31 @@ const normalizeUrl = (url: string): string => {
   return url.replace(/([^:]\/)\/+/g, '$1');
 };
 
-// Enhanced server URL detection with NetworkManager integration
+// Enhanced server URL detection with dynamic configuration
 const getServerUrl = async (): Promise<string> => {
   try {
-    console.log('[API] Getting server URL...');
+    console.log('[API] Getting server URL dynamically...');
     
-    // Use NetworkManager to get the current server URL
-    const baseUrl = await NetworkManager.getBaseUrl();
+    // Initialize dynamic config if not already done
+    await dynamicConfig.initialize();
+    
+    // First try to get URL from dynamic config
+    let baseUrl = dynamicConfig.getApiUrl().replace('/api', '');
     
     if (baseUrl) {
-      console.log('[API] Using NetworkManager server URL:', baseUrl);
+      console.log('[API] Using dynamic config server URL:', baseUrl);
       return baseUrl;
+    }
+    
+    // If no URL in config, try NetworkManager
+    console.log('[API] No URL in dynamic config, trying NetworkManager...');
+    const networkManagerUrl = await NetworkManager.getBaseUrl();
+    
+    if (networkManagerUrl) {
+      console.log('[API] Using NetworkManager server URL:', networkManagerUrl);
+      // Update dynamic config with discovered URL
+      await dynamicConfig.setApiUrl(`${networkManagerUrl}/api`);
+      return networkManagerUrl;
     }
     
     // If no URL is found, throw an error to indicate a connection problem
@@ -181,7 +197,7 @@ const initializeApiClient = async (): Promise<AxiosInstance> => {
       // Create axios instance
       apiInstance = axios.create({
         baseURL: serverUrl,
-    timeout: 30000, // 30 seconds
+    timeout: 10000, // 10 seconds - reduced for faster response
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
@@ -197,7 +213,15 @@ const initializeApiClient = async (): Promise<AxiosInstance> => {
     async (config) => {
           console.log('[API] Request interceptor called for URL:', config.url);
       try {
-        const token = await AsyncStorage.getItem('token');
+        // Use the authToken variable first, then fallback to AsyncStorage
+        let token = authToken;
+        if (!token) {
+          token = await AsyncStorage.getItem('token');
+          // Update authToken if found in storage
+          if (token) {
+            authToken = token;
+          }
+        }
         
         // Create a new config with updated headers
         const newConfig = { ...config };
@@ -219,6 +243,9 @@ const initializeApiClient = async (): Promise<AxiosInstance> => {
         // Add auth token if available
         if (token) {
           newConfig.headers.Authorization = `Bearer ${token}`;
+          console.log('[API] Added auth token to request');
+        } else {
+          console.log('[API] No auth token available for request');
         }
             
             // Fix URL to include /api/ prefix for all endpoints
@@ -287,16 +314,17 @@ const initializeApiClient = async (): Promise<AxiosInstance> => {
           
           // Handle network-related errors
           if (apiError.status === 0 || apiError.message.includes('Network Error')) {
-            console.warn('[API] Network error detected, triggering network refresh...');
+            console.warn('[API] Network error detected, following step-by-step recovery...');
             
-            // Try to refresh the network connection
+            // Step 1: Try to refresh the network connection (which follows step order)
             try {
+              console.log('[API] Step 1: Attempting network refresh...');
               await NetworkManager.refresh();
               
               // Get the new server URL
               const newServerUrl = await NetworkManager.getBaseUrl();
               if (newServerUrl && apiInstance && newServerUrl !== apiInstance.defaults.baseURL) {
-                console.log('[API] Network refreshed, updating API client base URL:', newServerUrl);
+                console.log('[API] Step 1 SUCCESS: Network refreshed, updating API client base URL:', newServerUrl);
                 apiInstance.defaults.baseURL = newServerUrl;
                 
                 // Retry the original request with the new URL
@@ -307,7 +335,31 @@ const initializeApiClient = async (): Promise<AxiosInstance> => {
                 }
               }
             } catch (networkError) {
-              console.error('[API] Failed to refresh network:', networkError);
+              console.error('[API] Step 1 FAILED: Network refresh failed:', networkError);
+              
+              // Step 2: Only try localhost fallback if Step 1 failed
+              if (__DEV__) {
+                try {
+                  console.log('[API] Step 2: Trying localhost as fallback...');
+                  const localhostUrl = 'http://localhost:8000';
+                  const isReachable = await checkServerReachable(localhostUrl);
+                  if (isReachable && apiInstance) {
+                    console.log('[API] Step 2 SUCCESS: Localhost is reachable, updating base URL');
+                    apiInstance.defaults.baseURL = localhostUrl;
+                    
+                    // Retry the original request
+                    const originalRequest = error.config;
+                    if (originalRequest) {
+                      console.log('[API] Retrying request with localhost...');
+                      return apiInstance.request(originalRequest);
+                    }
+                  } else {
+                    console.warn('[API] Step 2 FAILED: Localhost is not reachable');
+                  }
+                } catch (localhostError) {
+                  console.error('[API] Step 2 ERROR: Localhost fallback failed:', localhostError);
+                }
+              }
             }
           }
       
@@ -408,7 +460,10 @@ export const api = createSafeApiInstance();
 
 // Token management
 export const getAuthToken = (): string | null => authToken;
-export const setAuthToken = (token: string | null): void => { authToken = token; };
+export const setAuthToken = (token: string | null): void => { 
+  console.log('[API] Setting auth token:', token ? 'Token present' : 'Token cleared');
+  authToken = token; 
+};
 
 export const tokenStorage = {
   get: async (): Promise<string | null> => {

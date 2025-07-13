@@ -9,7 +9,7 @@ const DEFAULT_PORT = 8000;
 const SERVER_PATHS = ['/api/', '/health/', '/'];
 
 // Timeout for server checks (in ms)
-const CHECK_TIMEOUT = 3000; // Increased timeout for better reliability
+const CHECK_TIMEOUT = 2000; // Reduced timeout for faster discovery
 
 interface NetworkInfo {
   ipAddress: string | null;
@@ -105,7 +105,18 @@ const getIPAddressWithMultipleMethods = async (): Promise<string | null> => {
     console.warn('[NetworkDiscovery] Network API method failed:', error);
   }
   
-  // Method 2: Try WebSocket approach
+  // Method 2: Try localhost first (for development)
+  try {
+    const isLocalhostReachable = await checkServerReachable('http://localhost:8000');
+    if (isLocalhostReachable) {
+      console.log('[NetworkDiscovery] Localhost is reachable, using 127.0.0.1');
+      return '127.0.0.1';
+    }
+  } catch (error) {
+    console.warn('[NetworkDiscovery] Localhost check failed:', error);
+  }
+  
+  // Method 3: Try WebSocket approach
   try {
     const wsIP = await getIPFromWebSocket();
     if (wsIP) {
@@ -116,7 +127,7 @@ const getIPAddressWithMultipleMethods = async (): Promise<string | null> => {
     console.warn('[NetworkDiscovery] WebSocket method failed:', error);
   }
   
-  // Method 3: Try fetch approach
+  // Method 4: Try fetch approach
   try {
     const fetchIP = await getIPFromFetch();
     if (fetchIP) {
@@ -137,16 +148,17 @@ const getIPAddressWithMultipleMethods = async (): Promise<string | null> => {
 const getIPFromWebSocket = (): Promise<string | null> => {
   return new Promise((resolve) => {
     try {
-      const socket = new WebSocket('ws://stun.l.google.com:19302');
+      // Try to connect to a local server to get local IP
+      const socket = new WebSocket('ws://localhost:8000/ws/');
       
       socket.onopen = () => {
         try {
-        // @ts-ignore - _url is not in the TypeScript type but exists at runtime
-        const socketUrl = socket._url || '';
-        const ipMatch = socketUrl.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/);
-        const ipAddress = ipMatch ? ipMatch[1] : null;
-        
-        socket.close();
+          // @ts-ignore - _url is not in the TypeScript type but exists at runtime
+          const socketUrl = socket._url || '';
+          const ipMatch = socketUrl.match(/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/);
+          const ipAddress = ipMatch ? ipMatch[1] : null;
+          
+          socket.close();
           resolve(ipAddress);
         } catch (error) {
           socket.close();
@@ -163,7 +175,7 @@ const getIPFromWebSocket = (): Promise<string | null> => {
       setTimeout(() => {
         socket.close();
         resolve(null);
-      }, 3000);
+      }, 2000);
     } catch (error) {
       resolve(null);
     }
@@ -190,9 +202,9 @@ const getIPFromFetch = async (): Promise<string | null> => {
     
     clearTimeout(timeoutId);
     
-    // This won't work for getting local IP, but we can try other approaches
-    // For now, return null and let other methods handle it
-    return null;
+    // If we can reach localhost, we're likely on the same machine
+    // Return a common local IP pattern
+    return '127.0.0.1';
   } catch (error) {
     return null;
   }
@@ -281,7 +293,7 @@ const scanNetworkRange = async (networkRange: string, excludeIP: string): Promis
   }
   
   // Scan in batches to avoid overwhelming the network
-  const batchSize = 10;
+  const batchSize = 5; // Reduced for faster scanning
   const batches = [];
   for (let i = 0; i < ipsToScan.length; i += batchSize) {
     batches.push(ipsToScan.slice(i, i + batchSize));
@@ -321,7 +333,23 @@ const scanNetworkRange = async (networkRange: string, excludeIP: string): Promis
  */
 export const discoverServer = async (forceRediscover = false): Promise<string | null> => {
   try {
-    console.log('[NetworkDiscovery] Starting server discovery...');
+    console.log('[NetworkDiscovery] Starting enhanced server discovery...');
+    
+    // Quick localhost check first (fastest)
+    if (__DEV__) {
+      console.log('[NetworkDiscovery] Quick localhost check...');
+      try {
+        const localhostUrl = 'http://localhost:8000';
+        const isReachable = await checkServerReachable(localhostUrl);
+        if (isReachable) {
+          console.log('[NetworkDiscovery] Localhost is reachable');
+          await SecureStore.setItemAsync('last_known_server_url', localhostUrl);
+          return localhostUrl;
+        }
+      } catch (error) {
+        console.warn('[NetworkDiscovery] Localhost check failed:', error);
+      }
+    }
     
     // Check if we have a cached result and force rediscover is not requested
     if (!forceRediscover) {
@@ -351,20 +379,68 @@ export const discoverServer = async (forceRediscover = false): Promise<string | 
     
     console.log('[NetworkDiscovery] Device IP address:', networkInfo.ipAddress);
     
-    // Detect computer IP on the same network
+    // Method 1: Detect computer IP on the same network
     const computerInfo = await detectComputerIP(networkInfo.ipAddress);
     
     if (computerInfo.computerIP) {
       const serverUrl = `http://${computerInfo.computerIP}:${DEFAULT_PORT}`;
-      console.log('[NetworkDiscovery] Found Django server at:', serverUrl);
+      console.log('[NetworkDiscovery] Method 1 SUCCESS: Found Django server at:', serverUrl);
       
       // Cache the result
       await SecureStore.setItemAsync('last_known_server_url', serverUrl);
-      
-        return serverUrl;
+      return serverUrl;
     }
     
-    console.log('[NetworkDiscovery] No Django server found on the network');
+    // Method 2: Try common network ranges
+    console.log('[NetworkDiscovery] Method 2: Trying common network ranges...');
+    const commonRanges = [
+      '192.168.1',
+      '192.168.0', 
+      '192.168.2',
+      '10.0.0',
+      '10.0.1',
+      '172.16.0',
+      '172.16.1',
+    ];
+    
+    for (const range of commonRanges) {
+      try {
+        const foundIP = await scanNetworkRange(range, networkInfo.ipAddress);
+        if (foundIP) {
+          const serverUrl = `http://${foundIP}:${DEFAULT_PORT}`;
+          console.log('[NetworkDiscovery] Method 2 SUCCESS: Found server in common range:', serverUrl);
+          await SecureStore.setItemAsync('last_known_server_url', serverUrl);
+          return serverUrl;
+        }
+      } catch (error) {
+        console.warn(`[NetworkDiscovery] Method 2: Failed to scan range ${range}:`, error);
+        continue;
+      }
+    }
+    
+    // Method 3: Try specific common IPs (reduced list for faster discovery)
+    console.log('[NetworkDiscovery] Method 3: Trying specific common IPs...');
+    const commonIPs = [
+      '192.168.1.100', '192.168.1.101',
+      '192.168.0.100', '192.168.0.101',
+      '10.0.0.100', '10.0.0.101',
+    ];
+    
+    for (const ip of commonIPs) {
+      try {
+        const isReachable = await checkServerReachable(`http://${ip}:${DEFAULT_PORT}`);
+        if (isReachable) {
+          const serverUrl = `http://${ip}:${DEFAULT_PORT}`;
+          console.log('[NetworkDiscovery] Method 3 SUCCESS: Found server at common IP:', serverUrl);
+          await SecureStore.setItemAsync('last_known_server_url', serverUrl);
+          return serverUrl;
+        }
+      } catch (error) {
+        continue;
+      }
+    }
+    
+    console.log('[NetworkDiscovery] All methods failed: No Django server found');
     return null;
     
   } catch (error) {

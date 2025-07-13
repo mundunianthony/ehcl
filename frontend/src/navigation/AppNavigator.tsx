@@ -22,7 +22,13 @@ import AddHospitalConfirmation from '../screens/AddHospitalConfirmation';
 import Notifications from '../screens/Notifications';
 import NotificationSettings from '../screens/NotificationSettings';
 import NotificationBell from '../components/NotificationBell';
-import DebugScreen from '../screens/DebugScreen';
+import HospitalDashboard from '../screens/HospitalDashboard';
+import HospitalLogin from '../screens/HospitalLogin';
+import HospitalRegister from '../screens/HospitalRegister';
+import UpdateHospitalDetails from '../screens/UpdateHospitalDetails';
+import HospitalLocationScreen from '../screens/HospitalLocationScreen';
+import HospitalConditionsScreen from '../screens/HospitalConditionsScreen';
+import HospitalConfirmationScreen from '../screens/HospitalConfirmationScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -175,12 +181,67 @@ export default function AppNavigator() {
             headerBackTitle: 'Back'
           }}
         />
+
+        <Stack.Screen 
+          name="HospitalDashboard" 
+          component={HospitalDashboard}
+          options={{ 
+            title: 'Hospital Dashboard',
+            headerLeft: () => null
+          }}
+        />
+
+        {/* Hospital Authentication Screens */}
+        <Stack.Screen 
+          name="HospitalLogin" 
+          component={HospitalLogin}
+          options={{ 
+            title: 'Hospital Login',
+            headerBackTitle: 'Back'
+          }}
+        />
         
         <Stack.Screen 
-          name="Debug" 
-          component={DebugScreen}
+          name="HospitalRegister" 
+          component={HospitalRegister}
           options={{ 
-            title: "Debug Screen",
+            title: 'Register Hospital',
+            headerBackTitle: 'Back'
+          }}
+        />
+
+        <Stack.Screen 
+          name="UpdateHospitalDetails" 
+          component={UpdateHospitalDetails}
+          options={{ 
+            title: 'Update Hospital Details',
+            headerBackTitle: 'Back'
+          }}
+        />
+
+        <Stack.Screen 
+          name="HospitalLocation" 
+          component={HospitalLocationScreen}
+          options={{ 
+            title: 'Hospital Location',
+            headerBackTitle: 'Back'
+          }}
+        />
+
+        <Stack.Screen 
+          name="HospitalConditions" 
+          component={HospitalConditionsScreen}
+          options={{ 
+            title: 'Hospital Conditions',
+            headerBackTitle: 'Back'
+          }}
+        />
+
+        <Stack.Screen 
+          name="HospitalConfirmation" 
+          component={HospitalConfirmationScreen}
+          options={{ 
+            title: 'Confirm Hospital Updates',
             headerBackTitle: 'Back'
           }}
         />

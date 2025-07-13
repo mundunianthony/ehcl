@@ -1,4 +1,4 @@
-import { api } from '../services/api';
+import { api } from '../config/api';
 import { Alert, Vibration } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -16,7 +16,7 @@ export interface CreateNotificationData {
   user_email: string;
   title: string;
   message: string;
-  type?: 'new_center' | 'facility_update' | 'system' | 'account' | 'emergency';
+  type?: 'new_center' | 'facility_update' | 'system' | 'account' | 'emergency' | 'appointment';
   data?: any;
 }
 
@@ -98,23 +98,23 @@ class NotificationService {
       let totalCount = 0;
       let page = 1;
       const pageSize = 100;
-
+      
       // Always include user_email if not authenticated and currentUserEmail is set
-      const baseUrl = this.currentUserEmail
+      const baseUrl = this.currentUserEmail 
         ? `notifications/?user_email=${encodeURIComponent(this.currentUserEmail)}&page_size=${pageSize}`
         : `notifications/?page_size=${pageSize}`;
-
+      
       do {
         let response;
         const url = `${baseUrl}&page=${page}`;
-
+        
         try {
           response = await api.get(url);
         } catch (authError: any) {
           // If authentication fails and no email, throw
           throw authError;
         }
-
+        
         console.log(`[NotificationService] API Response Page ${page}:`, {
           hasResults: !!response.data?.results,
           resultsCount: response.data?.results?.length || 0,
@@ -122,11 +122,11 @@ class NotificationService {
           pageSize: response.data?.page_size || 'unknown',
           currentPage: response.data?.page || page
         });
-
+        
         if (response.data?.results) {
           allNotifications = allNotifications.concat(response.data.results);
           totalCount = response.data.count || 0;
-
+          
           // Check if we've fetched all notifications
           if (response.data.results.length < pageSize || allNotifications.length >= totalCount) {
             break;
@@ -138,12 +138,12 @@ class NotificationService {
           console.warn('Unexpected notification response format:', response.data);
           break;
         }
-
+        
         page++;
       } while (true);
-
+      
       console.log(`[NotificationService] Total notifications fetched: ${allNotifications.length}`);
-
+      
       return {
         notifications: allNotifications,
         unread_count: allNotifications.filter((n: Notification) => !n.is_read).length
@@ -192,7 +192,7 @@ class NotificationService {
         type: data.type || 'system',
         data: data.data || {}
       });
-
+      
       // Play notification feedback for both new and duplicate notifications
       this.playNotificationFeedback(data.type);
       this.showNotificationAlert(data.title, data.message, data.type);
@@ -204,27 +204,27 @@ class NotificationService {
       }
 
       console.log('Notification created successfully:', response.data);
-
+      
       return response.data;
     } catch (error: any) {
       console.error('Error creating notification:', error);
-
+      
       // Handle specific error cases
       if (error.response?.status === 404) {
         console.warn('Notification endpoint not found - user may not be authenticated');
         return null;
       }
-
+      
       if (error.response?.status === 400) {
         console.warn('Invalid notification data:', error.response.data);
         return null;
       }
-
+      
       if (error.response?.status === 429) {
         console.warn('Rate limit exceeded for notifications');
         return null;
       }
-
+      
       return null;
     }
   }
@@ -247,7 +247,7 @@ class NotificationService {
         console.log('[NotificationService] Request body:', reqBody);
         response = await api.post('notifications/', reqBody);
         console.log('[NotificationService] Response status:', response.status);
-
+        
         // Check if the response indicates success
         if (response.status >= 200 && response.status < 300) {
           console.log('[NotificationService] markAsRead successful');
@@ -265,7 +265,7 @@ class NotificationService {
           console.log('[NotificationService] Request body:', reqBody);
           response = await api.post('notifications/', reqBody);
           console.log('[NotificationService] Response status with user email:', response.status);
-
+          
           // Check if the response indicates success
           if (response.status >= 200 && response.status < 300) {
             console.log('[NotificationService] markAsRead successful with user email');
@@ -296,11 +296,11 @@ class NotificationService {
       const unreadIds = notifications
         .filter((n: Notification) => !n.is_read)
         .map((n: Notification) => n.id);
-
+      
       if (unreadIds.length === 0) {
         return true;
       }
-
+      
       return await this.markAsRead(unreadIds);
     } catch (error) {
       console.error('Error marking all notifications as read:', error);
@@ -394,7 +394,7 @@ class NotificationService {
       const response = await api.delete(url, { headers });
       console.log('[NotificationService] Response status:', response.status);
       console.log('[NotificationService] Response data:', response.data);
-
+      
       // Check if the response indicates success (200 or 204)
       if (response.status === 200 || response.status === 204) {
         console.log('[NotificationService] deleteNotification successful');
@@ -407,24 +407,24 @@ class NotificationService {
       console.error('[NotificationService] Error deleting notification:', error);
       console.error('[NotificationService] Error response:', error.response?.data);
       console.error('[NotificationService] Error status:', error.response?.status);
-
+      
       // Handle specific error cases
       if (error.response?.status === 404) {
         console.warn('[NotificationService] Notification not found - may have already been deleted');
         // Return true for 404 since the goal (deletion) is achieved
         return true;
       }
-
+      
       if (error.response?.status === 401) {
         console.warn('[NotificationService] Authentication required');
         return false;
       }
-
+      
       if (error.response?.status === 400) {
         console.warn('[NotificationService] Bad request:', error.response.data);
         return false;
       }
-
+      
       return false;
     }
   }
@@ -432,16 +432,16 @@ class NotificationService {
   /**
    * Get notification statistics
    */
-  async getNotificationStats(): Promise<{ total: number, unread: number, byType: Record<string, number> }> {
+  async getNotificationStats(): Promise<{total: number, unread: number, byType: Record<string, number>}> {
     try {
       const { notifications } = await this.getNotifications();
       const unread = notifications.filter((n: Notification) => !n.is_read).length;
-
+      
       const byType = notifications.reduce((acc: Record<string, number>, n: Notification) => {
         acc[n.notification_type] = (acc[n.notification_type] || 0) + 1;
         return acc;
       }, {} as Record<string, number>);
-
+      
       return {
         total: notifications.length,
         unread,
@@ -502,15 +502,15 @@ export const notificationService = new NotificationService();
 
 // Export convenience functions
 export const createNotification = (data: CreateNotificationData) => notificationService.createNotification(data);
-export const createSystemNotification = (userEmail: string, title: string, message: string) =>
+export const createSystemNotification = (userEmail: string, title: string, message: string) => 
   notificationService.createSystemNotification(userEmail, title, message);
-export const createEmergencyNotification = (userEmail: string, title: string, message: string) =>
+export const createEmergencyNotification = (userEmail: string, title: string, message: string) => 
   notificationService.createEmergencyNotification(userEmail, title, message);
-export const createNewCenterNotification = (userEmail: string, centerName: string, distance: number) =>
+export const createNewCenterNotification = (userEmail: string, centerName: string, distance: number) => 
   notificationService.createNewCenterNotification(userEmail, centerName, distance);
-export const createLocationNotification = (userEmail: string, title: string, message: string, locationData?: any) =>
+export const createLocationNotification = (userEmail: string, title: string, message: string, locationData?: any) => 
   notificationService.createLocationNotification(userEmail, title, message, locationData);
-export const createTestNotification = (userEmail: string) =>
+export const createTestNotification = (userEmail: string) => 
   notificationService.createTestNotification(userEmail);
 export const getUnreadCount = () => notificationService.getUnreadCount();
 export const markAllAsRead = () => notificationService.markAllAsRead();
@@ -519,5 +519,5 @@ export const clearAllNotifications = () => notificationService.clearAllNotificat
 export const setSoundEnabled = (enabled: boolean) => notificationService.setSoundEnabled(enabled);
 export const setVibrationEnabled = (enabled: boolean) => notificationService.setVibrationEnabled(enabled);
 export const setUserEmail = (email: string | null) => notificationService.setUserEmail(email);
-export const createEmergencyNotificationForUserAndStaff = (userEmail: string, title: string, message: string, data?: any) =>
+export const createEmergencyNotificationForUserAndStaff = (userEmail: string, title: string, message: string, data?: any) => 
   notificationService.createEmergencyNotificationForUserAndStaff(userEmail, title, message, data); 

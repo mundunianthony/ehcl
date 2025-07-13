@@ -13,6 +13,7 @@ import { useNavigation, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { RootStackParamList } from '../types';
+import StepProgress from '../components/StepProgress';
 
 const CONDITIONS = [
   "Malaria", "Typhoid", "Chest infection", "Urine infection", 
@@ -31,6 +32,28 @@ export default function AddHospitalConditions({ route }: { route: AddHospitalCon
   const [selectedConditions, setSelectedConditions] = useState<string[]>([]);
   const { hospitalData } = route.params;
 
+  // Step 2 Validation - Check if Step 1 was completed
+  React.useEffect(() => {
+    console.log('[AddHospitalConditions] Step 2: Checking if Step 1 was completed...');
+    
+    if (!(hospitalData as any).step1_completed) {
+      console.error('[AddHospitalConditions] Step 2 ERROR: Step 1 not completed');
+      Alert.alert(
+        'Step 1 Required', 
+        'You must complete Step 1 (Basic Details) before proceeding to Step 2 (Conditions). Please go back and complete all required fields.',
+        [
+          { 
+            text: 'Go Back', 
+            onPress: () => navigation.goBack() 
+          }
+        ]
+      );
+      return;
+    }
+    
+    console.log('[AddHospitalConditions] Step 2 SUCCESS: Step 1 completed, proceeding with conditions selection');
+  }, [(hospitalData as any).step1_completed, navigation]);
+
   const toggleCondition = (condition: string) => {
     setSelectedConditions(prev => 
       prev.includes(condition)
@@ -40,19 +63,37 @@ export default function AddHospitalConditions({ route }: { route: AddHospitalCon
   };
 
   const handleSubmit = async () => {
+    // Step 2 Validation - Must select at least one condition
+    console.log('[AddHospitalConditions] Step 2: Validating conditions selection...');
+    
     if (selectedConditions.length === 0) {
-      Alert.alert('Error', 'Please select at least one condition');
+      Alert.alert('Step 2 Required', 'Please select at least one condition before proceeding to Step 3 (Confirmation).');
       return;
     }
 
     try {
+      console.log('[AddHospitalConditions] Step 2 SUCCESS: Conditions selected, proceeding to Step 3');
+      
       // Prepare the final hospital data
       const finalHospitalData = {
         ...hospitalData,
-        conditions_treated: selectedConditions.join(', ')
+        conditions_treated: selectedConditions.join(', '),
+        // Ensure user credentials are passed through
+        user_email: hospitalData.user_email,
+        password: hospitalData.password,
+        is_emergency: hospitalData.is_emergency,
+        has_ambulance: hospitalData.has_ambulance,
+        has_pharmacy: hospitalData.has_pharmacy,
+        has_lab: hospitalData.has_lab,
+        // Mark Step 2 as completed
+        step2_completed: true,
+        step2_completion_time: new Date().toISOString(),
+        step2_conditions_count: selectedConditions.length,
       };
 
-      // Navigate to confirmation screen
+      console.log('[AddHospitalConditions] Step 2 COMPLETE: Proceeding to Step 3 (Confirmation)');
+      
+      // Navigate to confirmation screen (Step 3)
       navigation.navigate('AddHospitalConfirmation', { 
         hospitalData: finalHospitalData 
       });
@@ -65,7 +106,13 @@ export default function AddHospitalConditions({ route }: { route: AddHospitalCon
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>Select Conditions Treated</Text>
+          <StepProgress
+            currentStep={2}
+            totalSteps={3}
+            stepTitles={['Basic Details', 'Conditions', 'Confirmation']}
+            completedSteps={[1]}
+          />
+          <Text style={styles.title}>Hospital Registration - Conditions</Text>
           <Text style={styles.subtitle}>
             Select all conditions that this hospital can treat
           </Text>

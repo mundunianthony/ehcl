@@ -2,6 +2,7 @@ import * as Network from 'expo-network';
 import { AppState, AppStateStatus, type NativeEventSubscription } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 import { discoverServer, checkServerReachable } from './networkDiscovery';
+import { dynamicConfig } from '../config/dynamicConfig';
 
 type Subscriber = (url: string | null) => void;
 
@@ -44,14 +45,104 @@ class NetworkManagerImpl {
   
   // Public methods
   public async getBaseUrl(): Promise<string | null> {
-    if (!this.baseUrl) {
-      await this.performDiscovery();
+    // Dynamic discovery approach - no hardcoded IPs
+    
+    // Step 1: Try previously discovered/cached URL first
+    if (this.baseUrl) {
+      console.log('[NetworkManager] Step 1: Testing cached URL:', this.baseUrl);
+      try {
+        const isReachable = await checkServerReachable(this.baseUrl);
+        if (isReachable) {
+          console.log('[NetworkManager] Step 1 SUCCESS: Cached URL is reachable');
+          return this.baseUrl;
+        } else {
+          console.log('[NetworkManager] Step 1 FAILED: Cached URL is not reachable');
+          this.baseUrl = null; // Clear invalid cached URL
+        }
+      } catch (error) {
+        console.error('[NetworkManager] Step 1 ERROR: Failed to check cached URL:', error);
+        this.baseUrl = null; // Clear invalid cached URL
+      }
     }
-    return this.baseUrl;
+    
+    // Step 2: Try localhost for development
+    if (__DEV__) {
+      console.log('[NetworkManager] Step 2: Testing localhost for development...');
+      try {
+        const localhostUrl = 'http://localhost:8000';
+        const isReachable = await checkServerReachable(localhostUrl);
+        if (isReachable) {
+          console.log('[NetworkManager] Step 2 SUCCESS: Localhost is reachable');
+          this.baseUrl = localhostUrl;
+          await SecureStore.setItemAsync('last_known_server_url', localhostUrl);
+          return localhostUrl;
+        } else {
+          console.log('[NetworkManager] Step 2 FAILED: Localhost is not reachable');
+        }
+      } catch (error) {
+        console.warn('[NetworkManager] Step 2 ERROR: Localhost check failed:', error);
+      }
+    }
+    
+    // Step 3: Perform network discovery
+    console.log('[NetworkManager] Step 3: Performing network discovery...');
+    try {
+      await this.performDiscovery(true);
+      if (this.baseUrl) {
+        console.log('[NetworkManager] Step 3 SUCCESS: Network discovery successful, using:', this.baseUrl);
+        return this.baseUrl;
+      } else {
+        console.log('[NetworkManager] Step 3 FAILED: No server discovered on network');
+      }
+    } catch (error) {
+      console.warn('[NetworkManager] Step 3 ERROR: Network discovery failed:', error);
+    }
+    
+    // Step 4: Try common local network IPs as last resort
+    console.log('[NetworkManager] Step 4: Trying common local network IPs...');
+    const commonIPs = [
+      'http://192.168.1.100:8000',
+      'http://192.168.1.101:8000',
+      'http://192.168.0.100:8000',
+      'http://192.168.0.101:8000',
+      'http://10.0.0.100:8000',
+      'http://10.0.0.101:8000',
+    ];
+    
+    for (const ip of commonIPs) {
+      try {
+        const isReachable = await checkServerReachable(ip);
+        if (isReachable) {
+          console.log('[NetworkManager] Step 4 SUCCESS: Found server at common IP:', ip);
+          this.baseUrl = ip;
+          await SecureStore.setItemAsync('last_known_server_url', ip);
+          return ip;
+        }
+      } catch (error) {
+        // Continue to next IP
+        continue;
+      }
+    }
+    
+    console.log('[NetworkManager] ALL STEPS FAILED: No server found');
+    return null;
   }
 
   public async refresh(): Promise<void> {
-    await this.performDiscovery(true);
+    console.log('[NetworkManager] Refreshing with dynamic discovery...');
+    
+    // Clear current base URL to force fresh discovery
+    this.baseUrl = null;
+    
+    // Try to get a new base URL using the dynamic approach
+    const newBaseUrl = await this.getBaseUrl();
+    
+    if (newBaseUrl) {
+      console.log('[NetworkManager] Refresh SUCCESS: Found new server URL:', newBaseUrl);
+      this.notifySubscribers();
+    } else {
+      console.log('[NetworkManager] Refresh FAILED: No server found');
+    }
   }
 
   public subscribe(callback: Subscriber): () => void {
@@ -82,19 +173,26 @@ class NetworkManagerImpl {
     if (this.isInitialized) return;
     
     try {
-      // Load last known URL
-      const lastUrl = await SecureStore.getItemAsync('last_known_server_url');
-      if (lastUrl) {
-        this.baseUrl = lastUrl;
-      }
+      console.log('[NetworkManager] Initializing with dynamic discovery...');
+      
+      // Initialize dynamic configuration first
+      await dynamicConfig.initialize();
       
       // Set up network listeners
       await this.setupNetworkListeners();
       
-      // Initial discovery
-      await this.performDiscovery();
+      // Try to get base URL using dynamic discovery
+      const baseUrl = await this.getBaseUrl();
+      if (baseUrl) {
+        console.log('[NetworkManager] Initialization SUCCESS: Found server at:', baseUrl);
+        // Update dynamic config with discovered URL
+        await dynamicConfig.setApiUrl(`${baseUrl}/api`);
+      } else {
+        console.log('[NetworkManager] Initialization: No server found initially, will retry on network changes');
+      }
       
       this.isInitialized = true;
+      console.log('[NetworkManager] Initialization complete');
     } catch (error) {
       console.error('[Network] Initialization error:', error);
       throw error;

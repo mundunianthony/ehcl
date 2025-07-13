@@ -16,6 +16,11 @@ export default function Register() {
     setLoading(true);
     setError('');
     try {
+      if (!name || !email || !password) {
+        setError('Please fill in all fields');
+        return;
+      }
+      
       await signup(name, email, password);
       Alert.alert('Success', 'Account created!');
       navigation.goBack();
@@ -43,13 +48,6 @@ export default function Register() {
         onChangeText={setEmail}
         autoCapitalize="none"
         keyboardType="email-address"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <TouchableOpacity style={styles.button} onPress={handleRegister} disabled={loading}>
@@ -96,7 +94,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   link: {
-    color: '#1976d2',
+    color: '#4CAF50',
     textAlign: 'center',
     marginTop: 8,
     fontSize: 15,

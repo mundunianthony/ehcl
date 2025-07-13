@@ -10,17 +10,25 @@ import {
   Linking,
   Platform,
   ActivityIndicator,
-  Alert,
+  Modal,
+  TextInput,
 } from 'react-native';
 import WebMapComponent from '../components/WebMapComponent';
 import { FontAwesome5, MaterialIcons, Ionicons } from '@expo/vector-icons';
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList, Hospital } from '../types';
 import ScrollableScreen from '../components/ScrollableScreen';
 import { getPlaceholderImageUrl, isValidImageUrl } from '../utils/hospitalImages';
 import { useAuth } from '../context/AuthContext';
 import { createSystemNotification } from '../services/notificationService';
 import { cityCoords, getCoordsByCity } from '../utils/cityCoords';
+// Remove DatePicker, DateTimePicker, and related imports
+import Constants from 'expo-constants';
+import CalendarPicker from 'react-native-calendar-picker';
+import WheelPickerExpo from 'react-native-wheel-picker-expo';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { api } from '../config/api';
+import { PhoneInput } from '../components/PhoneInput';
 
 const { width } = Dimensions.get('window');
 
@@ -34,87 +42,120 @@ const HospitalDetails = ({
 }: {
   route: HospitalDetailsRouteProp;
 }) => {
-  const hospital = route.params?.hospital as Hospital;
+  const hospital = route.params.hospital as Hospital;
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const { user } = useAuth();
-  
-  // Validate hospital data on component mount
-  useEffect(() => {
-    if (!hospital) {
-      console.error('Hospital data is missing');
-      Alert.alert('Error', 'Hospital information is not available.');
-      return;
-    }
-
-    if (!hospital.id || !hospital.name) {
-      console.error('Invalid hospital data:', hospital);
-      Alert.alert('Error', 'Invalid hospital information.');
-      return;
-    }
-
-    console.log('HospitalDetails: Valid hospital data received:', {
-      id: hospital.id,
-      name: hospital.name,
-      hasCoords: !!hospital.coords,
-      hasImage: !!hospital.imageUrl
-    });
-  }, [hospital]);
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+  const [appointmentDate, setAppointmentDate] = useState(''); // YYYY-MM-DD
+  const [selectedHour, setSelectedHour] = useState('12');
+  const [selectedMinute, setSelectedMinute] = useState('00');
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [dateTimeError, setDateTimeError] = useState('');
+  const [appointmentMessage, setAppointmentMessage] = useState('');
+  const [booking, setBooking] = useState(false);
+  const [appointmentPhone, setAppointmentPhone] = useState('');
   
   // Get a valid image URL or fallback to placeholder
   const getImageUrl = () => {
-    try {
-      // First try to use the Cloudinary imageUrl
-      if (isValidImageUrl(hospital?.imageUrl)) {
-        return hospital.imageUrl;
-      }
-      // Then try the legacy imageUrl field
-      if (isValidImageUrl(hospital?.imageUrl)) {
-        return hospital.imageUrl;
-      }
-      // Finally fallback to placeholder
-      return getPlaceholderImageUrl(hospital?.name || 'Hospital');
-    } catch (error) {
-      console.error('Error getting image URL:', error);
-      return getPlaceholderImageUrl('Hospital');
+    // First try to use the Cloudinary imageUrl
+    if (isValidImageUrl(hospital.imageUrl)) {
+      return hospital.imageUrl;
     }
+    // Then try the legacy imageUrl field
+    if (isValidImageUrl(hospital.imageUrl)) {
+      return hospital.imageUrl;
+    }
+    // Finally fallback to placeholder
+    return getPlaceholderImageUrl(hospital.name);
   };
 
   const handleEmail = async () => {
+    if (!hospital.email) {
+      alert('Email not available for this hospital.');
+      return;
+    }
+
+    const subject = 'Inquiry from Hospital Finder';
+    const gmailUrl = `googlegmail:///co?to=${encodeURIComponent(hospital.email)}&subject=${encodeURIComponent(subject)}`;
+    const mailtoUrl = `mailto:${hospital.email}?subject=${encodeURIComponent(subject)}`;
+
     try {
-      if (!hospital?.email) {
-        Alert.alert('Email Not Available', 'Email not available for this hospital.');
-        return;
-      }
-
-      const subject = 'Inquiry from Hospital Finder';
-      const gmailUrl = `googlegmail:///co?to=${encodeURIComponent(hospital.email)}&subject=${encodeURIComponent(subject)}`;
-      const mailtoUrl = `mailto:${hospital.email}?subject=${encodeURIComponent(subject)}`;
-
       // First try to open Gmail app
       await Linking.openURL(gmailUrl);
     } catch (error) {
       console.log('Could not open Gmail, falling back to default mail handler');
-      try {
-        // Fall back to default mail handler
-        await Linking.openURL(mailtoUrl);
-      } catch (fallbackError) {
-        console.error('Failed to open email:', fallbackError);
-        Alert.alert('Error', 'Unable to open email application.');
-      }
+      // Fall back to default mail handler
+      await Linking.openURL(mailtoUrl);
     }
   };
 
   const handlePhoneCall = () => {
-    try {
-      if (!hospital?.phone) {
-        Alert.alert('Phone Not Available', 'Phone number not available for this hospital.');
-        return;
-      }
+    if (hospital.phone) {
       Linking.openURL(`tel:${hospital.phone}`);
-    } catch (error) {
-      console.error('Failed to make phone call:', error);
-      Alert.alert('Error', 'Unable to make phone call.');
+    } else {
+      alert('Phone number not available for this hospital.');
+    }
+  };
+
+  // Remove DatePicker, DateTimePicker, and related imports
+  // Remove showDatePicker and isNativeDatePickerSupported state
+
+  // Update handleBookAppointment to validate and combine date/time
+  const handleBookAppointment = async () => {
+    if (!user) {
+      alert('You must be logged in to book an appointment.');
+      return;
+    }
+    setDateTimeError('');
+    if (!selectedDate) {
+      setDateTimeError('Please select a date.');
+      return;
+    }
+    if (!appointmentPhone || appointmentPhone.length < 10) {
+      setDateTimeError('Please enter a valid phone number.');
+      return;
+    }
+    // Combine date and time
+    const dateString = selectedDate ? selectedDate.toISOString().slice(0, 10) : '';
+    const appointmentTime = `${selectedHour}:${selectedMinute}`;
+    const dateTimeString = `${dateString}T${appointmentTime}`;
+    const dateObj = new Date(dateTimeString);
+    if (isNaN(dateObj.getTime())) {
+      setDateTimeError('Invalid date or time.');
+      return;
+    }
+    setBooking(true);
+    const payload = {
+      user: user.id,
+      hospital: hospital.id,
+      date: dateObj.toISOString(),
+      message: appointmentMessage,
+      phone: appointmentPhone,
+    };
+    console.log('[BookAppointment] Sending payload:', payload, 'to appointments endpoint');
+    try {
+      await api.post('appointments/', payload);
+      alert('Appointment request sent!');
+      setShowAppointmentModal(false);
+      setAppointmentDate('');
+      setSelectedHour('12');
+      setSelectedMinute('00');
+      setSelectedDate(null);
+      setAppointmentMessage('');
+      setAppointmentPhone('');
+      setDateTimeError('');
+    } catch (err: any) {
+      console.error('[BookAppointment] Error:', err);
+      if (err.response && err.response.data) {
+        const backendMsg = err.response.data.message || JSON.stringify(err.response.data);
+        alert('Failed to book appointment: ' + backendMsg);
+      } else {
+        alert('Failed to book appointment.');
+      }
+    } finally {
+      setBooking(false);
     }
   };
 
@@ -189,40 +230,21 @@ const HospitalDetails = ({
 
   // Before rendering the map or using coords
   const getHospitalCoords = () => {
-    try {
-      if (
-        hospital?.coords &&
-        hospital.coords.latitude &&
-        hospital.coords.longitude &&
-        hospital.coords.latitude !== 0 &&
-        hospital.coords.longitude !== 0
-      ) {
-        return hospital.coords;
-      }
-      // Use normalized city name for lookup
-      return getCoordsByCity(hospital?.city || '');
-    } catch (error) {
-      console.error('Error getting hospital coordinates:', error);
-      return null;
+    if (
+      hospital.coords &&
+      hospital.coords.latitude &&
+      hospital.coords.longitude &&
+      hospital.coords.latitude !== 0 &&
+      hospital.coords.longitude !== 0
+    ) {
+      return hospital.coords;
     }
+    // Use normalized city name for lookup
+    return getCoordsByCity(hospital.city);
   };
 
   const coords = getHospitalCoords();
   console.log('Rendering map with coords:', coords);
-
-  // Early return if hospital data is invalid
-  if (!hospital || !hospital.id || !hospital.name) {
-    return (
-      <SafeAreaView style={styles.screen}>
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorTitle}>Hospital Not Found</Text>
-          <Text style={styles.errorMessage}>
-            The hospital information is not available or has been removed.
-          </Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -268,8 +290,20 @@ const HospitalDetails = ({
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.title}>{hospital.name || 'Unknown Hospital'}</Text>
+          <Text style={styles.title}>{hospital.name}</Text>
           <Text style={styles.subtitle}>{hospital.city || 'Unknown'} District</Text>
+
+          {/* Staff-only Hospital Dashboard button */}
+          {user && user.is_staff && (
+            <View style={{ marginVertical: 16 }}>
+              <TouchableOpacity
+                style={{ backgroundColor: '#000', padding: 12, borderRadius: 8 }}
+                onPress={() => navigation.navigate('HospitalDashboard', { hospital_id: Number(hospital.id) })}
+              >
+                <Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'bold' }}>View Hospital Dashboard</Text>
+              </TouchableOpacity>
+            </View>
+          )}
 
           {/* Available Services Section */}
           <View style={styles.servicesContainer}>
@@ -304,7 +338,7 @@ const HospitalDetails = ({
 
           <View style={styles.infoRow}>
             <FontAwesome5 name="map-marker-alt" size={20} color="#00796b" />
-            <Text style={styles.infoText}>{hospital.address || 'Address not available'}</Text>
+            <Text style={styles.infoText}>{hospital.address}</Text>
           </View>
 
           <View style={styles.infoRow}>
@@ -325,7 +359,95 @@ const HospitalDetails = ({
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.description}>{hospital.description || 'No description available'}</Text>
+          {/* Make Appointment Button for non-staff users */}
+          {user && !user.is_staff && (
+            <View style={{ marginVertical: 16 }}>
+              <TouchableOpacity
+                style={{ backgroundColor: '#00796b', padding: 12, borderRadius: 8 }}
+                onPress={() => setShowAppointmentModal(true)}
+              >
+                <Text style={{ color: '#fff', textAlign: 'center', fontWeight: 'bold' }}>Make Appointment</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          {/* Appointment Modal */}
+          <Modal
+            visible={showAppointmentModal}
+            animationType="slide"
+            transparent={true}
+            onRequestClose={() => setShowAppointmentModal(false)}
+          >
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.4)' }}>
+              <View style={{ backgroundColor: '#fff', padding: 24, borderRadius: 12, width: '85%' }}>
+                <Text style={{ fontWeight: 'bold', fontSize: 18, marginBottom: 12 }}>Book Appointment</Text>
+                <Text style={{ marginBottom: 4 }}>Select Date</Text>
+                <CalendarPicker
+                  onDateChange={(date: Date) => {
+                    setSelectedDate(date);
+                    setAppointmentDate(date.toISOString().slice(0, 10));
+                  }}
+                  selectedStartDate={selectedDate}
+                  width={300}
+                />
+                <Text style={{ marginBottom: 4, marginTop: 12 }}>Select Time</Text>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <View style={{ flex: 1, marginRight: 8 }}>
+                    <WheelPickerExpo
+                      height={120}
+                      width={100}
+                      initialSelectedIndex={12}
+                      items={Array.from({ length: 24 }, (_, i) => ({ label: i.toString().padStart(2, '0'), value: i.toString().padStart(2, '0') }))}
+                      onChange={({ item }) => setSelectedHour(item.value)}
+                    />
+                    <Text style={{ textAlign: 'center' }}>Hour</Text>
+                  </View>
+                  <View style={{ flex: 1, marginLeft: 8 }}>
+                    <WheelPickerExpo
+                      height={120}
+                      width={100}
+                      initialSelectedIndex={0}
+                      items={Array.from({ length: 60 }, (_, i) => ({ label: i.toString().padStart(2, '0'), value: i.toString().padStart(2, '0') }))}
+                      onChange={({ item }) => setSelectedMinute(item.value)}
+                    />
+                    <Text style={{ textAlign: 'center' }}>Minute</Text>
+                  </View>
+                </View>
+                <Text style={{ color: '#888', fontSize: 12, marginBottom: 8 }}>Example: 14:30</Text>
+                <PhoneInput
+                  value={appointmentPhone}
+                  onChangeText={setAppointmentPhone}
+                  placeholder="Phone number *"
+                  style={{ marginBottom: 12 }}
+                />
+                {dateTimeError ? <Text style={{ color: 'red', marginBottom: 8 }}>{dateTimeError}</Text> : null}
+                <TextInput
+                  placeholder="Message (optional)"
+                  value={appointmentMessage}
+                  onChangeText={setAppointmentMessage}
+                  style={{ borderWidth: 1, borderColor: '#ccc', borderRadius: 6, padding: 8, marginBottom: 12 }}
+                  multiline
+                />
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <TouchableOpacity
+                    style={{ backgroundColor: '#00796b', padding: 10, borderRadius: 6, flex: 1, marginRight: 8 }}
+                    onPress={handleBookAppointment}
+                    disabled={booking}
+                  >
+                    <Text style={{ color: '#fff', textAlign: 'center' }}>{booking ? 'Booking...' : 'Submit'}</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={{ backgroundColor: '#ccc', padding: 10, borderRadius: 6, flex: 1, marginLeft: 8 }}
+                    onPress={() => setShowAppointmentModal(false)}
+                    disabled={booking}
+                  >
+                    <Text style={{ color: '#333', textAlign: 'center' }}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+
+          <Text style={styles.description}>{hospital.description}</Text>
         </View>
 
         <View style={styles.mapContainer}>
@@ -353,34 +475,25 @@ const MapSection = React.memo(({ coords }: { coords: { latitude: number; longitu
   const [MapComponent, setMapComponent] = React.useState<React.ComponentType<any> | null>(null);
   const [MarkerComponent, setMarkerComponent] = React.useState<React.ComponentType<any> | null>(null);
   const [mapError, setMapError] = React.useState<string | null>(null);
-  const [isLoading, setIsLoading] = React.useState(true);
   
   // Get valid coordinates with fallback
   const getValidCoordinates = () => {
-    try {
-      // Check if provided coordinates are valid
-      if (coords && 
-          coords.latitude && 
-          coords.longitude &&
-          coords.latitude !== 0 && 
-          coords.longitude !== 0 &&
-          coords.latitude >= -90 && coords.latitude <= 90 &&
-          coords.longitude >= -180 && coords.longitude <= 180) {
-        return coords;
-      }
-      
-      // Return default Uganda coordinates if invalid
-      return {
-        latitude: 1.3733, // Center of Uganda
-        longitude: 32.2903,
-      };
-    } catch (error) {
-      console.error('Error validating coordinates:', error);
-      return {
-        latitude: 1.3733,
-        longitude: 32.2903,
-      };
+    // Check if provided coordinates are valid
+    if (coords && 
+        coords.latitude && 
+        coords.longitude &&
+        coords.latitude !== 0 && 
+        coords.longitude !== 0 &&
+        coords.latitude >= -90 && coords.latitude <= 90 &&
+        coords.longitude >= -180 && coords.longitude <= 180) {
+      return coords;
     }
+    
+    // Return default Uganda coordinates if invalid
+    return {
+      latitude: 1.3733, // Center of Uganda
+      longitude: 32.2903,
+    };
   };
   
   const validCoords = getValidCoordinates();
@@ -394,39 +507,22 @@ const MapSection = React.memo(({ coords }: { coords: { latitude: number; longitu
   
   // For web platform, use our WebMapComponent
   if (Platform.OS === 'web') {
-    try {
-      return (
-        <View style={styles.mapContainer}>
-          <WebMapComponent coords={validCoords} title="Hospital Location" />
-        </View>
-      );
-    } catch (error) {
-      console.error('Web map error:', error);
-      return (
-        <View style={styles.mapPlaceholder}>
-          <Text style={[styles.mapPlaceholderText, {color: 'red'}]}>
-            Map not available
-          </Text>
-        </View>
-      );
-    }
+    return (
+      <View style={styles.mapContainer}>
+        <WebMapComponent coords={validCoords} title="Hospital Location" />
+      </View>
+    );
   }
   
   // Load react-native-maps for native platforms
   React.useEffect(() => {
     const loadMap = async () => {
       try {
-        setIsLoading(true);
-        setMapError(null);
-        
         const module = await import('react-native-maps');
         setMapComponent(() => module.default);
         setMarkerComponent(() => module.Marker);
-        setIsLoading(false);
       } catch (error: any) {
-        console.error('Failed to load map:', error);
         setMapError(`Failed to load map: ${error.message}`);
-        setIsLoading(false);
       }
     };
     
@@ -435,15 +531,11 @@ const MapSection = React.memo(({ coords }: { coords: { latitude: number; longitu
   
   // Update region when coordinates change
   React.useEffect(() => {
-    try {
-      setRegion(prev => ({
-        ...prev,
-        latitude: validCoords.latitude,
-        longitude: validCoords.longitude,
-      }));
-    } catch (error) {
-      console.error('Error updating map region:', error);
-    }
+    setRegion(prev => ({
+      ...prev,
+      latitude: validCoords.latitude,
+      longitude: validCoords.longitude,
+    }));
   }, [validCoords.latitude, validCoords.longitude]);
   
   // Handle error state
@@ -458,47 +550,33 @@ const MapSection = React.memo(({ coords }: { coords: { latitude: number; longitu
   }
   
   // Handle loading state
-  if (isLoading || !MapComponent || !MarkerComponent) {
+  if (!MapComponent || !MarkerComponent) {
     return (
       <View style={styles.mapPlaceholder}>
-        <ActivityIndicator size="large" color="#00796b" />
         <Text style={styles.mapPlaceholderText}>Loading map...</Text>
       </View>
     );
   }
 
   const handleZoomIn = () => {
-    try {
-      setRegion(prev => ({
-        ...prev,
-        latitudeDelta: Math.max(prev.latitudeDelta / 2, 0.001),
-        longitudeDelta: Math.max(prev.longitudeDelta / 2, 0.001),
-      }));
-    } catch (error) {
-      console.error('Error zooming in:', error);
-    }
+    setRegion(prev => ({
+      ...prev,
+      latitudeDelta: Math.max(prev.latitudeDelta / 2, 0.001),
+      longitudeDelta: Math.max(prev.longitudeDelta / 2, 0.001),
+    }));
   };
 
   const handleZoomOut = () => {
-    try {
-      setRegion(prev => ({
-        ...prev,
-        latitudeDelta: Math.min(prev.latitudeDelta * 2, 180),
-        longitudeDelta: Math.min(prev.longitudeDelta * 2, 360),
-      }));
-    } catch (error) {
-      console.error('Error zooming out:', error);
-    }
+    setRegion(prev => ({
+      ...prev,
+      latitudeDelta: Math.min(prev.latitudeDelta * 2, 180),
+      longitudeDelta: Math.min(prev.longitudeDelta * 2, 360),
+    }));
   };
 
   const openDirections = () => {
-    try {
-      const url = `https://www.google.com/maps/dir/?api=1&destination=${validCoords.latitude},${validCoords.longitude}`;
-      Linking.openURL(url);
-    } catch (error) {
-      console.error('Error opening directions:', error);
-      Alert.alert('Error', 'Unable to open directions.');
-    }
+    const url = `https://www.google.com/maps/dir/?api=1&destination=${validCoords.latitude},${validCoords.longitude}`;
+    Linking.openURL(url);
   };
 
   return (
@@ -815,23 +893,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#495057',
     fontWeight: '600',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  errorTitle: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: '#1a3c34',
-    marginBottom: 16,
-  },
-  errorMessage: {
-    fontSize: 16,
-    color: '#495057',
-    textAlign: 'center',
   },
 });
 

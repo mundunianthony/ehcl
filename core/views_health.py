@@ -10,6 +10,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework import status
+from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiTypes, OpenApiExample
 
 class HealthCheckView(APIView):
     """
@@ -61,6 +62,37 @@ class HealthCheckView(APIView):
                 'error': str(e),
             }
     
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='Health check response',
+                examples=[OpenApiExample('Example Name', value={
+                    'status': 'ok',
+                    'service': 'mobi-app-backend',
+                    'version': '1.0.0',
+                    'timestamp': '2024-01-01T00:00:00Z',
+                    'response_time_ms': 123,
+                    'system': {
+                        'python_version': '3.10.0',
+                        'platform': 'Windows-10',
+                        'hostname': 'myhost',
+                        'server_time': '2024-01-01T00:00:00Z',
+                        'environment': 'development',
+                        'debug': True
+                    },
+                    'database': {'status': 'ok', 'engine': 'sqlite3', 'name': 'db.sqlite3'},
+                    'cache': {'status': 'ok', 'backend': 'LocMemCache'},
+                    'endpoints': {
+                        'api': 'http://localhost:8000/api/',
+                        'admin': 'http://localhost:8000/admin/',
+                        'docs': 'http://localhost:8000/api/schema/swagger/'
+                    },
+                    'test_message': 'Django server is working correctly!'
+                }, response_only=True)]
+            )
+        }
+    )
     def get(self, request, *args, **kwargs):
         """Handle health check request."""
         start_time = time.time()
@@ -107,6 +139,21 @@ class TestView(APIView):
     """
     permission_classes = [AllowAny]
     
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='Test endpoint response',
+                examples=[OpenApiExample('Example Name', value={
+                    'message': 'Django server is working!',
+                    'timestamp': '2024-01-01T00:00:00Z',
+                    'request_path': '/api/test/',
+                    'request_method': 'GET',
+                    'user_agent': 'Mozilla/5.0'
+                }, response_only=True)]
+            )
+        }
+    )
     def get(self, request, *args, **kwargs):
         """Simple test endpoint."""
         return Response({
@@ -117,6 +164,20 @@ class TestView(APIView):
             'user_agent': request.META.get('HTTP_USER_AGENT', 'Unknown'),
         }, status=status.HTTP_200_OK)
     
+    @extend_schema(
+        request=OpenApiTypes.OBJECT,
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='Test POST endpoint response',
+                examples=[OpenApiExample('Example Name', value={
+                    'message': 'POST request received successfully!',
+                    'data_received': {'foo': 'bar'},
+                    'timestamp': '2024-01-01T00:00:00Z'
+                }, response_only=True)]
+            )
+        }
+    )
     def post(self, request, *args, **kwargs):
         """Test POST endpoint."""
         return Response({

@@ -49,6 +49,9 @@ class HealthCenter(models.Model):
     )
     image = CloudinaryField('image', blank=True, null=True)
     
+    # Hospital authentication - link to user account
+    hospital_user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='hospital')
+    
     # New fields for medical services
     is_emergency = models.BooleanField(default=True, help_text='24/7 emergency services available')
     has_ambulance = models.BooleanField(default=False)
@@ -85,6 +88,7 @@ class Notification(models.Model):
         ('system', 'System Announcement'),
         ('account', 'Account Activity'),
         ('emergency', 'Emergency Alert'),
+        ('appointment', 'Appointment Update'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
@@ -100,3 +104,22 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.user.email}"
+
+class Appointment(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('cancelled', 'Cancelled'),
+        ('completed', 'Completed'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='appointments')
+    hospital = models.ForeignKey(HealthCenter, on_delete=models.CASCADE, related_name='appointments')
+    phone = models.CharField(max_length=20, help_text='Patient phone number for contact')
+    date = models.DateTimeField()
+    message = models.TextField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Appointment for {self.user.email} at {self.hospital.name} on {self.date.strftime('%Y-%m-%d %H:%M')}"

@@ -13,9 +13,10 @@ import { useNavigation, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../types';
 import { Ionicons } from '@expo/vector-icons';
-import { addHospital } from '../utils/api';
+import { registerHospital } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { createSystemNotification } from '../services/notificationService';
+import StepProgress from '../components/StepProgress';
 
 type AddHospitalConfirmationRouteProp = RouteProp<RootStackParamList, 'AddHospitalConfirmation'>;
 type AddHospitalConfirmationNavigationProp = StackNavigationProp<RootStackParamList, 'AddHospitalConfirmation'>;
@@ -26,37 +27,106 @@ export default function AddHospitalConfirmation({ route }: { route: AddHospitalC
   const { hospitalData } = route.params;
   const { user } = useAuth();
 
+  // Debug: Log the hospital data to see what's being received
+  React.useEffect(() => {
+    console.log('[AddHospitalConfirmation] Received hospital data:', JSON.stringify(hospitalData, null, 2));
+    console.log('[AddHospitalConfirmation] City field value:', hospitalData.city);
+    console.log('[AddHospitalConfirmation] City field type:', typeof hospitalData.city);
+  }, [hospitalData]);
+
+  // Step 3 Validation - Check if Steps 1 and 2 were completed
+  React.useEffect(() => {
+    console.log('[AddHospitalConfirmation] Step 3: Checking if Steps 1 and 2 were completed...');
+    
+    if (!(hospitalData as any).step1_completed) {
+      console.error('[AddHospitalConfirmation] Step 3 ERROR: Step 1 not completed');
+      Alert.alert(
+        'Step 1 Required', 
+        'You must complete Step 1 (Basic Details) before proceeding to Step 3 (Confirmation). Please go back and complete all required fields.',
+        [
+          { 
+            text: 'Go Back', 
+            onPress: () => navigation.navigate('BasicDetails' as never) 
+          }
+        ]
+      );
+      return;
+    }
+    
+    if (!(hospitalData as any).step2_completed) {
+      console.error('[AddHospitalConfirmation] Step 3 ERROR: Step 2 not completed');
+      Alert.alert(
+        'Step 2 Required', 
+        'You must complete Step 2 (Conditions) before proceeding to Step 3 (Confirmation). Please go back and select at least one condition.',
+        [
+          { 
+            text: 'Go Back', 
+            onPress: () => navigation.navigate('AddHospitalConditions' as never) 
+          }
+        ]
+      );
+      return;
+    }
+    
+    console.log('[AddHospitalConfirmation] Step 3 SUCCESS: Steps 1 and 2 completed, proceeding with confirmation');
+  }, [(hospitalData as any).step1_completed, (hospitalData as any).step2_completed, navigation]);
+
   const handleSubmit = async () => {
+    // Step 3 Validation - Final confirmation
+    console.log('[AddHospitalConfirmation] Step 3: Final validation and submission...');
+    
     try {
       setLoading(true);
       
-      // Add the missing images property
+      // Add the missing images property and ensure all required fields are present
       const hospitalDataWithImages = {
         ...hospitalData,
         images: [], // Add empty images array as required by the API
-        city: hospitalData.city || ''
+        city: hospitalData.city || '',
+        // Ensure user credentials are included
+        user_email: hospitalData.user_email || '',
+        password: hospitalData.password || '',
+        // Add default values for optional fields
+        is_emergency: hospitalData.is_emergency || true,
+        has_ambulance: hospitalData.has_ambulance || false,
+        has_pharmacy: hospitalData.has_pharmacy || true,
+        has_lab: hospitalData.has_lab || false,
+        // Mark Step 3 as completed
+        step3_completed: true,
+        step3_completion_time: new Date().toISOString(),
+        registration_complete: true,
       };
       
-      await addHospital(hospitalDataWithImages);
+      console.log('[AddHospitalConfirmation] Step 3 SUCCESS: All steps completed, registering hospital');
+      
+      await registerHospital(hospitalDataWithImages);
       
       // Send notification about the new hospital
       if (user?.email) {
         try {
           await createSystemNotification(
             user.email,
-            'New Hospital Added',
-            `A new hospital "${hospitalData.name}" has been added to the database in ${hospitalData.city || 'Unknown'} district.`
+            'New Hospital Registered',
+            `A new hospital "${hospitalData.name}" has been registered in ${hospitalData.city || 'Unknown'} district.`
           );
         } catch (error) {
           console.error('Failed to send hospital added notification:', error);
         }
       }
       
-      Alert.alert('Success', 'Hospital added successfully!');
-      navigation.navigate('Hospitals', {});
+      Alert.alert(
+        'Success', 
+        'Hospital registered successfully! You can now log in with your credentials to manage appointments.',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('HospitalLogin')
+          }
+        ]
+      );
     } catch (error) {
       console.error('Error adding hospital:', error);
-      Alert.alert('Error', 'Failed to add hospital. Please try again.');
+      Alert.alert('Error', 'Failed to register hospital. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -66,9 +136,15 @@ export default function AddHospitalConfirmation({ route }: { route: AddHospitalC
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.title}>Confirm Hospital Details</Text>
+          <StepProgress
+            currentStep={3}
+            totalSteps={3}
+            stepTitles={['Basic Details', 'Conditions', 'Confirmation']}
+            completedSteps={[1, 2]}
+          />
+          <Text style={styles.title}>Confirm Hospital Registration</Text>
           <Text style={styles.subtitle}>
-            Please review the hospital information before submitting
+            Please review the hospital information and account details before submitting
           </Text>
         </View>
 
@@ -123,6 +199,32 @@ export default function AddHospitalConfirmation({ route }: { route: AddHospitalC
               ))}
             </View>
           </View>
+
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Ionicons name="person" size={24} color="#00796b" />
+              <Text style={styles.sectionTitle}>Hospital Account</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>Login Email</Text>
+              <Text style={styles.value}>{hospitalData.user_email}</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>Password</Text>
+              <Text style={styles.value}>••••••••</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <Text style={styles.label}>Services</Text>
+              <Text style={styles.value}>
+                {[
+                  hospitalData.is_emergency && 'Emergency',
+                  hospitalData.has_ambulance && 'Ambulance',
+                  hospitalData.has_pharmacy && 'Pharmacy',
+                  hospitalData.has_lab && 'Laboratory'
+                ].filter(Boolean).join(', ') || 'None specified'}
+              </Text>
+            </View>
+          </View>
         </ScrollView>
 
         <View style={styles.footer}>
@@ -144,7 +246,7 @@ export default function AddHospitalConfirmation({ route }: { route: AddHospitalC
               <ActivityIndicator color="#fff" />
             ) : (
               <>
-                <Text style={styles.submitButtonText}>Submit</Text>
+                <Text style={styles.submitButtonText}>Register Hospital</Text>
                 <Ionicons name="checkmark-circle" size={20} color="#fff" />
               </>
             )}

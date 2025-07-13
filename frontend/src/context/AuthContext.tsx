@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { authAPI, api } from '../services/api';
+import { authAPI } from '../services/api';
+import { api, setAuthToken } from '../config/api';
 import { User } from '../types';
 import { setUserEmail } from '../services/notificationService';
 
@@ -69,6 +70,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setToken(storedToken);
       setUser(user);
       
+      // Set auth token for API requests
+      setAuthToken(storedToken);
+      
       // If we have a refresh token, try to refresh the access token in the background
       if (refreshToken) {
         // Don't block initialization for token refresh
@@ -86,6 +90,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               console.log('[Auth] Token refresh successful');
               await AsyncStorage.setItem('token', newAccessToken);
               setToken(newAccessToken);
+              setAuthToken(newAccessToken);
             }
           } catch (refreshError) {
             console.warn('[Auth] Token refresh failed, keeping existing token:', refreshError);
@@ -133,6 +138,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setToken(accessToken);
       setUser(userData as User);
 
+      // Set auth token for API requests
+      setAuthToken(accessToken);
+
       // Set user email for notification service
       setUserEmail(userData.email);
 
@@ -167,6 +175,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setToken(null);
       setUser(null);
       
+      // Clear auth token for API requests
+      setAuthToken(null);
+      
       console.log('[Auth] Logout successful');
     } catch (error) {
       console.error('Error during logout:', error);
@@ -176,7 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signup = async (name: string, email: string, password: string): Promise<void> => {
     try {
-      // First, register the user with just email and password
+      // First, register the user with email, password, and name
       await authAPI.register({
         email,
         password,
@@ -197,7 +208,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await authAPI.register({
         email,
         password,
-        name: `${first_name} ${last_name}`.trim()
+        username,
+        first_name,
+        last_name,
       });
       
       // After successful registration, log the user in

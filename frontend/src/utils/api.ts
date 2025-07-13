@@ -1,134 +1,15 @@
 import axios from 'axios';
-import { API_URL, apiConfig } from '../config/api';
+import { api as configApi } from '../config/api';
 import { getHospitalImageUrl } from './hospitalImages';
 import { Platform } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
-console.log('Initializing API with base URL:', API_URL);
+console.log('Using configured API instance from config/api.ts');
 
-// Create axios instance with better defaults
-const api = axios.create({
-  ...apiConfig,
-  timeout: 60000, // 60 second timeout for mobile
-  headers: {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  },
-  // Disable withCredentials for mobile apps
-  withCredentials: false,
-  // Increase max content length
-  maxContentLength: 50 * 1024 * 1024, // 50MB
-  maxBodyLength: 50 * 1024 * 1024, // 50MB
-  // Add retry configuration
-  validateStatus: function (status) {
-    return status >= 200 && status < 500; // Accept all status codes less than 500
-  },
-});
+// Use the configured API instance from config/api.ts
+const api = configApi;
 
-// Single request interceptor
-api.interceptors.request.use(
-  async (config) => {
-    try {
-      // Skip adding token for authentication endpoints
-      const isAuthEndpoint = config.url?.includes('/users/login/') || 
-                           config.url?.includes('/users/register/') ||
-                           config.url?.includes('/users/logout/');
-      
-      if (!isAuthEndpoint) {
-        // Get token based on platform
-        let token = null;
-        try {
-          if (Platform.OS === 'web') {
-            token = localStorage.getItem('access_token');
-          } else {
-            token = await SecureStore.getItemAsync('access_token');
-          }
-        } catch (err) {
-          console.log('Error getting token:', err);
-        }
-
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`;
-        }
-      } else {
-        // Remove any existing Authorization header for auth endpoints
-        delete config.headers.Authorization;
-      }
-
-      // Add cache control headers
-      config.headers['Cache-Control'] = 'no-cache';
-      config.headers['Pragma'] = 'no-cache';
-
-      // Log request details
-      console.log('\n[API Request]');
-      console.log('Method:', config.method?.toUpperCase());
-      console.log('URL:', config.url);
-      console.log('Headers:', config.headers);
-      console.log('Data:', config.data);
-      console.log('---');
-
-      return config;
-    } catch (error) {
-      console.error('Request interceptor error:', error);
-      return Promise.reject(error);
-    }
-  },
-  (error) => {
-    console.error('[API Request Error]', error);
-    return Promise.reject(error);
-  }
-);
-
-// Single response interceptor
-api.interceptors.response.use(
-  (response) => {
-    // Log successful response
-    console.log('[API Response]');
-    console.log('Status:', response.status);
-    console.log('Data:', response.data);
-    console.log('---');
-    return response;
-  },
-  (error) => {
-    // Log error details
-    console.error('[API Response Error]');
-    console.error('Error Message:', error.message);
-    console.error('Status Code:', error.response?.status);
-    console.error('Response Data:', error.response?.data);
-    console.error('Config:', error.config);
-    console.error('---');
-
-    // Handle network errors
-    if (!error.response) {
-      if (error.code === 'ECONNABORTED') {
-        throw new Error('Request timed out. Please check your internet connection and try again.');
-      }
-      if (error.message === 'Network Error') {
-        throw new Error('Cannot connect to server. Please make sure you are connected to the same network as the server.');
-      }
-      if (error.message === 'canceled') {
-        throw new Error('Connection was interrupted. Please check your internet connection and try again.');
-      }
-      throw new Error('Network error occurred. Please check your internet connection and try again.');
-    }
-
-    // Handle HTTP errors
-    const { status, data } = error.response;
-    
-    // Handle specific error cases
-    if (status === 401) {
-      throw new Error('Invalid email or password. Please try again.');
-    }
-    
-    if (status === 403) {
-      throw new Error('Access denied. You do not have permission.');
-    }
-
-    // Use detailed error message if available
-    const errorMessage = data?.detail || data?.message || `HTTP error! status: ${status}`;
-    throw new Error(errorMessage);
-  }
-);
+// Note: Request and response interceptors are handled in config/api.ts
 
 // Geocode an address to coordinates
 export const geocodeAddress = async (address: string, city: string, country: string = 'Uganda'): Promise<{latitude: number, longitude: number}> => {
@@ -330,6 +211,68 @@ export const addHospital = async (hospitalData: {
   } catch (error: any) {
     // Log detailed error information
     console.error('Error creating hospital:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status
+    });
+    throw error;
+  }
+};
+
+// Hospital Registration with User Account
+export const registerHospital = async (hospitalData: {
+  name: string;
+  city: string;
+  address: string;
+  description: string;
+  email: string;
+  phone: string;
+  conditions_treated: string;
+  images: string[];
+  coords: {
+    latitude: number;
+    longitude: number;
+  };
+  // Hospital user credentials
+  user_email: string;
+  password: string;
+  // Additional hospital fields
+  is_emergency?: boolean;
+  has_ambulance?: boolean;
+  has_pharmacy?: boolean;
+  has_lab?: boolean;
+}) => {
+  try {
+    // Log the data being sent
+    console.log('Attempting to register hospital with data:', JSON.stringify(hospitalData, null, 2));
+    
+    // Use the hospital registration endpoint
+    const response = await api.post('/hospitals/register/', {
+      name: hospitalData.name,
+      description: hospitalData.description,
+      address: hospitalData.address,
+      city: hospitalData.city,
+      country: 'Uganda',
+      email: hospitalData.email,
+      phone: hospitalData.phone,
+      is_emergency: hospitalData.is_emergency || true,
+      has_ambulance: hospitalData.has_ambulance || false,
+      has_pharmacy: hospitalData.has_pharmacy || true,
+      has_lab: hospitalData.has_lab || false,
+      specialties: '',
+      conditions_treated: hospitalData.conditions_treated,
+      // User credentials
+      user_email: hospitalData.user_email,
+      password: hospitalData.password,
+    });
+    
+    // Log the response
+    console.log('Hospital registration response:', response.data);
+    
+    return response.data;
+  } catch (error: any) {
+    // Log detailed error information
+    console.error('Error registering hospital:', {
       message: error.message,
       response: error.response?.data,
       status: error.response?.status

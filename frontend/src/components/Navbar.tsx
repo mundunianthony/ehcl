@@ -105,7 +105,7 @@ const Navbar: React.FC<NavbarProps> = ({
         onPress={() => setMenuVisible(true)}
       >
         <View style={styles.iconContainer}>
-          <Icon name="menu" size={24} color="#64748B" />
+          <Icon name="menu" size={24} color="#000" />
         </View>
         <Text style={[styles.navText, { color: "#64748B" }]}>Menu</Text>
       </TouchableOpacity>
@@ -125,7 +125,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 navigation.navigate("Home");
               }}
             >
-              <Icon name="home" size={20} color="#4F46E5" style={styles.menuIcon} />
+              <Icon name="home" size={20} color="#000" style={styles.menuIcon} />
               <Text style={styles.menuText}>Home</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -135,7 +135,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 navigation.navigate({ name: "Hospitals", params: {} });
               }}
             >
-              <Icon name="hospital" size={20} color="#14B8A6" style={styles.menuIcon} />
+              <Icon name="hospital" size={20} color="#000" style={styles.menuIcon} />
               <Text style={styles.menuText}>Hospitals</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -145,7 +145,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 navigation.navigate("Notifications");
               }}
             >
-              <Icon name="bell" size={20} color="#F59E42" style={styles.menuIcon} />
+              <Icon name="bell" size={20} color="#000" style={styles.menuIcon} />
               <Text style={styles.menuText}>Notifications</Text>
               {unreadCount > 0 && (
                 <View style={badgeStyle.badgeSmall}>
@@ -160,7 +160,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 navigation.navigate("Profile");
               }}
             >
-              <Icon name="account" size={20} color="#64748B" style={styles.menuIcon} />
+              <Icon name="account" size={20} color="#000" style={styles.menuIcon} />
               <Text style={styles.menuText}>Profile</Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -170,14 +170,14 @@ const Navbar: React.FC<NavbarProps> = ({
                 navigation.navigate("About");
               }}
             >
-              <Icon name="information" size={20} color="#64748B" style={styles.menuIcon} />
+              <Icon name="information" size={20} color="#000" style={styles.menuIcon} />
               <Text style={styles.menuText}>About</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.menuItem}
               onPress={handleLogout}
             >
-              <Icon name="logout" size={20} color="#EF4444" style={styles.menuIcon} />
+              <Icon name="logout" size={20} color="#000" style={styles.menuIcon} />
               <Text style={[styles.menuText, { color: "#EF4444" }]}>Logout</Text>
             </TouchableOpacity>
           </View>
@@ -234,19 +234,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   menuContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
+    backgroundColor: '#000', // Set menu background to black
+    borderRadius: 12,
     padding: 16,
-    width: 200,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    bottom: 0,
+    margin: 32,
+    alignItems: 'flex-start',
+    elevation: 8,
   },
   menuItem: {
     flexDirection: 'row',

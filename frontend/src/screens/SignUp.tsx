@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   primaryButton: {
-    backgroundColor: '#4CAF50', // Updated to match Login screen's green color
+    backgroundColor: '#4CAF50',
     borderRadius: 8,
     height: 48,
     justifyContent: 'center',
@@ -295,7 +295,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   linkText: {
-    color: '#4CAF50', // Updated to match the green theme
+    color: '#4CAF50',
     fontSize: 16,
     fontWeight: '700',
     textDecorationLine: 'underline',

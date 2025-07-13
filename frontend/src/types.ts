@@ -4,6 +4,7 @@ export type User = {
   username: string;
   first_name?: string;
   last_name?: string;
+  phone: string;
   is_staff?: boolean;
   is_admin?: boolean;
   is_active?: boolean;
@@ -52,7 +53,6 @@ export type RootStackParamList = {
   NotificationSettings: undefined;
   Profile: undefined;
   About: undefined;
-  Debug: undefined;
   AddLocation: {
     propertyDetails?: {
       country: string;
@@ -92,6 +92,14 @@ export type RootStackParamList = {
         latitude: number;
         longitude: number;
       };
+      // Hospital user credentials
+      user_email: string;
+      password: string;
+      // Additional hospital fields
+      is_emergency?: boolean;
+      has_ambulance?: boolean;
+      has_pharmacy?: boolean;
+      has_lab?: boolean;
     };
     images: string[];
   };
@@ -108,11 +116,67 @@ export type RootStackParamList = {
         latitude: number;
         longitude: number;
       };
+      // Hospital user credentials
+      user_email: string;
+      password: string;
+      // Additional hospital fields
+      is_emergency?: boolean;
+      has_ambulance?: boolean;
+      has_pharmacy?: boolean;
+      has_lab?: boolean;
     };
   };
   HospitalDetails: {
     hospital: Hospital;
   };
   NetworkTest: undefined;
+  HospitalDashboard: {
+    hospital_id?: number;
+  };
+  HospitalLogin: undefined;
+  HospitalRegister: undefined;
+  UpdateHospitalDetails: {
+    locationData?: {
+      country: string;
+      city: string;
+      address: string;
+    };
+    returnTo?: string;
+  };
+  HospitalLocation: {
+    returnTo?: string;
+  };
+  HospitalConditions: {
+    hospitalData?: {
+      name: string;
+      description: string;
+      phone: string;
+      email: string;
+      country: string;
+      city: string;
+      address: string;
+      is_emergency: boolean;
+      has_ambulance: boolean;
+      has_pharmacy: boolean;
+      has_lab: boolean;
+    };
+    returnTo?: string;
+  };
+  HospitalConfirmation: {
+    hospitalData?: {
+      name: string;
+      description: string;
+      phone: string;
+      email: string;
+      country: string;
+      city: string;
+      address: string;
+      conditions_treated: string;
+      is_emergency: boolean;
+      has_ambulance: boolean;
+      has_pharmacy: boolean;
+      has_lab: boolean;
+    };
+  };
 };
 

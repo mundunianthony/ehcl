@@ -12,6 +12,15 @@ import logging
 import cloudinary.uploader
 from datetime import timedelta
 from django.utils import timezone
+from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from .services.notification_service import create_emergency_notification_for_user_and_staff
+from drf_spectacular.utils import extend_schema, OpenApiResponse, OpenApiTypes, OpenApiExample
+from .serializers import AppointmentSerializer
+from .models import Appointment
+from rest_framework import viewsets, permissions
+from rest_framework.decorators import action
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +28,25 @@ logger = logging.getLogger(__name__)
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        request=OpenApiTypes.OBJECT,
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='Login successful',
+                examples=[OpenApiExample('Login successful', value={
+                    'refresh': 'jwt-refresh-token',
+                    'access': 'jwt-access-token',
+                    'user': {
+                        'id': 1,
+                        'email': 'user@example.com',
+                        'name': 'John Doe'
+                    }
+                }, response_only=True)]
+            ),
+            401: OpenApiResponse(description='Invalid credentials')
+        }
+    )
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')
@@ -73,6 +101,17 @@ class LoginView(APIView):
 class LogoutView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        request=OpenApiTypes.OBJECT,
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='Logout successful',
+                examples=[OpenApiExample('Logout successful', value={'message': 'Successfully logged out'}, response_only=True)]
+            ),
+            400: OpenApiResponse(description='Invalid refresh token')
+        }
+    )
     def post(self, request):
         try:
             refresh_token = request.data.get('refresh_token')
@@ -86,6 +125,28 @@ class LogoutView(APIView):
 class RegisterView(APIView):
     permission_classes = [AllowAny]  # Explicitly public
 
+    @extend_schema(
+        request=OpenApiTypes.OBJECT,
+        responses={
+            201: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='User registered successfully',
+                examples=[OpenApiExample('User registered successfully', value={
+                    'message': 'User registered successfully',
+                    'user': {
+                        'id': 1,
+                        'email': 'user@example.com',
+                        'name': 'John Doe'
+                    },
+                    'tokens': {
+                        'refresh': 'jwt-refresh-token',
+                        'access': 'jwt-access-token'
+                    }
+                }, response_only=True)]
+            ),
+            400: OpenApiResponse(description='Validation error')
+        }
+    )
     def post(self, request):
         # Only require email and password for registration
         data = {
@@ -309,6 +370,31 @@ class NotificationView(APIView):
     """Handle notifications for the current user"""
     permission_classes = [AllowAny]  # Allow both authenticated and unauthenticated access
     
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='List of notifications',
+                examples=[OpenApiExample('List of notifications', value={
+                    'results': [
+                        {
+                            'id': 1,
+                            'title': 'Test Notification',
+                            'message': 'This is a test',
+                            'is_read': False,
+                            'created_at': '2024-01-01T00:00:00Z',
+                        }
+                    ],
+                    'count': 1,
+                    'unread_count': 1,
+                    'page': 1,
+                    'total_pages': 1
+                }, response_only=True)]
+            ),
+            401: OpenApiResponse(description='Authentication required or user_email parameter needed'),
+            404: OpenApiResponse(description='User not found')
+        }
+    )
     def get(self, request):
         """Get all notifications for the current user"""
         # Try to get user from authentication first
@@ -346,18 +432,59 @@ class NotificationView(APIView):
             'total_pages': (notifications.count() + int(page_size) - 1) // int(page_size)
         })
 
+    @extend_schema(
+        request=OpenApiTypes.OBJECT,
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='Notifications marked as read',
+                examples=[OpenApiExample('Notifications marked as read', value={'message': 'Notifications marked as read. Updated: 1', 'updated_ids': [1]})]
+            ),
+            400: OpenApiResponse(description='No notification IDs provided'),
+            401: OpenApiResponse(description='Authentication required or user_email parameter needed'),
+            404: OpenApiResponse(description='User not found')
+        }
+    )
     def post(self, request):
-        """Mark notifications as read or handle _method=DELETE"""
-        # Check if this is a DELETE request disguised as POST
-        if request.data.get('_method') == 'DELETE':
-            notification_id = request.path.split('/')[-2]  # Get ID from URL
-            if notification_id.isdigit():
-                return self.delete(request, int(notification_id))
-            else:
-                return Response({'error': 'Invalid notification ID'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # Original POST logic for marking notifications as read
+        """Mark notifications as read"""
         notification_ids = request.data.get('notification_ids', [])
+        
+        # Debug logging
+        logger.info(f"Notification markAsRead request - Headers: {dict(request.headers)}")
+        logger.info(f"Notification markAsRead request - User authenticated: {request.user.is_authenticated}")
+        logger.info(f"Notification markAsRead request - User: {request.user}")
+        logger.info(f"Notification markAsRead request - Data: {request.data}")
+        
+        # Check JWT authentication specifically
+        auth_header = request.headers.get('Authorization', '')
+        logger.info(f"Authorization header: {auth_header}")
+        
+        if auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+            logger.info(f"JWT token received: {token[:20]}...")
+            
+            # Try to decode the token manually to see if it's valid
+            try:
+                access_token = AccessToken(token)
+                user_id = access_token['user_id']
+                logger.info(f"JWT token decoded successfully - user_id: {user_id}")
+                
+                # Try to get the user
+                try:
+                    user_from_token = User.objects.get(id=user_id)
+                    logger.info(f"User found from JWT token: {user_from_token.email}")
+                    # Set the user for this request
+                    request.user = user_from_token
+                    user = user_from_token
+                except User.DoesNotExist:
+                    logger.error(f"User with ID {user_id} not found in database")
+            except (InvalidToken, TokenError) as e:
+                logger.error(f"JWT token validation failed: {str(e)}")
+        else:
+            logger.warning("No Bearer token found in Authorization header")
+        
+        # Try to get user from authentication first
+        user = request.user if request.user.is_authenticated else None
         
         if not notification_ids:
             return Response(
@@ -365,18 +492,18 @@ class NotificationView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Try to get user from authentication first
-        user = request.user if request.user.is_authenticated else None
-        
         # If no authenticated user, try to get user by email from request data
         if not user:
             user_email = request.data.get('user_email')
             if user_email:
                 try:
                     user = User.objects.get(email=user_email)
+                    logger.info(f"Found user by email: {user.email}")
                 except User.DoesNotExist:
+                    logger.error(f"User not found for email: {user_email}")
                     return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
             else:
+                logger.error("No authenticated user and no user_email provided")
                 return Response({'error': 'Authentication required or user_email parameter needed'}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
@@ -395,39 +522,111 @@ class NotificationView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-    def delete(self, request, notification_id=None):
-        """Delete a specific notification"""
+    @extend_schema(
+        responses={
+            204: OpenApiResponse(description='No content')
+        }
+    )
+    def delete(self, request, pk=None):
+        """Delete a notification by ID for the current user"""
+        # Debug logging
+        logger.info(f"Notification delete request - Headers: {dict(request.headers)}")
+        logger.info(f"Notification delete request - User authenticated: {request.user.is_authenticated}")
+        logger.info(f"Notification delete request - User: {request.user}")
+        logger.info(f"Notification delete request - Query params: {dict(request.query_params)}")
+        logger.info(f"Notification delete request - Data: {request.data}")
+        
+        # Check JWT authentication specifically
+        auth_header = request.headers.get('Authorization', '')
+        logger.info(f"Authorization header: {auth_header}")
+        
+        if auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+            logger.info(f"JWT token received: {token[:20]}...")
+            
+            # Try to decode the token manually to see if it's valid
+            try:
+                access_token = AccessToken(token)
+                user_id = access_token['user_id']
+                logger.info(f"JWT token decoded successfully - user_id: {user_id}")
+                
+                # Try to get the user
+                try:
+                    user_from_token = User.objects.get(id=user_id)
+                    logger.info(f"User found from JWT token: {user_from_token.email}")
+                    # Set the user for this request
+                    request.user = user_from_token
+                    user = user_from_token
+                except User.DoesNotExist:
+                    logger.error(f"User with ID {user_id} not found in database")
+            except (InvalidToken, TokenError) as e:
+                logger.error(f"JWT token validation failed: {str(e)}")
+        else:
+            logger.warning("No Bearer token found in Authorization header")
+        
         # Try to get user from authentication first
         user = request.user if request.user.is_authenticated else None
         
-        # If no authenticated user, try to get user by email from query params
+        # If no authenticated user, try to get user by email from query params or data
+        user_email = request.query_params.get('user_email') or request.data.get('user_email')
+        if not user and user_email:
+            try:
+                user = User.objects.get(email=user_email)
+                logger.info(f"Found user by email: {user.email}")
+            except User.DoesNotExist:
+                logger.error(f"User not found for email: {user_email}")
+                return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
         if not user:
-            user_email = request.query_params.get('user_email')
-            if user_email:
-                try:
-                    user = User.objects.get(email=user_email)
-                except User.DoesNotExist:
-                    return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
-            else:
-                return Response({'error': 'Authentication required or user_email parameter needed'}, status=status.HTTP_401_UNAUTHORIZED)
+            logger.error("No authenticated user and no user_email provided")
+            return Response({'error': 'Authentication required or user_email parameter needed'}, status=status.HTTP_401_UNAUTHORIZED)
 
+        # Get notification ID from URL or data
+        notification_id = pk or request.query_params.get('id') or request.data.get('id')
+        if not notification_id:
+            logger.error("No notification ID provided")
+            return Response({'error': 'Notification ID required'}, status=status.HTTP_400_BAD_REQUEST)
+        
         try:
-            # Get the notification and verify it belongs to the user
+            # First check if the notification exists
             notification = Notification.objects.get(id=notification_id, user=user)
-            notification.delete()
-            logger.info(f"Notification {notification_id} deleted for user {user.email}")
-            return Response({'message': 'Notification deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+            logger.info(f"Found notification {notification_id} for user {user.email}")
         except Notification.DoesNotExist:
-            logger.warn(f"Notification {notification_id} not found for user {getattr(user, 'email', 'unknown')}")
-            return Response({'error': 'Notification not found'}, status=status.HTTP_404_NOT_FOUND)
+            # Check if notification exists but belongs to different user
+            try:
+                other_notification = Notification.objects.get(id=notification_id)
+                logger.warning(f"Notification {notification_id} exists but belongs to user {other_notification.user.email}, not {user.email}")
+                return Response({'error': 'Notification not found'}, status=status.HTTP_404_NOT_FOUND)
+            except Notification.DoesNotExist:
+                logger.warning(f"Notification {notification_id} does not exist in database")
+                # Return success even if notification doesn't exist (idempotent delete)
+                return Response({'message': 'Notification already deleted or not found'}, status=status.HTTP_200_OK)
+        
+        try:
+            notification.delete()
+            logger.info(f"Successfully deleted notification {notification_id} for user {user.email}")
+            return Response({'message': 'Notification deleted successfully'}, status=status.HTTP_200_OK)
         except Exception as e:
-            logger.error(f"Error deleting notification {notification_id} for user {getattr(user, 'email', 'unknown')}: {str(e)}")
-            return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            logger.error(f"Error deleting notification {notification_id} for user {getattr(user, 'email', None)}: {str(e)}")
+            return Response({'error': f'Failed to delete notification: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class CreateNotificationView(APIView):
     """Create a simple notification"""
     permission_classes = [AllowAny]  # Allow anyone to create notifications
     
+    @extend_schema(
+        request=OpenApiTypes.OBJECT,
+        responses={
+            201: NotificationSerializer,
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='Notification already exists',
+                examples=[OpenApiExample('Notification already exists', value={'message': 'Notification already exists', 'notification': {}}, response_only=True)]
+            ),
+            400: OpenApiResponse(description='User email is required'),
+            404: OpenApiResponse(description='User not found'),
+            500: OpenApiResponse(description='Internal server error')
+        }
+    )
     def post(self, request):
         """Create a new notification"""
         try:
@@ -484,9 +683,102 @@ class CreateNotificationView(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+class EmergencyNotificationView(APIView):
+    """Create emergency notifications for user and all staff"""
+    permission_classes = [AllowAny]  # Allow anyone to create emergency notifications
+    
+    @extend_schema(
+        request=OpenApiTypes.OBJECT,
+        responses={
+            201: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='Emergency notifications created',
+                examples=[OpenApiExample('Emergency notifications created', value={
+                    'message': 'Emergency notifications created successfully',
+                    'notifications_created': 2,
+                    'notifications': [
+                        {
+                            'id': 1,
+                            'title': 'Emergency',
+                            'message': 'This is an emergency',
+                            'is_read': False,
+                            'created_at': '2024-01-01T00:00:00Z',
+                        }
+                    ]
+                }, response_only=True)]
+            ),
+            400: OpenApiResponse(description='User email is required'),
+            404: OpenApiResponse(description='User not found'),
+            500: OpenApiResponse(description='Failed to create emergency notifications')
+        }
+    )
+    def post(self, request):
+        """Create emergency notifications for user and all staff users"""
+        try:
+            # Get user email from request
+            user_email = request.data.get('user_email')
+            if not user_email:
+                return Response(
+                    {'error': 'User email is required'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Find the user
+            try:
+                user = User.objects.get(email=user_email)
+            except User.DoesNotExist:
+                return Response(
+                    {'error': 'User not found'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+            
+            # Get notification details
+            title = request.data.get('title', 'Emergency Alert')
+            message = request.data.get('message', 'Emergency notification')
+            data = request.data.get('data', {})
+            
+            # Import the notification service
+            from .services.notification_service import create_emergency_notification_for_user_and_staff
+            
+            # Create notifications for user and all staff
+            notifications = create_emergency_notification_for_user_and_staff(
+                user=user,
+                title=title,
+                message=message,
+                data=data
+            )
+            
+            # Serialize the notifications
+            serialized_notifications = [NotificationSerializer(n).data for n in notifications]
+            
+            return Response({
+                'message': 'Emergency notifications created successfully',
+                'notifications_created': len(notifications),
+                'notifications': serialized_notifications
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            logger.error(f"Error creating emergency notifications: {str(e)}", exc_info=True)
+            return Response(
+                {'error': f'Failed to create emergency notifications: {str(e)}'},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
 class AvailableDistrictsView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='A list of available districts',
+                examples=[OpenApiExample('A list of available districts', value={
+                    'success': True,
+                    'districts': ['Kampala', 'Mbarara', 'Jinja']
+                }, response_only=True)]
+            )
+        }
+    )
     def get(self, request):
         # Get all unique districts from the database and clean them
         districts = HealthCenter.objects.exclude(
@@ -516,6 +808,29 @@ class AvailableDistrictsView(APIView):
 class CreateHealthCenterView(APIView):
     permission_classes = [AllowAny]  # Public
 
+    @extend_schema(
+        request=OpenApiTypes.OBJECT,
+        responses={
+            201: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='Health center created',
+                examples=[OpenApiExample('Health center created', value={
+                    'message': 'Health center created',
+                    'health_center': {
+                        'id': 1,
+                        'name': 'Sample Hospital',
+                        'city': 'Kampala',
+                        'address': '123 Main St',
+                        'description': 'A great hospital',
+                        'email': 'info@sample.com',
+                        'phone': '+256700000000',
+                        'coords': {'latitude': 0.3476, 'longitude': 32.5825}
+                    }
+                }, response_only=True)]
+            ),
+            400: OpenApiResponse(description='Validation error')
+        }
+    )
     def post(self, request):
         # Clean phone number before saving
         phone = request.data.get('phone', '').strip()
@@ -533,6 +848,11 @@ class CreateHealthCenterView(APIView):
 class AllHealthCentersView(APIView):
     permission_classes = [AllowAny]  # Public
 
+    @extend_schema(
+        responses={
+            200: HealthCenterSerializer(many=True)
+        }
+    )
     def get(self, request):
         # Get query parameters
         search = request.query_params.get('search', '').strip()
@@ -565,6 +885,12 @@ class AllHealthCentersView(APIView):
 class HealthCenterDetailView(APIView):
     permission_classes = [AllowAny]  # Public
 
+    @extend_schema(
+        responses={
+            200: HealthCenterSerializer,
+            404: OpenApiResponse(description='Health center not found')
+        }
+    )
     def get(self, request, id):
         try:
             center = HealthCenter.objects.get(id=id)
@@ -587,6 +913,26 @@ class UserDetailView(RetrieveAPIView):
 class UploadImageView(APIView):
     permission_classes = [AllowAny]
 
+    @extend_schema(
+        request={
+            'multipart/form-data': {
+                'type': 'object',
+                'properties': {
+                    'image': {'type': 'string', 'format': 'binary', 'description': 'Image file to upload'}
+                },
+                'required': ['image']
+            }
+        },
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='Image uploaded successfully',
+                examples=[OpenApiExample('Image uploaded successfully', value={'image_url': 'https://res.cloudinary.com/demo/image/upload/sample.jpg'}, response_only=True)]
+            ),
+            400: OpenApiResponse(description='No image file provided'),
+            500: OpenApiResponse(description='Failed to upload image')
+        }
+    )
     def post(self, request):
         try:
             if 'image' not in request.FILES:
@@ -613,5 +959,458 @@ class UploadImageView(APIView):
             logger.error(f"Error uploading image: {str(e)}", exc_info=True)
             return Response(
                 {'error': 'Failed to upload image'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+class JWTAuthTestView(APIView):
+    """Test endpoint to verify JWT authentication"""
+    permission_classes = [AllowAny]
+
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='JWT authentication status',
+                examples=[OpenApiExample('JWT authentication status', value={
+                    'message': 'JWT authentication working',
+                    'user': 'user@example.com',
+                    'user_id': 1,
+                    'authenticated': True
+                }, response_only=True), OpenApiExample('No JWT token provided', value={'message': 'No JWT token provided', 'authenticated': False}, response_only=True)]
+            ),
+            401: OpenApiResponse(description='JWT token invalid or not provided')
+        }
+    )
+    def get(self, request):
+        """Test JWT authentication status"""
+        logger.info(f"JWT Auth Test - Headers: {dict(request.headers)}")
+        logger.info(f"JWT Auth Test - User authenticated: {request.user.is_authenticated}")
+        logger.info(f"JWT Auth Test - User: {request.user}")
+        
+        auth_header = request.headers.get('Authorization', '')
+        logger.info(f"JWT Auth Test - Authorization header: {auth_header}")
+        
+        if auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+            logger.info(f"JWT Auth Test - Token received: {token[:20]}...")
+            
+            try:
+                access_token = AccessToken(token)
+                user_id = access_token['user_id']
+                logger.info(f"JWT Auth Test - Token decoded successfully - user_id: {user_id}")
+                
+                try:
+                    user_from_token = User.objects.get(id=user_id)
+                    logger.info(f"JWT Auth Test - User found: {user_from_token.email}")
+                    return Response({
+                        'message': 'JWT authentication working',
+                        'user': user_from_token.email,
+                        'user_id': user_id,
+                        'authenticated': True
+                    })
+                except User.DoesNotExist:
+                    logger.error(f"JWT Auth Test - User with ID {user_id} not found")
+                    return Response({
+                        'message': 'JWT token valid but user not found',
+                        'user_id': user_id,
+                        'authenticated': False
+                    })
+            except (InvalidToken, TokenError) as e:
+                logger.error(f"JWT Auth Test - Token validation failed: {str(e)}")
+                return Response({
+                    'message': 'JWT token invalid',
+                    'error': str(e),
+                    'authenticated': False
+                })
+        else:
+            logger.warning("JWT Auth Test - No Bearer token found")
+            return Response({
+                'message': 'No JWT token provided',
+                'authenticated': False
+            })
+
+class AppointmentViewSet(viewsets.ModelViewSet):
+    queryset = Appointment.objects.all().order_by('-created_at')
+    serializer_class = AppointmentSerializer
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        # Set user from request if authenticated, else require in data
+        user = self.request.user if self.request.user.is_authenticated else None
+        if user:
+            appointment = serializer.save(user=user)
+        else:
+            appointment = serializer.save()
+        # Notify user of successful booking
+        Notification.objects.create(
+            user=appointment.user,
+            title='Appointment Submitted',
+            message=f"Your appointment at {appointment.hospital.name} on {appointment.date.strftime('%Y-%m-%d %H:%M')} has been submitted and is pending approval.",
+            notification_type='appointment',
+        )
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            # If user is a hospital staff member, show appointments for their hospital
+            if user.is_staff:
+                try:
+                    hospital = user.hospital
+                    return Appointment.objects.filter(hospital_id=hospital.id).order_by('-created_at')
+                except HealthCenter.DoesNotExist:
+                    return Appointment.objects.none()
+            else:
+                # Regular users see only their own appointments
+                return Appointment.objects.filter(user=user).order_by('-created_at')
+        return Appointment.objects.none()
+
+    @action(detail=True, methods=['post'])
+    def approve(self, request, pk=None):
+        appointment = self.get_object()
+        # Check if user is authorized to approve this appointment
+        user = request.user
+        if user.is_staff:
+            try:
+                hospital = user.hospital
+                if appointment.hospital_id != hospital.id:
+                    return Response({'error': 'Not authorized to approve this appointment'}, status=403)
+            except HealthCenter.DoesNotExist:
+                return Response({'error': 'Hospital not found'}, status=404)
+        else:
+            return Response({'error': 'Not authorized to approve appointments'}, status=403)
+        
+        appointment.status = 'confirmed'
+        appointment.save()
+        # Notify user
+        Notification.objects.create(
+            user=appointment.user,
+            title='Appointment Approved',
+            message=f"Your appointment at {appointment.hospital.name} on {appointment.date.strftime('%Y-%m-%d %H:%M')} has been approved.",
+            notification_type='appointment',
+        )
+        return Response({'status': 'approved', 'appointment': AppointmentSerializer(appointment).data})
+
+    @action(detail=True, methods=['post'])
+    def reject(self, request, pk=None):
+        appointment = self.get_object()
+        # Check if user is authorized to reject this appointment
+        user = request.user
+        if user.is_staff:
+            try:
+                hospital = user.hospital
+                if appointment.hospital_id != hospital.id:
+                    return Response({'error': 'Not authorized to reject this appointment'}, status=403)
+            except HealthCenter.DoesNotExist:
+                return Response({'error': 'Hospital not found'}, status=404)
+        else:
+            return Response({'error': 'Not authorized to reject appointments'}, status=403)
+        
+        appointment.status = 'cancelled'
+        appointment.save()
+        # Notify user
+        Notification.objects.create(
+            user=appointment.user,
+            title='Appointment Rejected',
+            message=f"Your appointment at {appointment.hospital.name} on {appointment.date.strftime('%Y-%m-%d %H:%M')} has been rejected.",
+            notification_type='appointment',
+        )
+        return Response({'status': 'rejected', 'appointment': AppointmentSerializer(appointment).data})
+
+class HospitalDashboardView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request, hospital_id):
+        appointments = Appointment.objects.filter(hospital_id=hospital_id).order_by('-created_at')
+        serializer = AppointmentSerializer(appointments, many=True)
+        return Response(serializer.data)
+
+    def delete(self, request, hospital_id):
+        deleted_count, _ = Appointment.objects.filter(hospital_id=hospital_id).delete()
+        return Response({'message': f'Deleted {deleted_count} appointments.'}, status=200)
+
+class HospitalDashboardAuthView(APIView):
+    """Hospital dashboard view that gets hospital_id from authenticated user"""
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        try:
+            hospital = request.user.hospital
+            appointments = Appointment.objects.filter(hospital_id=hospital.id).order_by('-created_at')
+            serializer = AppointmentSerializer(appointments, many=True)
+            return Response(serializer.data)
+        except HealthCenter.DoesNotExist:
+            return Response(
+                {'error': 'No hospital found for this user'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    def delete(self, request):
+        try:
+            hospital = request.user.hospital
+            deleted_count, _ = Appointment.objects.filter(hospital_id=hospital.id).delete()
+            return Response({'message': f'Deleted {deleted_count} appointments.'}, status=200)
+        except HealthCenter.DoesNotExist:
+            return Response(
+                {'error': 'No hospital found for this user'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+# Hospital Authentication Views
+class HospitalRegisterView(APIView):
+    permission_classes = [AllowAny]
+
+    @extend_schema(
+        request=OpenApiTypes.OBJECT,
+        responses={
+            201: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='Hospital registered successfully',
+                examples=[OpenApiExample('Hospital registered successfully', value={
+                    'message': 'Hospital registered successfully',
+                    'hospital': {
+                        'id': 1,
+                        'name': 'Sample Hospital',
+                        'email': 'hospital@example.com'
+                    },
+                    'tokens': {
+                        'refresh': 'jwt-refresh-token',
+                        'access': 'jwt-access-token'
+                    }
+                }, response_only=True)]
+            ),
+            400: OpenApiResponse(description='Validation error')
+        }
+    )
+    def post(self, request):
+        # Extract user credentials
+        user_email = request.data.get('user_email')
+        password = request.data.get('password')
+        
+        # Validate required fields
+        if not user_email or not password:
+            return Response(
+                {'error': 'Email and password are required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Check if user already exists
+        if User.objects.filter(email=user_email).exists():
+            return Response(
+                {'error': 'A user with this email already exists'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            # Create user account for hospital
+            user = User.objects.create_user(
+                email=user_email,
+                password=password,
+                name=user_email.split('@')[0],  # Use email prefix as name
+                is_staff=True  # Hospitals are staff users
+            )
+            
+            # Create hospital with default values
+            hospital = HealthCenter.objects.create(
+                hospital_user=user,
+                name=f"Hospital {user_email.split('@')[0]}",  # Generate name from email
+                description="Hospital created via registration",
+                address="Address to be updated",
+                city="City to be updated",
+                country="Uganda",
+                email=user_email,
+                phone="+256 000 000000",
+                is_emergency=True,
+                has_ambulance=False,
+                has_pharmacy=True,
+                has_lab=False,
+                specialties="",
+                conditions_treated="",
+            )
+            
+            # Generate tokens
+            refresh = RefreshToken.for_user(user)
+            access = str(refresh.access_token)
+            
+            return Response({
+                'message': 'Hospital registered successfully',
+                'hospital': {
+                    'id': hospital.id,
+                    'name': hospital.name,
+                    'email': hospital.email
+                },
+                'tokens': {
+                    'refresh': str(refresh),
+                    'access': access
+                }
+            }, status=status.HTTP_201_CREATED)
+            
+        except Exception as e:
+            logger.error(f"Error registering hospital: {str(e)}", exc_info=True)
+            return Response(
+                {'error': 'Failed to register hospital'}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+class HospitalLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    @extend_schema(
+        request=OpenApiTypes.OBJECT,
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='Hospital login successful',
+                examples=[OpenApiExample('Hospital login successful', value={
+                    'refresh': 'jwt-refresh-token',
+                    'access': 'jwt-access-token',
+                    'hospital': {
+                        'id': 1,
+                        'name': 'Sample Hospital',
+                        'email': 'hospital@example.com'
+                    }
+                }, response_only=True)]
+            ),
+            401: OpenApiResponse(description='Invalid credentials')
+        }
+    )
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        
+        if not email or not password:
+            return Response(
+                {'error': 'Email and password are required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Authenticate user
+        user = authenticate(email=email, password=password)
+        if user is None:
+            return Response(
+                {'error': 'Invalid credentials'}, 
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        # Check if user is linked to a hospital
+        try:
+            hospital = user.hospital
+        except HealthCenter.DoesNotExist:
+            return Response(
+                {'error': 'This account is not linked to any hospital'}, 
+                status=status.HTTP_401_UNAUTHORIZED
+            )
+        
+        # Generate tokens
+        refresh = RefreshToken.for_user(user)
+        access = str(refresh.access_token)
+        
+        return Response({
+            'refresh': str(refresh),
+            'access': access,
+            'hospital': {
+                'id': hospital.id,
+                'name': hospital.name,
+                'email': hospital.email
+            }
+        }, status=status.HTTP_200_OK)
+
+class HospitalProfileView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    @extend_schema(
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='Hospital profile details',
+                examples=[OpenApiExample('Hospital profile', value={
+                    'id': 1,
+                    'name': 'Sample Hospital',
+                    'description': 'A great hospital',
+                    'address': '123 Main St',
+                    'city': 'Kampala',
+                    'country': 'Uganda',
+                    'email': 'hospital@example.com',
+                    'phone': '+256700000000',
+                    'is_emergency': True,
+                    'has_ambulance': False,
+                    'has_pharmacy': True,
+                    'has_lab': False,
+                    'specialties': 'Cardiology, Neurology',
+                    'conditions_treated': 'Malaria, Typhoid, Diabetes'
+                }, response_only=True)]
+            ),
+            404: OpenApiResponse(description='Hospital not found')
+        }
+    )
+    def get(self, request):
+        # DEBUG: Print Authorization header and user info
+        print('DEBUG: Authorization header:', request.META.get('HTTP_AUTHORIZATION'))
+        print('DEBUG: User:', request.user)
+        print('DEBUG: User is authenticated:', request.user.is_authenticated)
+        try:
+            hospital = request.user.hospital
+            serializer = HealthCenterSerializer(hospital)
+            return Response(serializer.data)
+        except HealthCenter.DoesNotExist:
+            return Response(
+                {'error': 'No hospital found for this user'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+    @extend_schema(
+        request=OpenApiTypes.OBJECT,
+        responses={
+            200: OpenApiResponse(
+                response=OpenApiTypes.OBJECT,
+                description='Hospital profile updated successfully',
+                examples=[OpenApiExample('Profile updated', value={
+                    'message': 'Hospital profile updated successfully',
+                    'hospital': {
+                        'id': 1,
+                        'name': 'Updated Hospital',
+                        'email': 'updated@hospital.com'
+                    }
+                }, response_only=True)]
+            ),
+            400: OpenApiResponse(description='Validation error'),
+            404: OpenApiResponse(description='Hospital not found')
+        }
+    )
+    def put(self, request):
+        """Update hospital profile details for the authenticated user"""
+        try:
+            hospital = request.user.hospital
+            
+            # Update hospital fields
+            update_fields = [
+                'name', 'description', 'address', 'city', 'country', 
+                'email', 'phone', 'is_emergency', 'has_ambulance', 
+                'has_pharmacy', 'has_lab', 'specialties', 'conditions_treated'
+            ]
+            
+            for field in update_fields:
+                if field in request.data:
+                    setattr(hospital, field, request.data[field])
+            
+            hospital.save()
+            
+            serializer = HealthCenterSerializer(hospital)
+            return Response({
+                'message': 'Hospital profile updated successfully',
+                'hospital': serializer.data
+            })
+            
+        except HealthCenter.DoesNotExist:
+            return Response(
+                {'error': 'No hospital found for this user'}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"Error updating hospital profile: {str(e)}", exc_info=True)
+            return Response(
+                {'error': 'Failed to update hospital profile'}, 
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

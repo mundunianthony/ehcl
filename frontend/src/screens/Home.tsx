@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { getCurrentApiUrl } from "../config/api";
 import { api } from "../services/api";
 import {
   View,
@@ -18,6 +19,7 @@ import { RootStackParamList } from "../types";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../context/AuthContext";
 import MainLayout from "../components/MainLayout";
+import { API_URL } from '../config/api';
 import { useNavigation, ParamListBase } from "@react-navigation/native";
 import IconMaterialCommunity from "react-native-vector-icons/MaterialCommunityIcons";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -93,7 +95,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
         console.log('Fetching districts...');
         
         // The endpoint is at /api/available-districts/
-        const response = await api.get('available-districts/');
+        const response = await api.get('api/available-districts/');
         
         console.log('API response:', response);
         
@@ -503,17 +505,6 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
                 <IconMaterialCommunity name="information" size={20} color="#64748B" style={styles.menuIcon} />
                 <Text style={styles.menuText}>About</Text>
               </TouchableOpacity>
-
-              {/* Debug Screen - Only show in development */}
-              {__DEV__ && (
-                <TouchableOpacity style={styles.menuItem} onPress={() => { 
-                  setMenuVisible(false); 
-                  navigation.navigate("Debug");
-                }}>
-                  <IconMaterialCommunity name="bug" size={20} color="#FF9800" style={styles.menuIcon} />
-                  <Text style={[styles.menuText, { color: "#FF9800" }]}>Debug</Text>
-                </TouchableOpacity>
-              )}
 
               <TouchableOpacity style={styles.menuItem} onPress={() => { setMenuVisible(false); navigation.navigate("Login"); }}>
                 <IconMaterialCommunity name="logout" size={20} color="#EF4444" style={styles.menuIcon} />

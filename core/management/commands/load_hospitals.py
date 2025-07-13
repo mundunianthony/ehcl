@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
-from core.models import HealthCenter
+from django.utils.text import slugify
+from core.models import HealthCenter, User
 
 # Common medical specialties and conditions
 # Common medical specialties and conditions
@@ -73,8 +74,8 @@ HOSPITALS_DATA = [
         "image": "https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600"
     },
     {
-        "name": "Mbarara Women’s Clinic",
-        "description": "A specialized healthcare facility dedicated to maternal health, gynecology, and family planning, offering prenatal care and treatment for women’s health conditions.",
+        "name": "Mbarara Women's Clinic",
+        "description": "A specialized healthcare facility dedicated to maternal health, gynecology, and family planning, offering prenatal care and treatment for women's health conditions.",
         "address": "Kikagate Rd, Mbarara",
         "is_emergency": True,
         "has_ambulance": True,
@@ -107,7 +108,7 @@ HOSPITALS_DATA = [
     },
     {
         "name": "Olive Health Clinic",
-        "description": "A private healthcare facility specializing in women’s health, minor surgical procedures, and primary care for common ailments.",
+        "description": "A private healthcare facility specializing in women's health, minor surgical procedures, and primary care for common ailments.",
         "address": "Health Centre Rd, Lira",
         "is_emergency": False,
         "has_ambulance": False,
@@ -156,7 +157,7 @@ HOSPITALS_DATA = [
     # Kampala District (4 hospitals)
     {
         "name": "Mulago National Referral Hospital",
-        "description": "Uganda’s largest national referral hospital, offering advanced medical, surgical, and specialized care across multiple disciplines, including diagnostics and emergency services.",
+        "description": "Uganda's largest national referral hospital, offering advanced medical, surgical, and specialized care across multiple disciplines, including diagnostics and emergency services.",
         "address": "Mulago Hill, Kampala",
         "is_emergency": True,
         "has_ambulance": True,
@@ -203,8 +204,8 @@ HOSPITALS_DATA = [
         "image": "https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600"
     },
     {
-        "name": "Kampala Women’s Clinic",
-        "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services, with a focus on women’s wellness.",
+        "name": "Kampala Women's Clinic",
+        "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services, with a focus on women's wellness.",
         "address": "Bukoto Rd, Kampala",
         "is_emergency": True,
         "has_ambulance": False,
@@ -301,7 +302,7 @@ HOSPITALS_DATA = [
         "image": "https://images.pexels.com/photos/236380/pexels-photo-236380.jpeg?auto=compress&cs=tinysrgb&w=600"
     },
     {
-        "name": "St. Mary’s Hospital Lacor",
+        "name": "St. Mary's Hospital Lacor",
         "description": "A faith-based hospital offering comprehensive medical, surgical, and pediatric care, with a focus on high-quality patient outcomes.",
         "address": "Lacor Rd, Gulu",
         "is_emergency": True,
@@ -528,7 +529,7 @@ HOSPITALS_DATA = [
         "image": "https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600"
     },
     {
-        "name": "Fort Portal Women’s Clinic",
+        "name": "Fort Portal Women's Clinic",
         "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services.",
         "address": "Mpanga Rd, Fort Portal",
         "is_emergency": True,
@@ -658,7 +659,7 @@ HOSPITALS_DATA = [
         "image": "https://images.pexels.com/photos/263337/pexels-photo-263337.jpeg?auto=compress&cs=tinysrgb&w=600"
     },
     {
-        "name": "Masaka Women’s Clinic",
+        "name": "Masaka Women's Clinic",
         "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services.",
         "address": "Kizungu Rd, Masaka",
         "is_emergency": True,
@@ -918,7 +919,7 @@ HOSPITALS_DATA = [
         "image": "https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600"
     },
     {
-        "name": "Kamuli Women’s Clinic",
+        "name": "Kamuli Women's Clinic",
         "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services.",
         "address": "Kitayunjwa Rd, Kamuli",
         "is_emergency": True,
@@ -1113,7 +1114,7 @@ HOSPITALS_DATA = [
         "image": "https://images.pexels.com/photos/4021814/pexels-photo-4021814.jpeg?auto=compress&cs=tinysrgb&w=600"
     },
     {
-        "name": "Nebbi Women’s Clinic",
+        "name": "Nebbi Women's Clinic",
         "description": "A specialized healthcare facility providing maternal health, gynecological care, and family planning services.",
         "address": "Panyimur Rd, Nebbi",
         "is_emergency": True,
@@ -1235,6 +1236,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         created_count = 0
         updated_count = 0
+        credentials = []
         
         for hospital_data in HOSPITALS_DATA:
             # Make a copy to avoid modifying the original dict
@@ -1266,6 +1268,24 @@ class Command(BaseCommand):
             if 'conditions_treated' not in hospital_data:
                 hospital_data['conditions_treated'] = 'Malaria, Typhoid, Chest infection, Urine infection, Sugar disease, High blood pressure, Breathing problems, HIV/AIDS, TB, Stroke (Poko), Heart pain, Pregnancy problems, Broken bones, Burns'
             
+            # Generate unique admin email and password for the hospital
+            # Create a shorter slug by taking first 3 words and limiting length
+            name_words = data['name'].split()[:3]  # Take first 3 words
+            short_name = ' '.join(name_words)
+            slug = slugify(short_name)[:15]  # Limit to 15 characters
+            slug = slug.replace('-', '')  # Remove dashes
+            admin_email = f"admin.{slug}@hospital.com"
+            admin_password = "password1234"
+            
+            # Create or get the user
+            user, user_created = User.objects.get_or_create(
+                email=admin_email,
+                defaults={"is_staff": True, "name": data['name']}
+            )
+            if user_created:
+                user.set_password(admin_password)
+                user.save()
+            
             # Try to find existing hospital by name and address
             name = data['name']
             address = data['address']
@@ -1275,18 +1295,23 @@ class Command(BaseCommand):
                 # Update existing hospital
                 for key, value in data.items():
                     setattr(hospital, key, value)
+                hospital.hospital_user = user
                 hospital.save()
                 updated_count += 1
                 self.stdout.write(self.style.SUCCESS(f'Updated hospital: {name}'))
             except HealthCenter.DoesNotExist:
                 # Create new hospital
-                hospital = HealthCenter.objects.create(**data)
+                hospital = HealthCenter.objects.create(**data, hospital_user=user)
                 created_count += 1
                 self.stdout.write(self.style.SUCCESS(f'Created hospital: {name}'))
             except Exception as e:
                 self.stdout.write(self.style.ERROR(f'Error processing {name}: {str(e)}'))
+            credentials.append((name, admin_email, admin_password))
 
         self.stdout.write(
             self.style.SUCCESS(f'Successfully processed {len(HOSPITALS_DATA)} hospitals. '
                              f'Created: {created_count}, Updated: {updated_count}')
         )
+        self.stdout.write(self.style.WARNING('\nHospital Login Credentials:'))
+        for name, email, password in credentials:
+            self.stdout.write(f"{name}:\n  Email: {email}\n  Password: {password}\n")

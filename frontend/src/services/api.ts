@@ -1,7 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, InternalAxiosRequestConfig } from 'axios';
-import { API_URL } from '../config';
+import { api as configApi, getAuthToken, setAuthToken, tokenStorage } from '../config/api';
 import { Alert, Platform } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // User interface for auth context
 interface User {
@@ -11,6 +10,7 @@ interface User {
   name: string;
   first_name: string | null;
   last_name: string | null;
+  phone: string;
   is_staff: boolean;
   is_admin: boolean;
   is_active: boolean;
@@ -93,40 +93,12 @@ interface NearbyHospitalsParams {
   radius?: number;
 }
 
-// Create a simple axios instance with the working config
-const apiInstance = axios.create({
-  baseURL: API_URL,
-  timeout: 30000,
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  },
-});
-
-// Add request interceptor to include auth token
-apiInstance.interceptors.request.use(
-  async (config) => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    } catch (error) {
-      console.warn('Error getting token:', error);
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// Use the simple API client
+// Use the working API client from config/api.ts directly
 export const api = {
   get: async (url: string, config?: any) => {
     console.log(`[API] GET ${url}`, { config });
     try {
-      const response = await apiInstance.get(url, config);
+      const response = await configApi.get(url, config);
       console.log(`[API] GET ${url} success`);
       return response;
     } catch (error) {
@@ -137,7 +109,7 @@ export const api = {
   post: async (url: string, data?: any, config?: any) => {
     console.log(`[API] POST ${url}`, { data, config });
     try {
-      const response = await apiInstance.post(url, data, config);
+      const response = await configApi.post(url, data, config);
       console.log(`[API] POST ${url} success`);
       return response;
     } catch (error) {
@@ -148,7 +120,7 @@ export const api = {
   put: async (url: string, data?: any, config?: any) => {
     console.log(`[API] PUT ${url}`, { data, config });
     try {
-      const response = await apiInstance.put(url, data, config);
+      const response = await configApi.put(url, data, config);
       console.log(`[API] PUT ${url} success`);
       return response;
     } catch (error) {
@@ -159,7 +131,7 @@ export const api = {
   delete: async (url: string, config?: any) => {
     console.log(`[API] DELETE ${url}`, { config });
     try {
-      const response = await apiInstance.delete(url, config);
+      const response = await configApi.delete(url, config);
       console.log(`[API] DELETE ${url} success`);
       return response;
     } catch (error) {
@@ -170,7 +142,7 @@ export const api = {
   request: async (config: any) => {
     console.log('[API] REQUEST', { config });
     try {
-      const response = await apiInstance.request(config);
+      const response = await configApi.request(config);
       console.log('[API] REQUEST success', { url: config.url });
       return response;
     } catch (error) {
@@ -288,12 +260,13 @@ const locationAPI = {
 // Auth API calls
 const authAPI = {
   login: async (credentials: { email: string; password: string }): Promise<AuthResponse> => {
-    console.log('[Auth] Sending login request...', {
+    console.log('[Auth] Sending login request...', { 
       email: credentials.email,
       endpoint: 'users/login/'
     });
-    await AsyncStorage.removeItem('token');
-
+    setAuthToken(null);
+    await tokenStorage.remove();
+    
     try {
       const response = await api.post('users/login/', credentials, {
         headers: { 'Content-Type': 'application/json' },
@@ -307,10 +280,10 @@ const authAPI = {
         headers: response.headers,
         data: data
       });
-
+      
       let accessToken: string | undefined;
       let refreshToken: string | undefined;
-
+      
       if (typeof data === 'object' && data !== null) {
         if ('access' in data) accessToken = data.access;
         if ('refresh' in data) refreshToken = data.refresh;
@@ -320,16 +293,17 @@ const authAPI = {
       } else if (typeof data === 'string') {
         accessToken = data;
       }
-
+      
       console.log('[Auth] Extracted tokens:', { accessToken, refreshToken });
-
+      
       if (!accessToken) {
         throw new Error('No access token found in response');
       }
-
-      await AsyncStorage.setItem('token', accessToken);
+      
+      setAuthToken(accessToken);
+      await tokenStorage.set(accessToken);
       console.log('[Auth] Token stored successfully');
-
+      
       let userData: User = data.user;
       if (!userData) {
         try {
@@ -344,6 +318,7 @@ const authAPI = {
             name: credentials.email.split('@')[0],
             first_name: null,
             last_name: null,
+            phone: '+256 000 000000', // Default phone
             is_staff: false,
             is_admin: false,
             is_active: true,
@@ -361,6 +336,7 @@ const authAPI = {
           name: userData.name || userData.email?.split('@')[0] || credentials.email.split('@')[0],
           first_name: userData.first_name || null,
           last_name: userData.last_name || null,
+          phone: userData.phone || '+256 000 000000', // Default phone if not provided
           is_staff: userData.is_staff || false,
           is_admin: userData.is_admin || false,
           is_active: userData.is_active !== undefined ? userData.is_active : true,
@@ -370,12 +346,12 @@ const authAPI = {
           user_permissions: userData.user_permissions || []
         };
       }
-
+      
       console.log('[Auth] Login successful, user:', userData);
-      return {
-        access: accessToken,
-        refresh: refreshToken || '',
-        user: userData
+      return { 
+        access: accessToken, 
+        refresh: refreshToken || '', 
+        user: userData 
       };
     } catch (error: any) {
       console.error('[Auth] Login error:', {
@@ -384,7 +360,7 @@ const authAPI = {
         data: error.response?.data,
         config: error.config
       });
-
+      
       if (error.response) {
         if (error.response.status === 400) {
           throw new Error('Invalid email or password');
@@ -393,22 +369,22 @@ const authAPI = {
         } else if (error.response.status >= 500) {
           throw new Error('Server error. Please try again later.');
         } else if (error.response.data) {
-          const errorMessage = error.response.data.detail ||
-            error.response.data.error ||
-            error.response.data.message ||
-            'An error occurred during login';
+          const errorMessage = error.response.data.detail || 
+                             error.response.data.error ||
+                             error.response.data.message ||
+                             'An error occurred during login';
           throw new Error(errorMessage);
         }
       } else if (error.request) {
         console.error('No response received:', error.request);
         throw new Error('No response from server. Please check your internet connection.');
       }
-
+      
       console.error('Login request error:', error.message);
       throw error;
     }
   },
-
+  
   getUserDetails: async (token: string): Promise<User> => {
     try {
       const response = await api.get('api/users/me/', {
@@ -422,8 +398,8 @@ const authAPI = {
       throw error;
     }
   },
-
-  register: async (userData: { email: string; password: string; name: string }): Promise<RegisterResponse> => {
+  
+  register: async (userData: { email: string; password: string; name: string; phone: string }): Promise<RegisterResponse> => {
     try {
       const response = await api.post('/users/register/', userData);
       return response.data;
@@ -436,12 +412,254 @@ const authAPI = {
       throw error;
     }
   },
-
+  
   logout: async (): Promise<void> => {
     try {
-      await AsyncStorage.removeItem('token');
+      await api.post('/users/logout/');
     } catch (error: any) {
       console.error('[Auth] Logout error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw error;
+    }
+  }
+};
+
+// Hospital Auth API calls
+const hospitalAuthAPI = {
+  login: async (credentials: { email: string; password: string }): Promise<AuthResponse> => {
+    console.log('[Hospital Auth] Sending login request...', { 
+      email: credentials.email,
+      endpoint: 'hospitals/login/'
+    });
+    setAuthToken(null);
+    await tokenStorage.remove();
+    
+    // Add timeout wrapper to prevent hanging
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Login request timed out after 15 seconds')), 15000);
+    });
+    
+    try {
+      console.log('[Hospital Auth] Making API call to hospitals/login/...');
+      const response = await Promise.race([
+        api.post('hospitals/login/', credentials, {
+          headers: { 'Content-Type': 'application/json' },
+          skipAuth: true,
+          timeout: 10000 // 10 second timeout
+        }),
+        timeoutPromise
+      ]);
+
+      const data = response.data;
+      console.log('[Hospital Auth] Login response data:', {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+        data: data
+      });
+      
+      let accessToken: string | undefined;
+      let refreshToken: string | undefined;
+      
+      if (typeof data === 'object' && data !== null) {
+        if ('access' in data) accessToken = data.access;
+        if ('refresh' in data) refreshToken = data.refresh;
+        if (!accessToken && 'access_token' in data) accessToken = data.access_token;
+        if (!refreshToken && 'refresh_token' in data) refreshToken = data.refresh_token;
+        if (!accessToken && 'token' in data) accessToken = data.token;
+      } else if (typeof data === 'string') {
+        accessToken = data;
+      }
+      
+      console.log('[Hospital Auth] Extracted tokens:', { accessToken, refreshToken });
+      
+      if (!accessToken) {
+        throw new Error('No access token found in response');
+      }
+      
+      setAuthToken(accessToken);
+      await tokenStorage.set(accessToken);
+      console.log('[Hospital Auth] Token stored successfully');
+      
+      let userData: User = data.user;
+      if (!userData) {
+        // Create minimal user object for hospital login
+        userData = {
+          id: data.user_id?.toString() || 'unknown',
+          email: credentials.email,
+          username: credentials.email.split('@')[0],
+          name: credentials.email.split('@')[0],
+          first_name: null,
+          last_name: null,
+          phone: '+256 000 000000', // Default phone
+          is_staff: true, // Hospitals are staff users
+          is_admin: false,
+          is_active: true,
+          date_joined: new Date().toISOString(),
+          last_login: new Date().toISOString(),
+          groups: [],
+          user_permissions: []
+        };
+      } else {
+        userData = {
+          id: userData.id?.toString() || 'unknown',
+          email: userData.email || credentials.email,
+          username: userData.username || userData.email?.split('@')[0] || credentials.email.split('@')[0],
+          name: userData.name || userData.email?.split('@')[0] || credentials.email.split('@')[0],
+          first_name: userData.first_name || null,
+          last_name: userData.last_name || null,
+          phone: userData.phone || '+256 000 000000', // Default phone if not provided
+          is_staff: userData.is_staff || true, // Hospitals are staff users
+          is_admin: userData.is_admin || false,
+          is_active: userData.is_active !== undefined ? userData.is_active : true,
+          date_joined: userData.date_joined || new Date().toISOString(),
+          last_login: userData.last_login || new Date().toISOString(),
+          groups: userData.groups || [],
+          user_permissions: userData.user_permissions || []
+        };
+      }
+      
+      console.log('[Hospital Auth] Login successful, user:', userData);
+      return { 
+        access: accessToken, 
+        refresh: refreshToken || '', 
+        user: userData 
+      };
+    } catch (error: any) {
+      console.error('[Hospital Auth] Login error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        config: error.config
+      });
+      
+      if (error.response) {
+        if (error.response.status === 400) {
+          throw new Error('Invalid email or password');
+        } else if (error.response.status === 401) {
+          throw new Error('Authentication failed. Please login again.');
+        } else if (error.response.status >= 500) {
+          throw new Error('Server error. Please try again later.');
+        } else if (error.response.data) {
+          const errorMessage = error.response.data.detail || 
+                             error.response.data.error ||
+                             error.response.data.message ||
+                             'An error occurred during login';
+          throw new Error(errorMessage);
+        }
+      } else if (error.request) {
+        console.error('No response received:', error.request);
+        throw new Error('No response from server. Please check your internet connection.');
+      }
+      
+      console.error('Hospital login request error:', error.message);
+      throw error;
+    }
+  },
+  
+  register: async (userData: { email: string; password: string; name: string }): Promise<RegisterResponse> => {
+    try {
+      const response = await api.post('/hospitals/register/', userData);
+      return response.data;
+    } catch (error: any) {
+      console.error('[Hospital Auth] Registration error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw error;
+    }
+  },
+  
+  logout: async (): Promise<void> => {
+    try {
+      await api.post('/hospitals/logout/');
+    } catch (error: any) {
+      console.error('[Hospital Auth] Logout error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw error;
+    }
+  },
+
+  // Hospital dashboard methods
+  getDashboard: async (): Promise<any> => {
+    try {
+      const response = await api.get('hospital/dashboard/');
+      return response.data;
+    } catch (error: any) {
+      console.error('[Hospital Auth] Dashboard error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw error;
+    }
+  },
+
+  approveAppointment: async (id: number): Promise<void> => {
+    try {
+      await api.post(`appointments/${id}/approve/`);
+    } catch (error: any) {
+      console.error('[Hospital Auth] Approve appointment error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw error;
+    }
+  },
+
+  rejectAppointment: async (id: number): Promise<void> => {
+    try {
+      await api.post(`appointments/${id}/reject/`);
+    } catch (error: any) {
+      console.error('[Hospital Auth] Reject appointment error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw error;
+    }
+  },
+
+  deleteAppointment: async (id: number): Promise<void> => {
+    try {
+      await api.delete(`appointments/${id}/`);
+    } catch (error: any) {
+      console.error('[Hospital Auth] Delete appointment error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw error;
+    }
+  },
+
+  clearAllAppointments: async (): Promise<void> => {
+    try {
+      await api.delete('hospital/dashboard/');
+    } catch (error: any) {
+      console.error('[Hospital Auth] Clear all appointments error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+      throw error;
+    }
+  },
+
+  updateProfile: async (data: any): Promise<any> => {
+    try {
+      const response = await api.put('hospital/profile/', data);
+      return response.data;
+    } catch (error: any) {
+      console.error('[Hospital Auth] Update profile error:', {
         message: error.message,
         status: error.response?.status,
         data: error.response?.data
@@ -457,18 +675,18 @@ const notificationAPI = {
     try {
       const response = await api.get('notifications/');
       console.log('Notifications response:', response.data);
-
+      
       if (response.data && response.data.results) {
         return response.data.results;
       }
-
+      
       return Array.isArray(response.data) ? response.data : [];
     } catch (error: any) {
       console.error('Error fetching notifications:', error.message);
       throw error;
     }
   },
-
+  
   markAsRead: async (id: number): Promise<void> => {
     try {
       await api.post(`notifications/${id}/mark_read/`);
@@ -488,7 +706,7 @@ export const apiServices = {
 };
 
 // Export individual API service objects
-export { authAPI, hospitalAPI, locationAPI, notificationAPI };
+export { authAPI, hospitalAuthAPI, hospitalAPI, locationAPI, notificationAPI };
 
 // Export TypeScript interfaces
 export type {

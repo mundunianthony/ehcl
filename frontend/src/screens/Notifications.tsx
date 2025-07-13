@@ -33,6 +33,8 @@ const getNotificationIcon = (type: string) => {
       return 'medical';
     case 'account':
       return 'person';
+    case 'appointment':
+      return 'calendar';
     default:
       return 'notifications';
   }
@@ -48,6 +50,8 @@ const getNotificationColor = (type: string) => {
       return '#2196F3';
     case 'account':
       return '#9C27B0';
+    case 'appointment':
+      return '#FF9800';
     default:
       return '#666';
   }
