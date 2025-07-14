@@ -1,2 +1,2 @@
-release: python manage.py migrate && python manage.py loaddata data_migration/sqlite_data.json
+release: python manage.py migrate && python manage.py loaddata data_migration/data.json
 web: gunicorn myproject.wsgi 
